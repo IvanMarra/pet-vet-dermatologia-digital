@@ -33,7 +33,14 @@ const SiteSettingsTab = () => {
           if (!settingsObj[item.section]) {
             settingsObj[item.section] = {};
           }
-          settingsObj[item.section][item.key] = JSON.parse(item.value);
+          // Handle different types of JSON values
+          let parsedValue;
+          try {
+            parsedValue = typeof item.value === 'string' ? JSON.parse(item.value) : item.value;
+          } catch {
+            parsedValue = item.value;
+          }
+          settingsObj[item.section][item.key] = parsedValue;
         });
         setSettings(settingsObj);
       }
@@ -81,6 +88,10 @@ const SiteSettingsTab = () => {
     }));
   };
 
+  const getSetting = (section: string, key: string, defaultValue: string = '') => {
+    return settings[section]?.[key] || defaultValue;
+  };
+
   return (
     <div className="space-y-6">
       <Card>
@@ -91,14 +102,14 @@ const SiteSettingsTab = () => {
           <div>
             <Label>Título Principal</Label>
             <Input
-              value={settings.hero?.title || ''}
+              value={getSetting('hero', 'title')}
               onChange={(e) => updateSetting('hero', 'title', e.target.value)}
             />
           </div>
           <div>
             <Label>Subtítulo</Label>
             <Textarea
-              value={settings.hero?.subtitle || ''}
+              value={getSetting('hero', 'subtitle')}
               onChange={(e) => updateSetting('hero', 'subtitle', e.target.value)}
             />
           </div>
@@ -113,28 +124,28 @@ const SiteSettingsTab = () => {
           <div>
             <Label>Título</Label>
             <Input
-              value={settings.about?.title || ''}
+              value={getSetting('about', 'title')}
               onChange={(e) => updateSetting('about', 'title', e.target.value)}
             />
           </div>
           <div>
             <Label>Descrição</Label>
             <Textarea
-              value={settings.about?.description || ''}
+              value={getSetting('about', 'description')}
               onChange={(e) => updateSetting('about', 'description', e.target.value)}
             />
           </div>
           <div>
             <Label>Missão</Label>
             <Textarea
-              value={settings.about?.mission || ''}
+              value={getSetting('about', 'mission')}
               onChange={(e) => updateSetting('about', 'mission', e.target.value)}
             />
           </div>
           <div>
             <Label>Visão</Label>
             <Textarea
-              value={settings.about?.vision || ''}
+              value={getSetting('about', 'vision')}
               onChange={(e) => updateSetting('about', 'vision', e.target.value)}
             />
           </div>
@@ -149,28 +160,28 @@ const SiteSettingsTab = () => {
           <div>
             <Label>Nome</Label>
             <Input
-              value={settings.veterinarian?.name || ''}
+              value={getSetting('veterinarian', 'name')}
               onChange={(e) => updateSetting('veterinarian', 'name', e.target.value)}
             />
           </div>
           <div>
             <Label>Especialidade</Label>
             <Input
-              value={settings.veterinarian?.specialty || ''}
+              value={getSetting('veterinarian', 'specialty')}
               onChange={(e) => updateSetting('veterinarian', 'specialty', e.target.value)}
             />
           </div>
           <div>
             <Label>Descrição</Label>
             <Textarea
-              value={settings.veterinarian?.description || ''}
+              value={getSetting('veterinarian', 'description')}
               onChange={(e) => updateSetting('veterinarian', 'description', e.target.value)}
             />
           </div>
           <div>
             <Label>LinkedIn</Label>
             <Input
-              value={settings.veterinarian?.linkedin || ''}
+              value={getSetting('veterinarian', 'linkedin')}
               onChange={(e) => updateSetting('veterinarian', 'linkedin', e.target.value)}
             />
           </div>
@@ -185,28 +196,28 @@ const SiteSettingsTab = () => {
           <div>
             <Label>Endereço</Label>
             <Input
-              value={settings.contact?.address || ''}
+              value={getSetting('contact', 'address')}
               onChange={(e) => updateSetting('contact', 'address', e.target.value)}
             />
           </div>
           <div>
             <Label>Telefone</Label>
             <Input
-              value={settings.contact?.phone || ''}
+              value={getSetting('contact', 'phone')}
               onChange={(e) => updateSetting('contact', 'phone', e.target.value)}
             />
           </div>
           <div>
             <Label>Email</Label>
             <Input
-              value={settings.contact?.email || ''}
+              value={getSetting('contact', 'email')}
               onChange={(e) => updateSetting('contact', 'email', e.target.value)}
             />
           </div>
           <div>
             <Label>Horário de Funcionamento</Label>
             <Textarea
-              value={settings.contact?.hours || ''}
+              value={getSetting('contact', 'hours')}
               onChange={(e) => updateSetting('contact', 'hours', e.target.value)}
             />
           </div>

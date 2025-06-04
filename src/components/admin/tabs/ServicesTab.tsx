@@ -8,7 +8,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { Plus, Edit, Trash2, X } from 'lucide-react';
+import { Plus, Edit, Trash2, GripVertical } from 'lucide-react';
 
 interface Service {
   id: string;
@@ -50,7 +50,13 @@ const ServicesTab = () => {
         .order('display_order', { ascending: true });
       
       if (data) {
-        setServices(data);
+        const formattedServices = data.map(service => ({
+          ...service,
+          services_list: Array.isArray(service.services_list) 
+            ? service.services_list 
+            : []
+        }));
+        setServices(formattedServices);
       }
     } catch (error) {
       console.error('Erro ao carregar serviços:', error);
@@ -135,7 +141,7 @@ const ServicesTab = () => {
       description: service.description,
       icon: service.icon || '',
       category: service.category,
-      services_list: service.services_list || [''],
+      services_list: service.services_list.length > 0 ? service.services_list : [''],
       is_active: service.is_active,
       display_order: service.display_order
     });
@@ -150,20 +156,19 @@ const ServicesTab = () => {
     });
   };
 
-  const removeServiceItem = (index: number) => {
-    const newList = formData.services_list.filter((_, i) => i !== index);
-    setFormData({
-      ...formData,
-      services_list: newList
-    });
-  };
-
   const updateServiceItem = (index: number, value: string) => {
     const newList = [...formData.services_list];
     newList[index] = value;
     setFormData({
       ...formData,
       services_list: newList
+    });
+  };
+
+  const removeServiceItem = (index: number) => {
+    setFormData({
+      ...formData,
+      services_list: formData.services_list.filter((_, i) => i !== index)
     });
   };
 
@@ -191,7 +196,7 @@ const ServicesTab = () => {
           <CardContent className="space-y-4">
             <div className="grid md:grid-cols-2 gap-4">
               <div>
-                <Label>Título</Label>
+                <Label>Título do Serviço</Label>
                 <Input
                   value={formData.title}
                   onChange={(e) => setFormData({...formData, title: e.target.value})}
@@ -208,11 +213,11 @@ const ServicesTab = () => {
             
             <div className="grid md:grid-cols-2 gap-4">
               <div>
-                <Label>Ícone (nome do Lucide)</Label>
+                <Label>Ícone (Lucide React)</Label>
                 <Input
                   value={formData.icon}
                   onChange={(e) => setFormData({...formData, icon: e.target.value})}
-                  placeholder="ex: Stethoscope"
+                  placeholder="ex: Heart, Stethoscope"
                 />
               </div>
               <div>
@@ -241,18 +246,17 @@ const ServicesTab = () => {
                   <Input
                     value={item}
                     onChange={(e) => updateServiceItem(index, e.target.value)}
-                    placeholder="Digite um serviço"
+                    placeholder="Descrição do serviço"
                   />
-                  {formData.services_list.length > 1 && (
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={() => removeServiceItem(index)}
-                    >
-                      <X className="h-4 w-4" />
-                    </Button>
-                  )}
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => removeServiceItem(index)}
+                    disabled={formData.services_list.length === 1}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
                 </div>
               ))}
               <Button
@@ -286,14 +290,17 @@ const ServicesTab = () => {
         </Card>
       )}
 
-      <div className="grid md:grid-cols-2 gap-4">
+      <div className="grid gap-4">
         {services.map((service) => (
           <Card key={service.id}>
             <CardContent className="p-4">
-              <div className="flex justify-between items-start mb-4">
-                <div>
-                  <h3 className="font-semibold text-lg">{service.title}</h3>
-                  <p className="text-sm text-gray-600">{service.category}</p>
+              <div className="flex justify-between items-start mb-2">
+                <div className="flex items-center gap-2">
+                  <GripVertical className="h-4 w-4 text-gray-400" />
+                  <div>
+                    <h3 className="font-semibold">{service.title}</h3>
+                    <p className="text-sm text-gray-600">{service.category}</p>
+                  </div>
                 </div>
                 <div className="flex gap-2">
                   <Button
@@ -312,31 +319,17 @@ const ServicesTab = () => {
                   </Button>
                 </div>
               </div>
-              
-              <p className="text-gray-700 mb-4">{service.description}</p>
-              
-              {service.services_list && (
-                <div className="mb-4">
-                  <h4 className="font-medium mb-2">Serviços inclusos:</h4>
-                  <ul className="space-y-1">
-                    {service.services_list.map((item, index) => (
-                      <li key={index} className="flex items-center text-sm">
-                        <div className="w-2 h-2 bg-primary rounded-full mr-3"></div>
-                        {item}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
+              <p className="text-sm text-gray-600 mb-2">{service.description}</p>
+              {service.services_list && service.services_list.length > 0 && (
+                <ul className="text-sm text-gray-600 list-disc list-inside">
+                  {service.services_list.map((item, index) => (
+                    <li key={index}>{item}</li>
+                  ))}
+                </ul>
               )}
-              
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-gray-500">
-                  Ordem: {service.display_order}
-                </span>
-                {!service.is_active && (
-                  <span className="text-xs text-red-500">Inativo</span>
-                )}
-              </div>
+              {!service.is_active && (
+                <span className="text-xs text-red-500 mt-2 block">Inativo</span>
+              )}
             </CardContent>
           </Card>
         ))}
