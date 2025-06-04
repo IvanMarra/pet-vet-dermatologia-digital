@@ -9,16 +9,13 @@ import { Switch } from '@/components/ui/switch';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { Plus, Edit, Trash2, GripVertical } from 'lucide-react';
+import type { Tables } from '@/integrations/supabase/types';
 
-interface Service {
-  id: string;
-  title: string;
-  description: string;
-  icon: string;
-  category: string;
+// Use the actual database type and extend it
+type ServiceRow = Tables<'services'>;
+
+interface Service extends Omit<ServiceRow, 'services_list'> {
   services_list: string[];
-  is_active: boolean;
-  display_order: number;
 }
 
 const ServicesTab = () => {
@@ -44,16 +41,22 @@ const ServicesTab = () => {
 
   const loadServices = async () => {
     try {
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from('services')
         .select('*')
         .order('display_order', { ascending: true });
       
+      if (error) {
+        console.error('Erro ao carregar serviços:', error);
+        return;
+      }
+      
       if (data) {
-        const formattedServices = data.map(service => ({
+        // Convert the database data to our Service interface
+        const formattedServices: Service[] = data.map(service => ({
           ...service,
           services_list: Array.isArray(service.services_list) 
-            ? service.services_list 
+            ? (service.services_list as string[])
             : []
         }));
         setServices(formattedServices);
@@ -68,19 +71,28 @@ const ServicesTab = () => {
   const saveService = async () => {
     try {
       const serviceData = {
-        ...formData,
-        services_list: formData.services_list.filter(item => item.trim() !== '')
+        title: formData.title,
+        description: formData.description,
+        icon: formData.icon || null,
+        category: formData.category,
+        services_list: formData.services_list.filter(item => item.trim() !== ''),
+        is_active: formData.is_active,
+        display_order: formData.display_order
       };
 
       if (editingService) {
-        await supabase
+        const { error } = await supabase
           .from('services')
           .update(serviceData)
           .eq('id', editingService.id);
+          
+        if (error) throw error;
       } else {
-        await supabase
+        const { error } = await supabase
           .from('services')
           .insert([serviceData]);
+          
+        if (error) throw error;
       }
       
       loadServices();
@@ -101,10 +113,12 @@ const ServicesTab = () => {
 
   const deleteService = async (id: string) => {
     try {
-      await supabase
+      const { error } = await supabase
         .from('services')
         .delete()
         .eq('id', id);
+        
+      if (error) throw error;
       
       loadServices();
       toast({
@@ -142,8 +156,8 @@ const ServicesTab = () => {
       icon: service.icon || '',
       category: service.category,
       services_list: service.services_list.length > 0 ? service.services_list : [''],
-      is_active: service.is_active,
-      display_order: service.display_order
+      is_active: service.is_active ?? true,
+      display_order: service.display_order ?? 0
     });
     setEditingService(service);
     setShowForm(true);
