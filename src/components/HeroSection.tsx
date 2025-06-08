@@ -1,41 +1,105 @@
 
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { ChevronLeft, ChevronRight, Heart, Shield, Clock } from 'lucide-react';
+import { Card, CardContent } from '@/components/ui/card';
+import { ChevronLeft, ChevronRight, Heart, Award, Clock } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
+
+interface SlideData {
+  title: string;
+  subtitle: string;
+  description: string;
+  image: string;
+  cta: string;
+}
 
 const HeroSection = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
-
-  const slides = [
-    {
-      title: "Cuidando dos seus melhores amigos",
-      subtitle: "A primeira clínica veterinária especializada em dermatologia da região",
-      description: "Oferecemos cuidados veterinários de excelência com equipamentos modernos e profissionais especializados.",
-      image: "https://images.unsplash.com/photo-1576201836106-db1758fd1c97?w=800&q=80",
-      cta: "Agendar Consulta"
-    },
-    {
-      title: "Especialistas em Dermatologia",
-      subtitle: "Tratamentos avançados para a pele dos seus pets",
-      description: "Nossa equipe especializada oferece diagnósticos precisos e tratamentos eficazes para problemas dermatológicos.",
-      image: "https://images.unsplash.com/photo-1601758228041-f3b2795255f1?w=800&q=80",
-      cta: "Conhecer Tratamentos"
-    },
-    {
-      title: "Cirurgias Seguras e Modernas",
-      subtitle: "Centro cirúrgico com tecnologia avançada",
-      description: "Realizamos procedimentos cirúrgicos com máxima segurança e cuidado para o bem-estar dos animais.",
-      image: "https://images.unsplash.com/photo-1559666126-84f389727b9a?w=800&q=80",
-      cta: "Saber Mais"
-    }
-  ];
+  const [slides, setSlides] = useState<SlideData[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % slides.length);
-    }, 5000);
-    return () => clearInterval(timer);
+    loadSlides();
   }, []);
+
+  const loadSlides = async () => {
+    try {
+      const { data } = await supabase
+        .from('site_settings')
+        .select('*')
+        .eq('section', 'hero');
+      
+      if (data) {
+        const settingsObj: { [key: string]: any } = {};
+        data.forEach(item => {
+          try {
+            settingsObj[item.key] = typeof item.value === 'string' ? JSON.parse(item.value) : item.value;
+          } catch {
+            settingsObj[item.key] = item.value;
+          }
+        });
+
+        // Create slides from settings or use defaults
+        const slidesData: SlideData[] = [];
+        
+        // Check for slide data in settings
+        let slideIndex = 1;
+        while (settingsObj[`slide_${slideIndex}_title`]) {
+          slidesData.push({
+            title: settingsObj[`slide_${slideIndex}_title`] || '',
+            subtitle: settingsObj[`slide_${slideIndex}_subtitle`] || '',
+            description: settingsObj[`slide_${slideIndex}_description`] || '',
+            image: settingsObj[`slide_${slideIndex}_image`] || '/placeholder.svg',
+            cta: settingsObj[`slide_${slideIndex}_cta`] || 'Agendar Consulta'
+          });
+          slideIndex++;
+        }
+
+        // If no slides found in settings, use default data
+        if (slidesData.length === 0) {
+          slidesData.push(
+            {
+              title: settingsObj.title || "Cuidando com amor do seu melhor amigo",
+              subtitle: settingsObj.subtitle || "Clínica veterinária especializada em cuidados completos para seu pet",
+              description: "Atendimento humanizado, equipamentos modernos e profissionais qualificados para garantir a saúde e bem-estar do seu companheiro.",
+              image: "/placeholder.svg",
+              cta: "Agendar Consulta"
+            },
+            {
+              title: "Emergências 24h",
+              subtitle: "Pronto atendimento quando seu pet mais precisa",
+              description: "Equipe especializada disponível 24 horas para emergências veterinárias com equipamentos de última geração.",
+              image: "/placeholder.svg",
+              cta: "Emergência"
+            },
+            {
+              title: "Exames Completos",
+              subtitle: "Diagnóstico preciso para seu pet",
+              description: "Laboratório próprio e equipamentos modernos para exames rápidos e resultados confiáveis.",
+              image: "/placeholder.svg",
+              cta: "Ver Exames"
+            }
+          );
+        }
+
+        setSlides(slidesData);
+      }
+    } catch (error) {
+      console.error('Erro ao carregar slides:', error);
+      // Use default slides on error
+      setSlides([
+        {
+          title: "Cuidando com amor do seu melhor amigo",
+          subtitle: "Clínica veterinária especializada em cuidados completos para seu pet",
+          description: "Atendimento humanizado, equipamentos modernos e profissionais qualificados para garantir a saúde e bem-estar do seu companheiro.",
+          image: "/placeholder.svg",
+          cta: "Agendar Consulta"
+        }
+      ]);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const nextSlide = () => {
     setCurrentSlide((prev) => (prev + 1) % slides.length);
@@ -45,8 +109,27 @@ const HeroSection = () => {
     setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
   };
 
+  const goToSlide = (index: number) => {
+    setCurrentSlide(index);
+  };
+
+  useEffect(() => {
+    if (slides.length > 1) {
+      const timer = setInterval(nextSlide, 5000);
+      return () => clearInterval(timer);
+    }
+  }, [slides.length]);
+
+  if (loading) {
+    return (
+      <section className="relative h-screen flex items-center justify-center bg-gradient-to-br from-primary/10 to-secondary/10">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
+      </section>
+    );
+  }
+
   return (
-    <section id="home" className="relative h-screen overflow-hidden">
+    <section id="inicio" className="relative h-screen overflow-hidden">
       {/* Slides */}
       <div className="relative h-full">
         {slides.map((slide, index) => (
@@ -57,24 +140,25 @@ const HeroSection = () => {
             }`}
           >
             <div
-              className="h-full bg-cover bg-center relative"
-              style={{ backgroundImage: `url(${slide.image})` }}
+              className="h-full bg-cover bg-center bg-gray-100"
+              style={{
+                backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url(${slide.image})`
+              }}
             >
-              <div className="absolute inset-0 bg-black/40" />
-              <div className="relative h-full flex items-center">
-                <div className="container mx-auto px-4">
-                  <div className="max-w-2xl text-white">
-                    <p className="text-lg mb-2 text-primary-foreground/90">{slide.subtitle}</p>
-                    <h1 className="text-4xl md:text-6xl font-bold mb-6 animate-fade-in">
-                      {slide.title}
-                    </h1>
-                    <p className="text-xl mb-8 text-primary-foreground/90 animate-slide-up">
-                      {slide.description}
-                    </p>
-                    <Button size="lg" className="animate-slide-up">
-                      {slide.cta}
-                    </Button>
-                  </div>
+              <div className="container mx-auto px-4 h-full flex items-center">
+                <div className="max-w-2xl text-white">
+                  <h1 className="text-5xl md:text-6xl font-bold mb-4 leading-tight">
+                    {slide.title}
+                  </h1>
+                  <p className="text-xl md:text-2xl mb-6 text-gray-200">
+                    {slide.subtitle}
+                  </p>
+                  <p className="text-lg mb-8 text-gray-300 leading-relaxed">
+                    {slide.description}
+                  </p>
+                  <Button size="lg" className="text-lg px-8 py-6">
+                    {slide.cta}
+                  </Button>
                 </div>
               </div>
             </div>
@@ -82,65 +166,67 @@ const HeroSection = () => {
         ))}
       </div>
 
-      {/* Navigation Arrows */}
-      <button
-        onClick={prevSlide}
-        className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/20 hover:bg-white/30 backdrop-blur-sm rounded-full p-3 transition-colors"
-      >
-        <ChevronLeft className="h-6 w-6 text-white" />
-      </button>
-      <button
-        onClick={nextSlide}
-        className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/20 hover:bg-white/30 backdrop-blur-sm rounded-full p-3 transition-colors"
-      >
-        <ChevronRight className="h-6 w-6 text-white" />
-      </button>
+      {/* Navigation arrows - only show if more than 1 slide */}
+      {slides.length > 1 && (
+        <>
+          <Button
+            variant="outline"
+            size="icon"
+            className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white/20 border-white/30 text-white hover:bg-white/30"
+            onClick={prevSlide}
+          >
+            <ChevronLeft className="h-6 w-6" />
+          </Button>
+          <Button
+            variant="outline"
+            size="icon"
+            className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white/20 border-white/30 text-white hover:bg-white/30"
+            onClick={nextSlide}
+          >
+            <ChevronRight className="h-6 w-6" />
+          </Button>
+        </>
+      )}
 
-      {/* Dots Indicator */}
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex space-x-2">
-        {slides.map((_, index) => (
-          <button
-            key={index}
-            onClick={() => setCurrentSlide(index)}
-            className={`w-3 h-3 rounded-full transition-colors ${
-              index === currentSlide ? 'bg-white' : 'bg-white/50'
-            }`}
-          />
-        ))}
-      </div>
+      {/* Slide indicators - only show if more than 1 slide */}
+      {slides.length > 1 && (
+        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex space-x-2">
+          {slides.map((_, index) => (
+            <button
+              key={index}
+              className={`w-3 h-3 rounded-full transition-all ${
+                index === currentSlide ? 'bg-white' : 'bg-white/50'
+              }`}
+              onClick={() => goToSlide(index)}
+            />
+          ))}
+        </div>
+      )}
 
-      {/* Features Cards */}
-      <div className="absolute bottom-0 left-0 right-0 p-4">
-        <div className="container mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="bg-white/90 backdrop-blur-sm rounded-lg p-4 flex items-center gap-3">
-              <div className="bg-primary rounded-full p-2">
-                <Heart className="h-5 w-5 text-primary-foreground" />
-              </div>
-              <div>
-                <h3 className="font-semibold">Cuidado Especializado</h3>
-                <p className="text-sm text-muted-foreground">Dermatologia veterinária</p>
-              </div>
-            </div>
-            <div className="bg-white/90 backdrop-blur-sm rounded-lg p-4 flex items-center gap-3">
-              <div className="bg-primary rounded-full p-2">
-                <Shield className="h-5 w-5 text-primary-foreground" />
-              </div>
-              <div>
-                <h3 className="font-semibold">Equipamentos Modernos</h3>
-                <p className="text-sm text-muted-foreground">Tecnologia avançada</p>
-              </div>
-            </div>
-            <div className="bg-white/90 backdrop-blur-sm rounded-lg p-4 flex items-center gap-3">
-              <div className="bg-primary rounded-full p-2">
-                <Clock className="h-5 w-5 text-primary-foreground" />
-              </div>
-              <div>
-                <h3 className="font-semibold">Atendimento 24h</h3>
-                <p className="text-sm text-muted-foreground">Emergências</p>
-              </div>
-            </div>
-          </div>
+      {/* Features cards */}
+      <div className="absolute bottom-20 left-1/2 transform -translate-x-1/2 w-full max-w-4xl px-4">
+        <div className="grid md:grid-cols-3 gap-4">
+          <Card className="bg-white/90 backdrop-blur-sm">
+            <CardContent className="p-4 text-center">
+              <Heart className="h-8 w-8 text-primary mx-auto mb-2" />
+              <h3 className="font-semibold text-gray-800">Cuidado Especializado</h3>
+              <p className="text-sm text-gray-600">Atendimento personalizado para cada pet</p>
+            </CardContent>
+          </Card>
+          <Card className="bg-white/90 backdrop-blur-sm">
+            <CardContent className="p-4 text-center">
+              <Award className="h-8 w-8 text-primary mx-auto mb-2" />
+              <h3 className="font-semibold text-gray-800">Profissionais Qualificados</h3>
+              <p className="text-sm text-gray-600">Equipe experiente e dedicada</p>
+            </CardContent>
+          </Card>
+          <Card className="bg-white/90 backdrop-blur-sm">
+            <CardContent className="p-4 text-center">
+              <Clock className="h-8 w-8 text-primary mx-auto mb-2" />
+              <h3 className="font-semibold text-gray-800">Emergência 24h</h3>
+              <p className="text-sm text-gray-600">Pronto atendimento quando precisar</p>
+            </CardContent>
+          </Card>
         </div>
       </div>
     </section>

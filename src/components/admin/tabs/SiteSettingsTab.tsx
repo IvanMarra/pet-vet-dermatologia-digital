@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -7,6 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { Plus, Trash2 } from 'lucide-react';
 
 interface Settings {
   [key: string]: any;
@@ -15,6 +15,7 @@ interface Settings {
 const SiteSettingsTab = () => {
   const [settings, setSettings] = useState<Settings>({});
   const [loading, setLoading] = useState(false);
+  const [slideCount, setSlideCount] = useState(1);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -33,7 +34,6 @@ const SiteSettingsTab = () => {
           if (!settingsObj[item.section]) {
             settingsObj[item.section] = {};
           }
-          // Handle different types of JSON values
           let parsedValue;
           try {
             parsedValue = typeof item.value === 'string' ? JSON.parse(item.value) : item.value;
@@ -43,6 +43,13 @@ const SiteSettingsTab = () => {
           settingsObj[item.section][item.key] = parsedValue;
         });
         setSettings(settingsObj);
+        
+        // Count existing slides
+        let count = 0;
+        while (settingsObj.hero?.[`slide_${count + 1}_title`]) {
+          count++;
+        }
+        setSlideCount(Math.max(1, count));
       }
     } catch (error) {
       console.error('Erro ao carregar configurações:', error);
@@ -92,11 +99,110 @@ const SiteSettingsTab = () => {
     return settings[section]?.[key] || defaultValue;
   };
 
+  const addSlide = () => {
+    setSlideCount(prev => prev + 1);
+  };
+
+  const removeSlide = (slideIndex: number) => {
+    if (slideCount > 1) {
+      // Remove slide settings
+      const updatedSettings = { ...settings };
+      if (updatedSettings.hero) {
+        delete updatedSettings.hero[`slide_${slideIndex}_title`];
+        delete updatedSettings.hero[`slide_${slideIndex}_subtitle`];
+        delete updatedSettings.hero[`slide_${slideIndex}_description`];
+        delete updatedSettings.hero[`slide_${slideIndex}_image`];
+        delete updatedSettings.hero[`slide_${slideIndex}_cta`];
+      }
+      setSettings(updatedSettings);
+      setSlideCount(prev => prev - 1);
+    }
+  };
+
   return (
     <div className="space-y-6">
       <Card>
         <CardHeader>
-          <CardTitle>Seção Hero (Principal)</CardTitle>
+          <CardTitle>Banner Principal (Slides)</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          {Array.from({ length: slideCount }, (_, index) => {
+            const slideNum = index + 1;
+            return (
+              <div key={slideNum} className="border rounded-lg p-4 space-y-4">
+                <div className="flex justify-between items-center">
+                  <h4 className="font-semibold">Slide {slideNum}</h4>
+                  {slideCount > 1 && (
+                    <Button
+                      variant="destructive"
+                      size="sm"
+                      onClick={() => removeSlide(slideNum)}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  )}
+                </div>
+                
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div>
+                    <Label>Título</Label>
+                    <Input
+                      value={getSetting('hero', `slide_${slideNum}_title`)}
+                      onChange={(e) => updateSetting('hero', `slide_${slideNum}_title`, e.target.value)}
+                      placeholder="Título do slide"
+                    />
+                  </div>
+                  <div>
+                    <Label>Botão CTA</Label>
+                    <Input
+                      value={getSetting('hero', `slide_${slideNum}_cta`)}
+                      onChange={(e) => updateSetting('hero', `slide_${slideNum}_cta`, e.target.value)}
+                      placeholder="Texto do botão"
+                    />
+                  </div>
+                </div>
+                
+                <div>
+                  <Label>Subtítulo</Label>
+                  <Input
+                    value={getSetting('hero', `slide_${slideNum}_subtitle`)}
+                    onChange={(e) => updateSetting('hero', `slide_${slideNum}_subtitle`, e.target.value)}
+                    placeholder="Subtítulo do slide"
+                  />
+                </div>
+                
+                <div>
+                  <Label>Descrição</Label>
+                  <Textarea
+                    value={getSetting('hero', `slide_${slideNum}_description`)}
+                    onChange={(e) => updateSetting('hero', `slide_${slideNum}_description`, e.target.value)}
+                    placeholder="Descrição detalhada"
+                    rows={3}
+                  />
+                </div>
+                
+                <div>
+                  <Label>URL da Imagem</Label>
+                  <Input
+                    value={getSetting('hero', `slide_${slideNum}_image`)}
+                    onChange={(e) => updateSetting('hero', `slide_${slideNum}_image`, e.target.value)}
+                    placeholder="https://exemplo.com/imagem.jpg"
+                  />
+                </div>
+              </div>
+            );
+          })}
+          
+          <Button onClick={addSlide} variant="outline" className="w-full">
+            <Plus className="h-4 w-4 mr-2" />
+            Adicionar Slide
+          </Button>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Seção Hero (Dados Gerais)</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div>
