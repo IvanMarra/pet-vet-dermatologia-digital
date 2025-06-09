@@ -37,20 +37,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const checkUser = async () => {
     try {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session?.user) {
-        const { data: adminUser } = await supabase
-          .from('admin_users')
-          .select('*')
-          .eq('id', session.user.id)
-          .single();
-        
-        if (adminUser) {
-          setUser(adminUser);
-        }
+      // Verificar se há um usuário logado no localStorage
+      const storedUser = localStorage.getItem('admin_user');
+      if (storedUser) {
+        const userData = JSON.parse(storedUser);
+        setUser(userData);
       }
     } catch (error) {
       console.error('Error checking user:', error);
+      localStorage.removeItem('admin_user');
     } finally {
       setLoading(false);
     }
@@ -58,25 +53,52 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const login = async (email: string, password: string): Promise<boolean> => {
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
+      console.log('Tentando fazer login com:', email);
+      
+      // Usar a função do banco para verificar as credenciais
+      const { data, error } = await supabase.rpc('verify_admin_password', {
+        p_email: email,
+        p_password: password
       });
 
-      if (error) throw error;
+      console.log('Resposta da verificação:', data, error);
 
-      if (data.user) {
-        const { data: adminUser } = await supabase
+      if (error) {
+        console.error('Erro na verificação:', error);
+        return false;
+      }
+
+      if (data && data.length > 0 && data[0].is_valid) {
+        // Buscar os dados completos do usuário
+        const { data: adminUser, error: userError } = await supabase
           .from('admin_users')
           .select('*')
-          .eq('id', data.user.id)
+          .eq('id', data[0].user_id)
           .single();
 
+        console.log('Dados do usuário:', adminUser, userError);
+
+        if (userError) {
+          console.error('Erro ao buscar usuário:', userError);
+          return false;
+        }
+
         if (adminUser && adminUser.is_approved) {
-          setUser(adminUser);
+          const userData = {
+            id: adminUser.id,
+            email: adminUser.email,
+            name: adminUser.name,
+            is_approved: adminUser.is_approved
+          };
+          
+          setUser(userData);
+          localStorage.setItem('admin_user', JSON.stringify(userData));
+          console.log('Login realizado com sucesso');
           return true;
         }
       }
+      
+      console.log('Credenciais inválidas ou usuário não aprovado');
       return false;
     } catch (error) {
       console.error('Login error:', error);
@@ -85,8 +107,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const logout = async () => {
-    await supabase.auth.signOut();
     setUser(null);
+    localStorage.removeItem('admin_user');
   };
 
   const isAdmin = user?.is_approved || false;
