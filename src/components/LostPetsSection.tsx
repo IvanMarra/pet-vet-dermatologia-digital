@@ -1,85 +1,210 @@
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Search, Heart, MapPin, Phone } from 'lucide-react';
+import { Search, Heart, MapPin, Phone, Calendar } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
+import MapComponent from './MapComponent';
+
+interface LostPet {
+  id: string;
+  type: string;
+  pet_name: string;
+  pet_type: string;
+  breed: string;
+  color: string;
+  size: string;
+  location: string;
+  contact_name: string;
+  contact_phone: string;
+  contact_email: string;
+  status: string;
+  image_url: string;
+  description: string;
+  coordinates: [number, number] | null;
+  created_at: string;
+}
 
 const LostPetsSection = () => {
+  const [lostPets, setLostPets] = useState<LostPet[]>([]);
+  const [foundPets, setFoundPets] = useState<LostPet[]>([]);
+  const [loading, setLoading] = useState(true);
   const [formData, setFormData] = useState({
+    type: 'lost',
     petName: '',
     petType: '',
     breed: '',
     color: '',
+    size: '',
     location: '',
-    date: '',
     description: '',
     contact: '',
-    email: ''
+    email: '',
+    coordinates: null as [number, number] | null
   });
 
-  const lostPets = [
-    {
-      id: 1,
-      name: "Max",
-      type: "Cão",
-      breed: "Golden Retriever",
-      color: "Dourado",
-      location: "Centro da cidade",
-      date: "2024-01-15",
-      contact: "(11) 99999-9999",
-      image: "https://images.unsplash.com/photo-1552053831-71594a27632d?w=300&q=80"
-    },
-    {
-      id: 2,
-      name: "Luna",
-      type: "Gato",
-      breed: "SRD",
-      color: "Preto e branco",
-      location: "Bairro Jardim",
-      date: "2024-01-20",
-      contact: "(11) 88888-8888",
-      image: "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=300&q=80"
-    },
-    {
-      id: 3,
-      name: "Bolinha",
-      type: "Cão",
-      breed: "Poodle",
-      color: "Branco",
-      location: "Vila Nova",
-      date: "2024-01-18",
-      contact: "(11) 77777-7777",
-      image: "https://images.unsplash.com/photo-1616190264687-b7ebf7aa1015?w=300&q=80"
-    }
-  ];
+  useEffect(() => {
+    loadPets();
+  }, []);
 
-  const foundPets = [
-    {
-      id: 1,
-      type: "Cão",
-      breed: "SRD",
-      color: "Marrom",
-      location: "Próximo ao parque central",
-      date: "2024-01-22",
-      contact: "(11) 66666-6666",
-      image: "https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=300&q=80"
+  const loadPets = async () => {
+    try {
+      const { data } = await supabase
+        .from('lost_pets')
+        .select('*')
+        .eq('status', 'active')
+        .order('created_at', { ascending: false });
+      
+      if (data) {
+        const lost = data.filter(pet => pet.type === 'lost');
+        const found = data.filter(pet => pet.type === 'found');
+        setLostPets(lost);
+        setFoundPets(found);
+      }
+    } catch (error) {
+      console.error('Erro ao carregar pets:', error);
+    } finally {
+      setLoading(false);
     }
-  ];
+  };
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    // Aqui seria integrado com o backend
-    console.log('Dados do formulário:', formData);
-    alert('Informações cadastradas com sucesso! Entraremos em contato em breve.');
+  const handleLocationSelect = (coordinates: [number, number], address: string) => {
+    setFormData(prev => ({
+      ...prev,
+      coordinates,
+      location: address
+    }));
   };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    try {
+      await supabase
+        .from('lost_pets')
+        .insert([{
+          type: formData.type,
+          pet_name: formData.petName,
+          pet_type: formData.petType,
+          breed: formData.breed,
+          color: formData.color,
+          size: formData.size,
+          location: formData.location,
+          description: formData.description,
+          contact_name: formData.contact,
+          contact_phone: formData.contact,
+          contact_email: formData.email,
+          coordinates: formData.coordinates
+        }]);
+      
+      alert('Informações cadastradas com sucesso! Entraremos em contato em breve.');
+      
+      // Reset form
+      setFormData({
+        type: 'lost',
+        petName: '',
+        petType: '',
+        breed: '',
+        color: '',
+        size: '',
+        location: '',
+        description: '',
+        contact: '',
+        email: '',
+        coordinates: null
+      });
+      
+      // Reload pets
+      loadPets();
+    } catch (error) {
+      console.error('Erro ao cadastrar:', error);
+      alert('Erro ao cadastrar as informações. Tente novamente.');
+    }
+  };
+
+  const PetCard = ({ pet, isPetLost }: { pet: LostPet; isPetLost: boolean }) => (
+    <Card className="overflow-hidden">
+      <div className="aspect-square bg-gray-100">
+        {pet.image_url ? (
+          <img
+            src={pet.image_url}
+            alt={pet.pet_name || 'Pet'}
+            className="w-full h-full object-cover"
+          />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center text-gray-400">
+            <MapPin className="h-12 w-12" />
+          </div>
+        )}
+      </div>
+      <CardContent className="p-4">
+        <div className="flex items-center gap-2 mb-2">
+          {isPetLost ? (
+            <>
+              <Heart className="h-4 w-4 text-red-500" />
+              <span className="text-sm text-red-500 font-medium">PERDIDO</span>
+            </>
+          ) : (
+            <>
+              <Search className="h-4 w-4 text-green-500" />
+              <span className="text-sm text-green-500 font-medium">ENCONTRADO</span>
+            </>
+          )}
+        </div>
+        <h3 className="font-bold text-lg mb-2">
+          {pet.pet_name || (isPetLost ? 'Pet Perdido' : 'Pet Encontrado')}
+        </h3>
+        <div className="space-y-1 text-sm text-muted-foreground mb-4">
+          <p><strong>Tipo:</strong> {pet.pet_type}</p>
+          {pet.breed && <p><strong>Raça:</strong> {pet.breed}</p>}
+          <p><strong>Cor:</strong> {pet.color}</p>
+          {pet.size && <p><strong>Porte:</strong> {pet.size}</p>}
+          <div className="flex items-center gap-1">
+            <MapPin className="h-3 w-3" />
+            <span>{pet.location}</span>
+          </div>
+          <div className="flex items-center gap-1">
+            <Calendar className="h-3 w-3" />
+            <span>{new Date(pet.created_at).toLocaleDateString()}</span>
+          </div>
+        </div>
+        
+        {pet.coordinates && (
+          <div className="mb-4">
+            <MapComponent
+              initialCoordinates={pet.coordinates}
+              height="150px"
+              interactive={false}
+              showSearch={false}
+            />
+          </div>
+        )}
+        
+        <Button className="w-full" size="sm">
+          <Phone className="h-4 w-4 mr-2" />
+          {pet.contact_phone}
+        </Button>
+      </CardContent>
+    </Card>
+  );
+
+  if (loading) {
+    return (
+      <section id="lost-pets" className="py-20">
+        <div className="container mx-auto px-4 text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+          <p className="mt-4">Carregando pets...</p>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section id="lost-pets" className="py-20">
@@ -101,74 +226,26 @@ const LostPetsSection = () => {
           <TabsContent value="lost">
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               {lostPets.map((pet) => (
-                <Card key={pet.id} className="overflow-hidden">
-                  <div className="aspect-square bg-gray-100">
-                    <img
-                      src={pet.image}
-                      alt={pet.name}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                  <CardContent className="p-4">
-                    <div className="flex items-center gap-2 mb-2">
-                      <Heart className="h-4 w-4 text-red-500" />
-                      <span className="text-sm text-red-500 font-medium">PERDIDO</span>
-                    </div>
-                    <h3 className="font-bold text-lg mb-2">{pet.name}</h3>
-                    <div className="space-y-1 text-sm text-muted-foreground mb-4">
-                      <p><strong>Tipo:</strong> {pet.type}</p>
-                      <p><strong>Raça:</strong> {pet.breed}</p>
-                      <p><strong>Cor:</strong> {pet.color}</p>
-                      <div className="flex items-center gap-1">
-                        <MapPin className="h-3 w-3" />
-                        <span>{pet.location}</span>
-                      </div>
-                      <p><strong>Desde:</strong> {new Date(pet.date).toLocaleDateString()}</p>
-                    </div>
-                    <Button className="w-full" size="sm">
-                      <Phone className="h-4 w-4 mr-2" />
-                      {pet.contact}
-                    </Button>
-                  </CardContent>
-                </Card>
+                <PetCard key={pet.id} pet={pet} isPetLost={true} />
               ))}
+              {lostPets.length === 0 && (
+                <div className="col-span-full text-center py-8 text-muted-foreground">
+                  Nenhum pet perdido cadastrado no momento.
+                </div>
+              )}
             </div>
           </TabsContent>
 
           <TabsContent value="found">
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               {foundPets.map((pet) => (
-                <Card key={pet.id} className="overflow-hidden">
-                  <div className="aspect-square bg-gray-100">
-                    <img
-                      src={pet.image}
-                      alt="Pet encontrado"
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                  <CardContent className="p-4">
-                    <div className="flex items-center gap-2 mb-2">
-                      <Search className="h-4 w-4 text-green-500" />
-                      <span className="text-sm text-green-500 font-medium">ENCONTRADO</span>
-                    </div>
-                    <h3 className="font-bold text-lg mb-2">Pet Encontrado</h3>
-                    <div className="space-y-1 text-sm text-muted-foreground mb-4">
-                      <p><strong>Tipo:</strong> {pet.type}</p>
-                      <p><strong>Raça:</strong> {pet.breed}</p>
-                      <p><strong>Cor:</strong> {pet.color}</p>
-                      <div className="flex items-center gap-1">
-                        <MapPin className="h-3 w-3" />
-                        <span>{pet.location}</span>
-                      </div>
-                      <p><strong>Encontrado em:</strong> {new Date(pet.date).toLocaleDateString()}</p>
-                    </div>
-                    <Button className="w-full" size="sm">
-                      <Phone className="h-4 w-4 mr-2" />
-                      {pet.contact}
-                    </Button>
-                  </CardContent>
-                </Card>
+                <PetCard key={pet.id} pet={pet} isPetLost={false} />
               ))}
+              {foundPets.length === 0 && (
+                <div className="col-span-full text-center py-8 text-muted-foreground">
+                  Nenhum pet encontrado cadastrado no momento.
+                </div>
+              )}
             </div>
           </TabsContent>
 
@@ -279,6 +356,18 @@ const LostPetsSection = () => {
                         required
                       />
                     </div>
+                  </div>
+
+                  <div>
+                    <Label htmlFor="location-map">Localização no Mapa</Label>
+                    <MapComponent
+                      onLocationSelect={handleLocationSelect}
+                      initialCoordinates={formData.coordinates || [-46.6333, -23.5505]}
+                      initialAddress={formData.location}
+                      height="300px"
+                      interactive={true}
+                      showSearch={true}
+                    />
                   </div>
 
                   <Button type="submit" className="w-full" size="lg">

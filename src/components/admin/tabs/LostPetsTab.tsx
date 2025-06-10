@@ -9,8 +9,9 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { Eye, CheckCircle, XCircle, Plus, Edit, Trash2 } from 'lucide-react';
+import { Eye, CheckCircle, XCircle, Plus, Edit, Trash2, MapPin } from 'lucide-react';
 import ImageUpload from '../ImageUpload';
+import MapComponent from '../../MapComponent';
 
 interface LostPet {
   id: string;
@@ -27,6 +28,7 @@ interface LostPet {
   image_url: string;
   description: string;
   size: string;
+  coordinates: [number, number] | null;
   created_at: string;
 }
 
@@ -49,7 +51,8 @@ const LostPetsTab = () => {
     contact_phone: '',
     contact_email: '',
     description: '',
-    image_url: ''
+    image_url: '',
+    coordinates: null as [number, number] | null
   });
 
   useEffect(() => {
@@ -159,7 +162,8 @@ const LostPetsTab = () => {
       contact_phone: '',
       contact_email: '',
       description: '',
-      image_url: ''
+      image_url: '',
+      coordinates: null
     });
     setEditingPet(null);
     setShowForm(false);
@@ -178,10 +182,19 @@ const LostPetsTab = () => {
       contact_phone: pet.contact_phone,
       contact_email: pet.contact_email || '',
       description: pet.description || '',
-      image_url: pet.image_url || ''
+      image_url: pet.image_url || '',
+      coordinates: pet.coordinates
     });
     setEditingPet(pet);
     setShowForm(true);
+  };
+
+  const handleLocationSelect = (coordinates: [number, number], address: string) => {
+    setFormData({
+      ...formData,
+      coordinates,
+      location: address
+    });
   };
 
   if (loading) {
@@ -286,13 +299,25 @@ const LostPetsTab = () => {
                 />
               </div>
               <div>
-                <Label>Local</Label>
+                <Label>Local (será atualizado automaticamente pelo mapa)</Label>
                 <Input
                   value={formData.location}
                   onChange={(e) => setFormData({...formData, location: e.target.value})}
                   placeholder="Bairro, rua, ponto de referência"
                 />
               </div>
+            </div>
+
+            <div>
+              <Label>Localização no Mapa</Label>
+              <MapComponent
+                onLocationSelect={handleLocationSelect}
+                initialCoordinates={formData.coordinates || [-46.6333, -23.5505]}
+                initialAddress={formData.location}
+                height="400px"
+                interactive={true}
+                showSearch={true}
+              />
             </div>
 
             <div>
@@ -328,7 +353,6 @@ const LostPetsTab = () => {
                 <Input
                   value={formData.contact_phone}
                   onChange={(e) => setFormData({...formData, contact_phone: e.target.value})}
-                  placeholder="(11) 99999-9999"
                 />
               </div>
               <div>
