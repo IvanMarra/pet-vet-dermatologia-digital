@@ -9,6 +9,7 @@ import { Switch } from '@/components/ui/switch';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { Plus, Edit, Trash2 } from 'lucide-react';
+import ImageUpload from '../ImageUpload';
 
 interface Product {
   id: string;
@@ -173,23 +174,14 @@ const ProductsTab = () => {
               </div>
             </div>
             
-            <div className="grid md:grid-cols-2 gap-4">
-              <div>
-                <Label>Preço (R$)</Label>
-                <Input
-                  type="number"
-                  step="0.01"
-                  value={formData.price}
-                  onChange={(e) => setFormData({...formData, price: parseFloat(e.target.value)})}
-                />
-              </div>
-              <div>
-                <Label>URL da Imagem</Label>
-                <Input
-                  value={formData.image_url}
-                  onChange={(e) => setFormData({...formData, image_url: e.target.value})}
-                />
-              </div>
+            <div>
+              <Label>Preço (R$)</Label>
+              <Input
+                type="number"
+                step="0.01"
+                value={formData.price}
+                onChange={(e) => setFormData({...formData, price: parseFloat(e.target.value)})}
+              />
             </div>
             
             <div>
@@ -200,6 +192,16 @@ const ProductsTab = () => {
                 rows={3}
               />
             </div>
+            
+            <ImageUpload
+              bucket="product-images"
+              currentImageUrl={formData.image_url}
+              onImageUploaded={(url) => setFormData({...formData, image_url: url})}
+              onImageRemoved={() => setFormData({...formData, image_url: ''})}
+              label="Imagem do Produto"
+              recommendedSize="800x600 pixels"
+              maxSizeMB={3}
+            />
             
             <div className="flex items-center space-x-2">
               <Switch

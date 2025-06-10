@@ -1,10 +1,54 @@
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Award, GraduationCap, Calendar, Linkedin } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
 
 const VeterinarianSection = () => {
+  const [veterinarianData, setVeterinarianData] = useState({
+    name: 'Dra. Karine Silva',
+    specialty: 'Especialista em Dermatologia Veterinária',
+    description: '',
+    linkedin: '',
+    photo: 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=600&q=80'
+  });
+
+  useEffect(() => {
+    loadVeterinarianData();
+  }, []);
+
+  const loadVeterinarianData = async () => {
+    try {
+      const { data } = await supabase
+        .from('site_settings')
+        .select('*')
+        .eq('section', 'veterinarian');
+      
+      if (data) {
+        const settings: { [key: string]: any } = {};
+        data.forEach(item => {
+          try {
+            settings[item.key] = typeof item.value === 'string' ? JSON.parse(item.value) : item.value;
+          } catch {
+            settings[item.key] = item.value;
+          }
+        });
+        
+        setVeterinarianData(prev => ({
+          ...prev,
+          name: settings.name || prev.name,
+          specialty: settings.specialty || prev.specialty,
+          description: settings.description || prev.description,
+          linkedin: settings.linkedin || prev.linkedin,
+          photo: settings.photo || prev.photo
+        }));
+      }
+    } catch (error) {
+      console.error('Erro ao carregar dados da veterinária:', error);
+    }
+  };
+
   const qualifications = [
     "Graduação em Medicina Veterinária - FMVZ USP",
     "Pós-graduação em Dermatologia Veterinária - Anclivepa",
@@ -25,29 +69,29 @@ const VeterinarianSection = () => {
     <section id="veterinarian" className="py-20 bg-gray-50">
       <div className="container mx-auto px-4">
         <div className="text-center mb-16">
-          <h2 className="text-4xl font-bold mb-4">Conheça a Dra. Karine</h2>
+          <h2 className="text-4xl font-bold mb-4">Conheça a {veterinarianData.name}</h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            Especialista em dermatologia veterinária, dedicada ao cuidado e bem-estar dos animais
+            {veterinarianData.specialty}
           </p>
         </div>
 
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           <div className="order-2 lg:order-1">
-            <h3 className="text-3xl font-bold mb-6">Dra. Karine Silva</h3>
+            <h3 className="text-3xl font-bold mb-6">{veterinarianData.name}</h3>
             <p className="text-lg mb-6 text-muted-foreground">
-              A Dra. Karine é uma veterinária apaixonada pelos animais desde criança. 
+              {veterinarianData.description || `A ${veterinarianData.name} é uma veterinária apaixonada pelos animais desde criança. 
               Formada pela renomada Faculdade de Medicina Veterinária e Zootecnia da USP, 
               ela se especializou em dermatologia veterinária, tornando-se a primeira 
-              especialista nesta área em nossa região.
+              especialista nesta área em nossa região.`}
             </p>
             <p className="text-lg mb-6 text-muted-foreground">
-              Com mais de 10 anos de experiência, a Dra. Karine combina conhecimento 
+              Com mais de 10 anos de experiência, a {veterinarianData.name} combina conhecimento 
               científico avançado com muito carinho e dedicação no atendimento. Ela 
               acredita que cada animal merece o melhor cuidado possível e trabalha 
               incansavelmente para proporcionar isso.
             </p>
             <p className="text-lg mb-8 text-muted-foreground">
-              Além da clínica, a Dra. Karine é palestrante ativa em congressos 
+              Além da clínica, a {veterinarianData.name} é palestrante ativa em congressos 
               veterinários e está sempre se atualizando com as mais novas técnicas 
               e tratamentos da medicina veterinária.
             </p>
@@ -67,18 +111,22 @@ const VeterinarianSection = () => {
               </div>
             </div>
 
-            <Button size="lg" className="mr-4">
-              <Linkedin className="h-4 w-4 mr-2" />
-              LinkedIn da Dra. Karine
-            </Button>
+            {veterinarianData.linkedin && (
+              <Button size="lg" className="mr-4" asChild>
+                <a href={veterinarianData.linkedin} target="_blank" rel="noopener noreferrer">
+                  <Linkedin className="h-4 w-4 mr-2" />
+                  LinkedIn da {veterinarianData.name}
+                </a>
+              </Button>
+            )}
           </div>
 
           <div className="order-1 lg:order-2">
             <div className="relative">
               <img
-                src="https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=600&q=80"
-                alt="Dra. Karine"
-                className="rounded-lg shadow-lg"
+                src={veterinarianData.photo}
+                alt={veterinarianData.name}
+                className="rounded-lg shadow-lg w-full h-auto"
               />
               <div className="absolute -bottom-6 -right-6 bg-white rounded-lg p-4 shadow-lg">
                 <div className="text-center">
@@ -131,7 +179,7 @@ const VeterinarianSection = () => {
         </div>
 
         <div className="mt-12 bg-primary/5 rounded-xl p-8 text-center">
-          <h3 className="text-2xl font-bold mb-4">Mensagem da Dra. Karine</h3>
+          <h3 className="text-2xl font-bold mb-4">Mensagem da {veterinarianData.name}</h3>
           <blockquote className="text-lg text-muted-foreground max-w-4xl mx-auto italic">
             "Minha missão é proporcionar o melhor cuidado possível para cada animal que 
             atendo. Acredito que com carinho, conhecimento e dedicação, podemos fazer a 
@@ -139,8 +187,8 @@ const VeterinarianSection = () => {
             para suas famílias."
           </blockquote>
           <div className="mt-6">
-            <p className="font-semibold">- Dra. Karine Silva</p>
-            <p className="text-sm text-muted-foreground">Médica Veterinária Especialista em Dermatologia</p>
+            <p className="font-semibold">- {veterinarianData.name}</p>
+            <p className="text-sm text-muted-foreground">{veterinarianData.specialty}</p>
           </div>
         </div>
       </div>

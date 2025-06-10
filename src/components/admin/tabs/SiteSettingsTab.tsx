@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -7,6 +8,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { Plus, Trash2 } from 'lucide-react';
+import ImageUpload from '../ImageUpload';
 
 interface Settings {
   [key: string]: any;
@@ -291,6 +293,16 @@ const SiteSettingsTab = () => {
               onChange={(e) => updateSetting('veterinarian', 'linkedin', e.target.value)}
             />
           </div>
+          
+          <ImageUpload
+            bucket="veterinarian-photos"
+            currentImageUrl={getSetting('veterinarian', 'photo')}
+            onImageUploaded={(url) => updateSetting('veterinarian', 'photo', url)}
+            onImageRemoved={() => updateSetting('veterinarian', 'photo', '')}
+            label="Foto da Dra. Karine"
+            recommendedSize="400x500 pixels (formato retrato)"
+            maxSizeMB={2}
+          />
         </CardContent>
       </Card>
 

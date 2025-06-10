@@ -3,9 +3,14 @@ import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { Eye, CheckCircle, XCircle } from 'lucide-react';
+import { Eye, CheckCircle, XCircle, Plus, Edit, Trash2 } from 'lucide-react';
+import ImageUpload from '../ImageUpload';
 
 interface LostPet {
   id: string;
@@ -19,13 +24,33 @@ interface LostPet {
   contact_phone: string;
   contact_email: string;
   status: string;
+  image_url: string;
+  description: string;
+  size: string;
   created_at: string;
 }
 
 const LostPetsTab = () => {
   const [pets, setPets] = useState<LostPet[]>([]);
+  const [showForm, setShowForm] = useState(false);
+  const [editingPet, setEditingPet] = useState<LostPet | null>(null);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
+
+  const [formData, setFormData] = useState({
+    type: 'lost',
+    pet_name: '',
+    pet_type: '',
+    breed: '',
+    color: '',
+    size: '',
+    location: '',
+    contact_name: '',
+    contact_phone: '',
+    contact_email: '',
+    description: '',
+    image_url: ''
+  });
 
   useEffect(() => {
     loadPets();
@@ -45,6 +70,35 @@ const LostPetsTab = () => {
       console.error('Erro ao carregar pets:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const savePet = async () => {
+    try {
+      if (editingPet) {
+        await supabase
+          .from('lost_pets')
+          .update(formData)
+          .eq('id', editingPet.id);
+      } else {
+        await supabase
+          .from('lost_pets')
+          .insert([formData]);
+      }
+      
+      loadPets();
+      resetForm();
+      toast({
+        title: "Sucesso",
+        description: "Pet salvo com sucesso!",
+      });
+    } catch (error) {
+      console.error('Erro ao salvar pet:', error);
+      toast({
+        title: "Erro",
+        description: "Erro ao salvar pet",
+        variant: "destructive",
+      });
     }
   };
 
@@ -70,12 +124,235 @@ const LostPetsTab = () => {
     }
   };
 
+  const deletePet = async (id: string) => {
+    try {
+      await supabase
+        .from('lost_pets')
+        .delete()
+        .eq('id', id);
+      
+      loadPets();
+      toast({
+        title: "Sucesso",
+        description: "Pet excluído com sucesso!",
+      });
+    } catch (error) {
+      console.error('Erro ao excluir pet:', error);
+      toast({
+        title: "Erro",
+        description: "Erro ao excluir pet",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const resetForm = () => {
+    setFormData({
+      type: 'lost',
+      pet_name: '',
+      pet_type: '',
+      breed: '',
+      color: '',
+      size: '',
+      location: '',
+      contact_name: '',
+      contact_phone: '',
+      contact_email: '',
+      description: '',
+      image_url: ''
+    });
+    setEditingPet(null);
+    setShowForm(false);
+  };
+
+  const editPet = (pet: LostPet) => {
+    setFormData({
+      type: pet.type,
+      pet_name: pet.pet_name || '',
+      pet_type: pet.pet_type,
+      breed: pet.breed || '',
+      color: pet.color || '',
+      size: pet.size || '',
+      location: pet.location,
+      contact_name: pet.contact_name,
+      contact_phone: pet.contact_phone,
+      contact_email: pet.contact_email || '',
+      description: pet.description || '',
+      image_url: pet.image_url || ''
+    });
+    setEditingPet(pet);
+    setShowForm(true);
+  };
+
   if (loading) {
     return <div>Carregando...</div>;
   }
 
   return (
     <div className="space-y-6">
+      <div className="flex justify-between items-center">
+        <h2 className="text-2xl font-bold">Pets Perdidos/Encontrados</h2>
+        <Button onClick={() => setShowForm(true)}>
+          <Plus className="h-4 w-4 mr-2" />
+          Novo Registro
+        </Button>
+      </div>
+
+      {showForm && (
+        <Card>
+          <CardHeader>
+            <CardTitle>
+              {editingPet ? 'Editar Pet' : 'Novo Registro de Pet'}
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid md:grid-cols-2 gap-4">
+              <div>
+                <Label>Tipo de Registro</Label>
+                <Select
+                  value={formData.type}
+                  onValueChange={(value) => setFormData({...formData, type: value})}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="lost">Pet Perdido</SelectItem>
+                    <SelectItem value="found">Pet Encontrado</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label>Nome do Pet</Label>
+                <Input
+                  value={formData.pet_name}
+                  onChange={(e) => setFormData({...formData, pet_name: e.target.value})}
+                  placeholder="Nome do pet (se conhecido)"
+                />
+              </div>
+            </div>
+
+            <div className="grid md:grid-cols-3 gap-4">
+              <div>
+                <Label>Tipo de Animal</Label>
+                <Select
+                  value={formData.pet_type}
+                  onValueChange={(value) => setFormData({...formData, pet_type: value})}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecionar" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="cão">Cão</SelectItem>
+                    <SelectItem value="gato">Gato</SelectItem>
+                    <SelectItem value="pássaro">Pássaro</SelectItem>
+                    <SelectItem value="outro">Outro</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label>Raça</Label>
+                <Input
+                  value={formData.breed}
+                  onChange={(e) => setFormData({...formData, breed: e.target.value})}
+                  placeholder="Ex: SRD, Golden, Persa..."
+                />
+              </div>
+              <div>
+                <Label>Porte</Label>
+                <Select
+                  value={formData.size}
+                  onValueChange={(value) => setFormData({...formData, size: value})}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecionar" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="pequeno">Pequeno</SelectItem>
+                    <SelectItem value="médio">Médio</SelectItem>
+                    <SelectItem value="grande">Grande</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-4">
+              <div>
+                <Label>Cor</Label>
+                <Input
+                  value={formData.color}
+                  onChange={(e) => setFormData({...formData, color: e.target.value})}
+                  placeholder="Cor predominante"
+                />
+              </div>
+              <div>
+                <Label>Local</Label>
+                <Input
+                  value={formData.location}
+                  onChange={(e) => setFormData({...formData, location: e.target.value})}
+                  placeholder="Bairro, rua, ponto de referência"
+                />
+              </div>
+            </div>
+
+            <div>
+              <Label>Descrição Adicional</Label>
+              <Textarea
+                value={formData.description}
+                onChange={(e) => setFormData({...formData, description: e.target.value})}
+                placeholder="Características especiais, comportamento, etc."
+                rows={3}
+              />
+            </div>
+
+            <ImageUpload
+              bucket="pet-images"
+              currentImageUrl={formData.image_url}
+              onImageUploaded={(url) => setFormData({...formData, image_url: url})}
+              onImageRemoved={() => setFormData({...formData, image_url: ''})}
+              label="Foto do Pet"
+              recommendedSize="600x400 pixels"
+              maxSizeMB={3}
+            />
+
+            <div className="grid md:grid-cols-3 gap-4">
+              <div>
+                <Label>Nome do Contato</Label>
+                <Input
+                  value={formData.contact_name}
+                  onChange={(e) => setFormData({...formData, contact_name: e.target.value})}
+                />
+              </div>
+              <div>
+                <Label>Telefone</Label>
+                <Input
+                  value={formData.contact_phone}
+                  onChange={(e) => setFormData({...formData, contact_phone: e.target.value})}
+                  placeholder="(11) 99999-9999"
+                />
+              </div>
+              <div>
+                <Label>Email (opcional)</Label>
+                <Input
+                  type="email"
+                  value={formData.contact_email}
+                  onChange={(e) => setFormData({...formData, contact_email: e.target.value})}
+                />
+              </div>
+            </div>
+
+            <div className="flex gap-2">
+              <Button onClick={savePet}>
+                {editingPet ? 'Atualizar' : 'Salvar'}
+              </Button>
+              <Button variant="outline" onClick={resetForm}>
+                Cancelar
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       <div className="grid gap-6">
         {pets.map((pet) => (
           <Card key={pet.id}>
@@ -87,24 +364,59 @@ const LostPetsTab = () => {
                   </Badge>
                   {pet.pet_name || 'Sem nome'}
                 </CardTitle>
-                <Badge variant={pet.status === 'active' ? 'default' : 'secondary'}>
-                  {pet.status === 'active' ? 'Ativo' : 'Resolvido'}
-                </Badge>
+                <div className="flex gap-2">
+                  <Badge variant={pet.status === 'active' ? 'default' : 'secondary'}>
+                    {pet.status === 'active' ? 'Ativo' : 'Resolvido'}
+                  </Badge>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => editPet(pet)}
+                  >
+                    <Edit className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="destructive"
+                    onClick={() => deletePet(pet.id)}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
               </div>
             </CardHeader>
             <CardContent>
-              <div className="grid md:grid-cols-2 gap-4">
-                <div>
-                  <p><strong>Tipo:</strong> {pet.pet_type}</p>
-                  <p><strong>Raça:</strong> {pet.breed || 'Não informado'}</p>
-                  <p><strong>Cor:</strong> {pet.color}</p>
-                  <p><strong>Local:</strong> {pet.location}</p>
-                </div>
-                <div>
-                  <p><strong>Contato:</strong> {pet.contact_name}</p>
-                  <p><strong>Telefone:</strong> {pet.contact_phone}</p>
-                  <p><strong>Email:</strong> {pet.contact_email || 'Não informado'}</p>
-                  <p><strong>Data:</strong> {new Date(pet.created_at).toLocaleDateString()}</p>
+              <div className="grid md:grid-cols-3 gap-4">
+                {pet.image_url && (
+                  <div>
+                    <img
+                      src={pet.image_url}
+                      alt={pet.pet_name || 'Pet'}
+                      className="w-full h-32 object-cover rounded"
+                    />
+                  </div>
+                )}
+                <div className={pet.image_url ? "md:col-span-2" : "md:col-span-3"}>
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div>
+                      <p><strong>Tipo:</strong> {pet.pet_type}</p>
+                      <p><strong>Raça:</strong> {pet.breed || 'Não informado'}</p>
+                      <p><strong>Cor:</strong> {pet.color}</p>
+                      <p><strong>Porte:</strong> {pet.size || 'Não informado'}</p>
+                    </div>
+                    <div>
+                      <p><strong>Local:</strong> {pet.location}</p>
+                      <p><strong>Contato:</strong> {pet.contact_name}</p>
+                      <p><strong>Telefone:</strong> {pet.contact_phone}</p>
+                      <p><strong>Data:</strong> {new Date(pet.created_at).toLocaleDateString()}</p>
+                    </div>
+                  </div>
+                  
+                  {pet.description && (
+                    <div className="mt-4">
+                      <p><strong>Descrição:</strong> {pet.description}</p>
+                    </div>
+                  )}
                 </div>
               </div>
               
