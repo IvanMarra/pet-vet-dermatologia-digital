@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -59,8 +60,15 @@ const LostPetsSection = () => {
         .order('created_at', { ascending: false });
       
       if (data) {
-        const lost = data.filter(pet => pet.type === 'lost');
-        const found = data.filter(pet => pet.type === 'found');
+        const petsWithCoordinates = data.map(pet => ({
+          ...pet,
+          coordinates: pet.coordinates ? 
+            (Array.isArray(pet.coordinates) ? pet.coordinates as [number, number] : null) 
+            : null
+        }));
+        
+        const lost = petsWithCoordinates.filter(pet => pet.type === 'lost');
+        const found = petsWithCoordinates.filter(pet => pet.type === 'found');
         setLostPets(lost);
         setFoundPets(found);
       }
@@ -312,13 +320,12 @@ const LostPetsSection = () => {
                       />
                     </div>
                     <div>
-                      <Label htmlFor="date">Data</Label>
+                      <Label htmlFor="size">Porte</Label>
                       <Input
-                        id="date"
-                        type="date"
-                        value={formData.date}
-                        onChange={(e) => handleInputChange('date', e.target.value)}
-                        required
+                        id="size"
+                        value={formData.size}
+                        onChange={(e) => handleInputChange('size', e.target.value)}
+                        placeholder="Pequeno, Médio, Grande"
                       />
                     </div>
                   </div>

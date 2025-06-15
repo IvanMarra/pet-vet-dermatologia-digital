@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -76,6 +75,9 @@ const SiteSettingsTab = () => {
         title: "Sucesso",
         description: "Configurações salvas com sucesso!",
       });
+      
+      // Trigger a reload of settings in other components
+      window.dispatchEvent(new CustomEvent('settingsUpdated'));
     } catch (error) {
       console.error('Erro ao salvar configurações:', error);
       toast({
@@ -183,14 +185,15 @@ const SiteSettingsTab = () => {
                   />
                 </div>
                 
-                <div>
-                  <Label>URL da Imagem</Label>
-                  <Input
-                    value={getSetting('hero', `slide_${slideNum}_image`)}
-                    onChange={(e) => updateSetting('hero', `slide_${slideNum}_image`, e.target.value)}
-                    placeholder="https://exemplo.com/imagem.jpg"
-                  />
-                </div>
+                <ImageUpload
+                  bucket="site-images"
+                  currentImageUrl={getSetting('hero', `slide_${slideNum}_image`)}
+                  onImageUploaded={(url) => updateSetting('hero', `slide_${slideNum}_image`, url)}
+                  onImageRemoved={() => updateSetting('hero', `slide_${slideNum}_image`, '')}
+                  label={`Imagem do Slide ${slideNum}`}
+                  recommendedSize="1920x1080 pixels (formato paisagem)"
+                  maxSizeMB={5}
+                />
               </div>
             );
           })}
