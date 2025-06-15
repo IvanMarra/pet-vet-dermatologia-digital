@@ -1,140 +1,194 @@
 
-import React from 'react';
-import { Card, CardContent } from '@/components/ui/card';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Phone, Mail, MapPin, Clock, Instagram, Facebook } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { MapPin, Phone, Mail, Clock } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
 
 const ContactSection = () => {
-  const contactInfo = [
-    {
-      icon: Phone,
-      title: "Telefone",
-      info: "(11) 9999-9999",
-      description: "Ligue para agendar sua consulta"
-    },
-    {
-      icon: Mail,
-      title: "E-mail",
-      info: "contato@vetcare.com.br",
-      description: "Envie sua dúvida por e-mail"
-    },
-    {
-      icon: MapPin,
-      title: "Endereço",
-      info: "Rua das Flores, 123 - Centro",
-      description: "São Paulo - SP, CEP: 01234-567"
-    },
-    {
-      icon: Clock,
-      title: "Horário de Funcionamento",
-      info: "Seg-Sex: 8h às 18h | Sáb: 8h às 14h",
-      description: "Emergências 24h"
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    message: ''
+  });
+  const [loading, setLoading] = useState(false);
+  const { toast } = useToast();
+
+  const handleInputChange = (field: string, value: string) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+
+    try {
+      // Save contact to database
+      const { error } = await supabase
+        .from('contacts')
+        .insert([{
+          name: formData.name,
+          email: formData.email,
+          phone: formData.phone || null,
+          message: formData.message,
+          status: 'new'
+        }]);
+
+      if (error) throw error;
+
+      // Track analytics event
+      await supabase
+        .from('site_analytics')
+        .insert([{
+          event_type: 'contact_form_submit',
+          page_path: window.location.pathname,
+          additional_data: { form_type: 'contact' }
+        }]);
+
+      toast({
+        title: "Mensagem enviada!",
+        description: "Obrigado pelo seu contato. Responderemos em breve!",
+      });
+
+      // Reset form
+      setFormData({
+        name: '',
+        email: '',
+        phone: '',
+        message: ''
+      });
+    } catch (error) {
+      console.error('Erro ao enviar mensagem:', error);
+      toast({
+        title: "Erro",
+        description: "Erro ao enviar mensagem. Tente novamente.",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
     }
-  ];
+  };
 
   return (
-    <section id="contact" className="py-20 bg-gray-50">
+    <section id="contato" className="py-20 bg-gray-50">
       <div className="container mx-auto px-4">
         <div className="text-center mb-16">
           <h2 className="text-4xl font-bold mb-4">Entre em Contato</h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            Estamos prontos para cuidar do seu melhor amigo. Entre em contato conosco!
+            Estamos aqui para cuidar do seu pet. Entre em contato conosco para agendar uma consulta ou esclarecer suas dúvidas.
           </p>
         </div>
 
-        <div className="grid lg:grid-cols-2 gap-12">
-          <div>
-            <h3 className="text-2xl font-bold mb-6">Informações de Contato</h3>
-            <div className="space-y-6">
-              {contactInfo.map((item, index) => (
-                <div key={index} className="flex items-start gap-4">
-                  <div className="bg-primary/10 rounded-full p-3">
-                    <item.icon className="h-6 w-6 text-primary" />
-                  </div>
+        <div className="grid md:grid-cols-2 gap-12">
+          <div className="space-y-8">
+            <Card>
+              <CardHeader>
+                <CardTitle>Informações de Contato</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="flex items-center space-x-4">
+                  <MapPin className="h-6 w-6 text-primary" />
                   <div>
-                    <h4 className="font-semibold mb-1">{item.title}</h4>
-                    <p className="text-lg text-primary font-medium">{item.info}</p>
-                    <p className="text-sm text-muted-foreground">{item.description}</p>
+                    <h3 className="font-semibold">Endereço</h3>
+                    <p className="text-muted-foreground">
+                      Rua das Flores, 123<br />
+                      Centro, São Paulo - SP<br />
+                      CEP: 01234-567
+                    </p>
                   </div>
                 </div>
-              ))}
-            </div>
 
-            <div className="mt-8">
-              <h4 className="font-semibold mb-4">Siga-nos nas Redes Sociais</h4>
-              <div className="flex gap-4">
-                <Button variant="outline" size="sm">
-                  <Instagram className="h-4 w-4 mr-2" />
-                  Instagram
-                </Button>
-                <Button variant="outline" size="sm">
-                  <Facebook className="h-4 w-4 mr-2" />
-                  Facebook
-                </Button>
-              </div>
-            </div>
+                <div className="flex items-center space-x-4">
+                  <Phone className="h-6 w-6 text-primary" />
+                  <div>
+                    <h3 className="font-semibold">Telefone</h3>
+                    <p className="text-muted-foreground">(11) 9999-9999</p>
+                  </div>
+                </div>
+
+                <div className="flex items-center space-x-4">
+                  <Mail className="h-6 w-6 text-primary" />
+                  <div>
+                    <h3 className="font-semibold">E-mail</h3>
+                    <p className="text-muted-foreground">contato@clinicaveterinaria.com</p>
+                  </div>
+                </div>
+
+                <div className="flex items-center space-x-4">
+                  <Clock className="h-6 w-6 text-primary" />
+                  <div>
+                    <h3 className="font-semibold">Horário de Funcionamento</h3>
+                    <p className="text-muted-foreground">
+                      Segunda a Sexta: 8h às 18h<br />
+                      Sábado: 8h às 12h<br />
+                      Emergências: 24h
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
           </div>
 
           <Card>
-            <CardContent className="p-6">
-              <h3 className="text-2xl font-bold mb-6">Envie uma Mensagem</h3>
-              <form className="space-y-4">
+            <CardHeader>
+              <CardTitle>Envie sua Mensagem</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="grid md:grid-cols-2 gap-4">
                   <div>
-                    <Label htmlFor="name">Nome Completo</Label>
-                    <Input id="name" placeholder="Seu nome" />
+                    <Label htmlFor="name">Nome *</Label>
+                    <Input
+                      id="name"
+                      value={formData.name}
+                      onChange={(e) => handleInputChange('name', e.target.value)}
+                      required
+                    />
                   </div>
                   <div>
                     <Label htmlFor="phone">Telefone</Label>
-                    <Input id="phone" placeholder="(11) 99999-9999" />
+                    <Input
+                      id="phone"
+                      value={formData.phone}
+                      onChange={(e) => handleInputChange('phone', e.target.value)}
+                      placeholder="(11) 99999-9999"
+                    />
                   </div>
                 </div>
+
                 <div>
-                  <Label htmlFor="email">E-mail</Label>
-                  <Input id="email" type="email" placeholder="seu@email.com" />
-                </div>
-                <div>
-                  <Label htmlFor="pet">Nome do Pet</Label>
-                  <Input id="pet" placeholder="Nome do seu pet" />
-                </div>
-                <div>
-                  <Label htmlFor="subject">Assunto</Label>
-                  <Input id="subject" placeholder="Consulta, emergência, dúvida..." />
-                </div>
-                <div>
-                  <Label htmlFor="message">Mensagem</Label>
-                  <Textarea 
-                    id="message" 
-                    placeholder="Conte-nos como podemos ajudar seu pet..."
-                    rows={4}
+                  <Label htmlFor="email">E-mail *</Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    value={formData.email}
+                    onChange={(e) => handleInputChange('email', e.target.value)}
+                    required
                   />
                 </div>
-                <Button type="submit" className="w-full" size="lg">
-                  Enviar Mensagem
+
+                <div>
+                  <Label htmlFor="message">Mensagem *</Label>
+                  <Textarea
+                    id="message"
+                    value={formData.message}
+                    onChange={(e) => handleInputChange('message', e.target.value)}
+                    rows={5}
+                    required
+                  />
+                </div>
+
+                <Button type="submit" className="w-full" disabled={loading}>
+                  {loading ? 'Enviando...' : 'Enviar Mensagem'}
                 </Button>
               </form>
             </CardContent>
           </Card>
-        </div>
-
-        <div className="mt-16">
-          <h3 className="text-2xl font-bold mb-6 text-center">Nossa Localização</h3>
-          <div className="bg-white rounded-lg shadow-lg overflow-hidden">
-            <div className="aspect-video bg-gray-200 flex items-center justify-center">
-              <div className="text-center">
-                <MapPin className="h-12 w-12 text-primary mx-auto mb-4" />
-                <p className="text-lg font-semibold">Mapa da Clínica</p>
-                <p className="text-muted-foreground">Rua das Flores, 123 - Centro</p>
-                <p className="text-muted-foreground">São Paulo - SP</p>
-                <Button className="mt-4" variant="outline">
-                  Ver no Google Maps
-                </Button>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
     </section>

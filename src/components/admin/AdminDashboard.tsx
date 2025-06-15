@@ -1,18 +1,44 @@
 
 import React, { useState } from 'react';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
-import { useAuth } from '@/hooks/useAuth';
-import { LogOut, Settings, FileText, Users, Package, Heart } from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { LogOut, BarChart3, MessageSquare, Settings, PawPrint, Star, Package, Users } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
 import SiteSettingsTab from './tabs/SiteSettingsTab';
-import LostPetsTab from './tabs/LostPetsTab';
-import TestimonialsTab from './tabs/TestimonialsTab';
-import ProductsTab from './tabs/ProductsTab';
 import ServicesTab from './tabs/ServicesTab';
+import ProductsTab from './tabs/ProductsTab';
+import TestimonialsTab from './tabs/TestimonialsTab';
+import LostPetsTab from './tabs/LostPetsTab';
+import DashboardTab from './tabs/DashboardTab';
+import ContactsTab from './tabs/ContactsTab';
 
 const AdminDashboard = () => {
-  const { logout, user } = useAuth();
-  const [activeTab, setActiveTab] = useState('settings');
+  const [activeTab, setActiveTab] = useState('dashboard');
+  const { toast } = useToast();
+
+  const handleLogout = async () => {
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+      
+      toast({
+        title: "Logout realizado",
+        description: "Você foi desconectado com sucesso!",
+      });
+      
+      // Force page reload to clear any cached state and show the public site
+      window.location.href = '/';
+    } catch (error) {
+      console.error('Erro no logout:', error);
+      toast({
+        title: "Erro",
+        description: "Erro ao fazer logout",
+        variant: "destructive",
+      });
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -21,14 +47,18 @@ const AdminDashboard = () => {
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center">
               <h1 className="text-xl font-semibold text-gray-900">
-                PopularVet - Painel Administrativo
+                Painel Administrativo
               </h1>
             </div>
             <div className="flex items-center space-x-4">
-              <span className="text-sm text-gray-600">
-                Olá, {user?.name}
-              </span>
-              <Button variant="outline" size="sm" onClick={logout}>
+              <Button
+                variant="outline"
+                onClick={() => window.open('/', '_blank')}
+                className="hidden sm:inline-flex"
+              >
+                Ver Site
+              </Button>
+              <Button variant="outline" onClick={handleLogout}>
                 <LogOut className="h-4 w-4 mr-2" />
                 Sair
               </Button>
@@ -38,50 +68,68 @@ const AdminDashboard = () => {
       </header>
 
       <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-        <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="grid w-full grid-cols-5 mb-6">
-            <TabsTrigger value="settings" className="flex items-center gap-2">
-              <Settings className="h-4 w-4" />
-              Configurações
-            </TabsTrigger>
-            <TabsTrigger value="lost-pets" className="flex items-center gap-2">
-              <Heart className="h-4 w-4" />
-              Pets Perdidos
-            </TabsTrigger>
-            <TabsTrigger value="testimonials" className="flex items-center gap-2">
-              <Users className="h-4 w-4" />
-              Depoimentos
-            </TabsTrigger>
-            <TabsTrigger value="products" className="flex items-center gap-2">
-              <Package className="h-4 w-4" />
-              Produtos
-            </TabsTrigger>
-            <TabsTrigger value="services" className="flex items-center gap-2">
-              <FileText className="h-4 w-4" />
-              Serviços
-            </TabsTrigger>
-          </TabsList>
+        <div className="px-4 py-6 sm:px-0">
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
+            <TabsList className="grid w-full grid-cols-4 lg:grid-cols-7">
+              <TabsTrigger value="dashboard" className="flex items-center gap-2">
+                <BarChart3 className="h-4 w-4" />
+                <span className="hidden sm:inline">Dashboard</span>
+              </TabsTrigger>
+              <TabsTrigger value="contacts" className="flex items-center gap-2">
+                <MessageSquare className="h-4 w-4" />
+                <span className="hidden sm:inline">Contatos</span>
+              </TabsTrigger>
+              <TabsTrigger value="settings" className="flex items-center gap-2">
+                <Settings className="h-4 w-4" />
+                <span className="hidden sm:inline">Configurações</span>
+              </TabsTrigger>
+              <TabsTrigger value="services" className="flex items-center gap-2">
+                <Users className="h-4 w-4" />
+                <span className="hidden sm:inline">Serviços</span>
+              </TabsTrigger>
+              <TabsTrigger value="products" className="flex items-center gap-2">
+                <Package className="h-4 w-4" />
+                <span className="hidden sm:inline">Produtos</span>
+              </TabsTrigger>
+              <TabsTrigger value="testimonials" className="flex items-center gap-2">
+                <Star className="h-4 w-4" />
+                <span className="hidden sm:inline">Depoimentos</span>
+              </TabsTrigger>
+              <TabsTrigger value="lost-pets" className="flex items-center gap-2">
+                <PawPrint className="h-4 w-4" />
+                <span className="hidden sm:inline">Pets</span>
+              </TabsTrigger>
+            </TabsList>
 
-          <TabsContent value="settings">
-            <SiteSettingsTab />
-          </TabsContent>
+            <TabsContent value="dashboard" className="space-y-4">
+              <DashboardTab />
+            </TabsContent>
 
-          <TabsContent value="lost-pets">
-            <LostPetsTab />
-          </TabsContent>
+            <TabsContent value="contacts" className="space-y-4">
+              <ContactsTab />
+            </TabsContent>
 
-          <TabsContent value="testimonials">
-            <TestimonialsTab />
-          </TabsContent>
+            <TabsContent value="settings" className="space-y-4">
+              <SiteSettingsTab />
+            </TabsContent>
 
-          <TabsContent value="products">
-            <ProductsTab />
-          </TabsContent>
+            <TabsContent value="services" className="space-y-4">
+              <ServicesTab />
+            </TabsContent>
 
-          <TabsContent value="services">
-            <ServicesTab />
-          </TabsContent>
-        </Tabs>
+            <TabsContent value="products" className="space-y-4">
+              <ProductsTab />
+            </TabsContent>
+
+            <TabsContent value="testimonials" className="space-y-4">
+              <TestimonialsTab />
+            </TabsContent>
+
+            <TabsContent value="lost-pets" className="space-y-4">
+              <LostPetsTab />
+            </TabsContent>
+          </Tabs>
+        </div>
       </main>
     </div>
   );
