@@ -39,6 +39,78 @@ export type Database = {
         }
         Relationships: []
       }
+      contacts: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          message: string
+          name: string
+          phone: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          message: string
+          name: string
+          phone?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          message?: string
+          name?: string
+          phone?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      hero_slides: {
+        Row: {
+          created_at: string
+          cta_text: string | null
+          description: string | null
+          display_order: number | null
+          id: string
+          image_url: string | null
+          is_active: boolean | null
+          subtitle: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          cta_text?: string | null
+          description?: string | null
+          display_order?: number | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean | null
+          subtitle?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          cta_text?: string | null
+          description?: string | null
+          display_order?: number | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean | null
+          subtitle?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       lost_pets: {
         Row: {
           breed: string | null
@@ -46,6 +118,7 @@ export type Database = {
           contact_email: string | null
           contact_name: string
           contact_phone: string
+          coordinates: Json | null
           created_at: string
           description: string | null
           id: string
@@ -64,6 +137,7 @@ export type Database = {
           contact_email?: string | null
           contact_name: string
           contact_phone: string
+          coordinates?: Json | null
           created_at?: string
           description?: string | null
           id?: string
@@ -82,6 +156,7 @@ export type Database = {
           contact_email?: string | null
           contact_name?: string
           contact_phone?: string
+          coordinates?: Json | null
           created_at?: string
           description?: string | null
           id?: string
@@ -171,6 +246,39 @@ export type Database = {
         }
         Relationships: []
       }
+      site_analytics: {
+        Row: {
+          additional_data: Json | null
+          created_at: string
+          event_type: string
+          id: string
+          ip_address: string | null
+          page_path: string
+          session_id: string | null
+          user_agent: string | null
+        }
+        Insert: {
+          additional_data?: Json | null
+          created_at?: string
+          event_type: string
+          id?: string
+          ip_address?: string | null
+          page_path: string
+          session_id?: string | null
+          user_agent?: string | null
+        }
+        Update: {
+          additional_data?: Json | null
+          created_at?: string
+          event_type?: string
+          id?: string
+          ip_address?: string | null
+          page_path?: string
+          session_id?: string | null
+          user_agent?: string | null
+        }
+        Relationships: []
+      }
       site_settings: {
         Row: {
           id: string
@@ -239,6 +347,10 @@ export type Database = {
       create_admin_user: {
         Args: { p_email: string; p_password: string; p_name: string }
         Returns: string
+      }
+      is_admin_user: {
+        Args: Record<PropertyKey, never>
+        Returns: boolean
       }
       verify_admin_password: {
         Args: { p_email: string; p_password: string }
