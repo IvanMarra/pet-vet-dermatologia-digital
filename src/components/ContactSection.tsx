@@ -36,35 +36,31 @@ const ContactSection = () => {
     setLoading(true);
 
     try {
-      // Save contact using raw SQL query to avoid type issues
-      const { error } = await supabase.rpc('exec_sql', {
-        sql: `INSERT INTO contacts (name, email, phone, message, status) VALUES ($1, $2, $3, $4, $5)`,
-        params: [formData.name, formData.email, formData.phone || null, formData.message, 'new']
-      }).catch(async () => {
-        // Fallback: direct insert using any type
-        return await (supabase as any)
-          .from('contacts')
-          .insert([{
-            name: formData.name,
-            email: formData.email,
-            phone: formData.phone || null,
-            message: formData.message,
-            status: 'new'
-          }]);
-      });
+      // Save contact directly using insert
+      const { error } = await supabase
+        .from('contacts')
+        .insert([{
+          name: formData.name,
+          email: formData.email,
+          phone: formData.phone || null,
+          message: formData.message,
+          status: 'new'
+        }]);
 
       if (error) throw error;
 
-      // Track analytics event with fallback
-      await (supabase as any)
-        .from('site_analytics')
-        .insert([{
-          event_type: 'contact_form_submit',
-          page_path: window.location.pathname,
-          additional_data: { form_type: 'contact' }
-        }]).catch(() => {
-          console.log('Analytics tracking failed - this is non-critical');
-        });
+      // Track analytics event with error handling
+      try {
+        await supabase
+          .from('site_analytics')
+          .insert([{
+            event_type: 'contact_form_submit',
+            page_path: window.location.pathname,
+            additional_data: { form_type: 'contact' }
+          }]);
+      } catch (analyticsError) {
+        console.log('Analytics tracking failed - this is non-critical:', analyticsError);
+      }
 
       toast({
         title: "Mensagem enviada!",

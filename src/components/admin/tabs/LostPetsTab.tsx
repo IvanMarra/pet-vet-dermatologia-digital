@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -12,22 +11,23 @@ import { useToast } from '@/hooks/use-toast';
 import { Eye, CheckCircle, XCircle, Plus, Edit, Trash2, MapPin } from 'lucide-react';
 import ImageUpload from '../ImageUpload';
 import MapComponent from '../../MapComponent';
+import type { Json } from '@/integrations/supabase/types';
 
 interface LostPet {
   id: string;
   type: string;
-  pet_name: string;
+  pet_name: string | null;
   pet_type: string;
-  breed: string;
-  color: string;
+  breed: string | null;
+  color: string | null;
   location: string;
   contact_name: string;
   contact_phone: string;
-  contact_email: string;
-  status: string;
-  image_url: string;
-  description: string;
-  size: string;
+  contact_email: string | null;
+  status: string | null;
+  image_url: string | null;
+  description: string | null;
+  size: string | null;
   coordinates: [number, number] | null;
   created_at: string;
 }
@@ -61,16 +61,31 @@ const LostPetsTab = () => {
 
   const loadPets = async () => {
     try {
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from('lost_pets')
         .select('*')
         .order('created_at', { ascending: false });
       
+      if (error) throw error;
+      
       if (data) {
-        setPets(data);
+        // Transform data to match our interface
+        const transformedPets: LostPet[] = data.map(pet => ({
+          ...pet,
+          coordinates: pet.coordinates ? 
+            (Array.isArray(pet.coordinates) && pet.coordinates.length === 2 ? 
+              pet.coordinates as [number, number] : null) 
+            : null
+        }));
+        setPets(transformedPets);
       }
     } catch (error) {
       console.error('Erro ao carregar pets:', error);
+      toast({
+        title: "Erro",
+        description: "Erro ao carregar pets",
+        variant: "destructive",
+      });
     } finally {
       setLoading(false);
     }
@@ -78,15 +93,24 @@ const LostPetsTab = () => {
 
   const savePet = async () => {
     try {
+      const petData = {
+        ...formData,
+        coordinates: formData.coordinates as Json
+      };
+
       if (editingPet) {
-        await supabase
+        const { error } = await supabase
           .from('lost_pets')
-          .update(formData)
+          .update(petData)
           .eq('id', editingPet.id);
+        
+        if (error) throw error;
       } else {
-        await supabase
+        const { error } = await supabase
           .from('lost_pets')
-          .insert([formData]);
+          .insert([petData]);
+        
+        if (error) throw error;
       }
       
       loadPets();
@@ -107,10 +131,12 @@ const LostPetsTab = () => {
 
   const updatePetStatus = async (id: string, status: string) => {
     try {
-      await supabase
+      const { error } = await supabase
         .from('lost_pets')
         .update({ status })
         .eq('id', id);
+      
+      if (error) throw error;
       
       loadPets();
       toast({
@@ -129,10 +155,12 @@ const LostPetsTab = () => {
 
   const deletePet = async (id: string) => {
     try {
-      await supabase
+      const { error } = await supabase
         .from('lost_pets')
         .delete()
         .eq('id', id);
+      
+      if (error) throw error;
       
       loadPets();
       toast({
