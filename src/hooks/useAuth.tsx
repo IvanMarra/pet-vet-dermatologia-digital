@@ -37,11 +37,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const checkUser = async () => {
     try {
+      console.log('Verificando usuário logado...');
       // Verificar se há um usuário logado no localStorage
       const storedUser = localStorage.getItem('admin_user');
       if (storedUser) {
         const userData = JSON.parse(storedUser);
+        console.log('Usuário encontrado no localStorage:', userData);
         setUser(userData);
+      } else {
+        console.log('Nenhum usuário encontrado no localStorage');
       }
     } catch (error) {
       console.error('Error checking user:', error);
@@ -106,9 +110,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const logout = async () => {
+  const logout = () => {
+    console.log('Fazendo logout...');
     setUser(null);
     localStorage.removeItem('admin_user');
+    // Força o recarregamento da página para garantir que o estado seja limpo
+    window.location.href = '/admin';
   };
 
   const isAdmin = user?.is_approved || false;

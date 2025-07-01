@@ -18,27 +18,20 @@ const VeterinarianSection = () => {
 
   useEffect(() => {
     loadVeterinarianData();
-    
-    // Listen for settings updates
-    const handleSettingsUpdate = () => {
-      loadVeterinarianData();
-    };
-    
-    window.addEventListener('settingsUpdated', handleSettingsUpdate);
-    
-    return () => {
-      window.removeEventListener('settingsUpdated', handleSettingsUpdate);
-    };
   }, []);
 
   const loadVeterinarianData = async () => {
     try {
-      const { data } = await supabase
+      console.log('Carregando dados do veterinário...');
+      const { data, error } = await supabase
         .from('site_settings')
         .select('*')
         .eq('section', 'veterinarian');
       
-      if (data) {
+      if (error) {
+        console.error('Erro ao carregar dados do veterinário:', error);
+      } else if (data && data.length > 0) {
+        console.log('Dados do veterinário carregados:', data);
         const settingsObj: { [key: string]: any } = {};
         data.forEach(item => {
           try {
@@ -52,11 +45,13 @@ const VeterinarianSection = () => {
           name: settingsObj.name || 'Dra. Karine Silva',
           title: settingsObj.title || 'Médica Veterinária',
           description: settingsObj.description || 'Especialista em clínica geral e cirurgia de pequenos animais. Com mais de 10 anos de experiência, dedica-se ao cuidado integral dos pets com muito amor e profissionalismo.',
-          image: settingsObj.image || '/placeholder.svg',
+          image: settingsObj.image || settingsObj.photo || '/placeholder.svg',
           experience: settingsObj.experience || '10+ anos',
           specialties: settingsObj.specialties || ['Clínica Geral', 'Cirurgia', 'Emergências'],
           education: settingsObj.education || 'FMVZ-USP'
         });
+      } else {
+        console.log('Nenhum dado encontrado, usando padrão');
       }
     } catch (error) {
       console.error('Erro ao carregar dados do veterinário:', error);

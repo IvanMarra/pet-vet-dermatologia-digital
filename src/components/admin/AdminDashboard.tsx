@@ -3,8 +3,8 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { LogOut, BarChart3, MessageSquare, Settings, PawPrint, Star, Package, Users, Image } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/hooks/useAuth';
 import SiteSettingsTab from './tabs/SiteSettingsTab';
 import ServicesTab from './tabs/ServicesTab';
 import ProductsTab from './tabs/ProductsTab';
@@ -17,19 +17,15 @@ import HeroSlidesTab from './tabs/HeroSlidesTab';
 const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
   const { toast } = useToast();
+  const { logout } = useAuth();
 
-  const handleLogout = async () => {
+  const handleLogout = () => {
     try {
-      const { error } = await supabase.auth.signOut();
-      if (error) throw error;
-      
+      logout();
       toast({
         title: "Logout realizado",
         description: "Você foi desconectado com sucesso!",
       });
-      
-      // Force page reload to clear any cached state and show the public site
-      window.location.href = '/';
     } catch (error) {
       console.error('Erro no logout:', error);
       toast({
