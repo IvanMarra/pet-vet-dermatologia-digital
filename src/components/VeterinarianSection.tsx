@@ -18,6 +18,18 @@ const VeterinarianSection = () => {
 
   useEffect(() => {
     loadVeterinarianData();
+    
+    // Listen for settings updates
+    const handleSettingsUpdate = () => {
+      console.log('Configurações atualizadas, recarregando dados do veterinário...');
+      loadVeterinarianData();
+    };
+    
+    window.addEventListener('settingsUpdated', handleSettingsUpdate);
+    
+    return () => {
+      window.removeEventListener('settingsUpdated', handleSettingsUpdate);
+    };
   }, []);
 
   const loadVeterinarianData = async () => {
@@ -31,27 +43,32 @@ const VeterinarianSection = () => {
       if (error) {
         console.error('Erro ao carregar dados do veterinário:', error);
       } else if (data && data.length > 0) {
-        console.log('Dados do veterinário carregados:', data);
+        console.log('Dados do veterinário encontrados:', data);
         const settingsObj: { [key: string]: any } = {};
         data.forEach(item => {
           try {
+            // Primeiro tenta fazer parse, se falhar usa o valor direto
             settingsObj[item.key] = typeof item.value === 'string' ? JSON.parse(item.value) : item.value;
           } catch {
-            settingsObj[item.key] = item.value;
+            // Se não conseguir fazer parse (ex: string simples), usa o valor direto
+            settingsObj[item.key] = typeof item.value === 'string' ? item.value : JSON.stringify(item.value);
           }
         });
 
-        setVeterinarianData({
-          name: settingsObj.name || 'Dra. Karine Silva',
-          title: settingsObj.title || 'Médica Veterinária',
-          description: settingsObj.description || 'Especialista em clínica geral e cirurgia de pequenos animais. Com mais de 10 anos de experiência, dedica-se ao cuidado integral dos pets com muito amor e profissionalismo.',
-          image: settingsObj.image || settingsObj.photo || '/placeholder.svg',
-          experience: settingsObj.experience || '10+ anos',
-          specialties: settingsObj.specialties || ['Clínica Geral', 'Cirurgia', 'Emergências'],
-          education: settingsObj.education || 'FMVZ-USP'
-        });
+        console.log('Dados processados do veterinário:', settingsObj);
+
+        setVeterinarianData(prev => ({
+          ...prev,
+          name: settingsObj.name || prev.name,
+          title: settingsObj.title || settingsObj.specialty || prev.title,
+          description: settingsObj.description || prev.description,
+          image: settingsObj.photo || settingsObj.image || prev.image,
+          experience: settingsObj.experience || prev.experience,
+          specialties: Array.isArray(settingsObj.specialties) ? settingsObj.specialties : prev.specialties,
+          education: settingsObj.education || prev.education
+        }));
       } else {
-        console.log('Nenhum dado encontrado, usando padrão');
+        console.log('Nenhum dado encontrado para veterinarian, usando dados padrão');
       }
     } catch (error) {
       console.error('Erro ao carregar dados do veterinário:', error);
@@ -90,6 +107,10 @@ const VeterinarianSection = () => {
                     src={veterinarianData.image}
                     alt={veterinarianData.name}
                     className="w-full h-full object-cover"
+                    onError={(e) => {
+                      console.log('Erro ao carregar imagem:', veterinarianData.image);
+                      (e.target as HTMLImageElement).src = '/placeholder.svg';
+                    }}
                   />
                 </div>
                 <div className="p-8 md:p-12 flex flex-col justify-center">
