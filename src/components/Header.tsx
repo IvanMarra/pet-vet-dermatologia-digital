@@ -29,7 +29,7 @@ const Header = () => {
     { id: 'services', label: 'Procedimentos' },
     { id: 'products', label: 'Produtos' },
     { id: 'lost-pets', label: 'Pets Perdidos' },
-    { id: 'veterinarian', label: 'Dra. Karine' },
+    { id: 'veterinaria', label: 'Dra. Karine' }, // Corrigido para corresponder ao ID da seção
     { id: 'testimonials', label: 'Depoimentos' },
     { id: 'contact', label: 'Contato' },
   ];

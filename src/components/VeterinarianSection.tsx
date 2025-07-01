@@ -35,6 +35,15 @@ const VeterinarianSection = () => {
   const loadVeterinarianData = async () => {
     try {
       console.log('Carregando dados do veterinário...');
+      
+      // Buscar dados sem filtro de seção primeiro para debug
+      const { data: allData, error: allError } = await supabase
+        .from('site_settings')
+        .select('*');
+      
+      console.log('Todos os dados da tabela site_settings:', allData);
+      
+      // Agora buscar especificamente dados do veterinário
       const { data, error } = await supabase
         .from('site_settings')
         .select('*')
@@ -42,33 +51,48 @@ const VeterinarianSection = () => {
       
       if (error) {
         console.error('Erro ao carregar dados do veterinário:', error);
-      } else if (data && data.length > 0) {
-        console.log('Dados do veterinário encontrados:', data);
-        const settingsObj: { [key: string]: any } = {};
-        data.forEach(item => {
-          try {
-            // Primeiro tenta fazer parse, se falhar usa o valor direto
-            settingsObj[item.key] = typeof item.value === 'string' ? JSON.parse(item.value) : item.value;
-          } catch {
-            // Se não conseguir fazer parse (ex: string simples), usa o valor direto
-            settingsObj[item.key] = typeof item.value === 'string' ? item.value : JSON.stringify(item.value);
-          }
-        });
-
-        console.log('Dados processados do veterinário:', settingsObj);
-
-        setVeterinarianData(prev => ({
-          ...prev,
-          name: settingsObj.name || prev.name,
-          title: settingsObj.title || settingsObj.specialty || prev.title,
-          description: settingsObj.description || prev.description,
-          image: settingsObj.photo || settingsObj.image || prev.image,
-          experience: settingsObj.experience || prev.experience,
-          specialties: Array.isArray(settingsObj.specialties) ? settingsObj.specialties : prev.specialties,
-          education: settingsObj.education || prev.education
-        }));
       } else {
-        console.log('Nenhum dado encontrado para veterinarian, usando dados padrão');
+        console.log('Dados do veterinário encontrados:', data);
+        
+        if (data && data.length > 0) {
+          const settingsObj: { [key: string]: any } = {};
+          data.forEach(item => {
+            try {
+              // Tratar valores JSON e strings
+              if (typeof item.value === 'string') {
+                try {
+                  settingsObj[item.key] = JSON.parse(item.value);
+                } catch {
+                  settingsObj[item.key] = item.value;
+                }
+              } else {
+                settingsObj[item.key] = item.value;
+              }
+            } catch (parseError) {
+              console.error('Erro ao processar item:', item, parseError);
+              settingsObj[item.key] = item.value;
+            }
+          });
+
+          console.log('Dados processados do veterinário:', settingsObj);
+
+          // Verificar se existe uma URL de imagem
+          const photoUrl = settingsObj.photo || settingsObj.image;
+          console.log('URL da foto encontrada:', photoUrl);
+
+          setVeterinarianData(prev => ({
+            ...prev,
+            name: settingsObj.name || prev.name,
+            title: settingsObj.title || settingsObj.specialty || prev.title,
+            description: settingsObj.description || prev.description,
+            image: photoUrl || prev.image,
+            experience: settingsObj.experience || prev.experience,
+            specialties: Array.isArray(settingsObj.specialties) ? settingsObj.specialties : prev.specialties,
+            education: settingsObj.education || prev.education
+          }));
+        } else {
+          console.log('Nenhum dado encontrado para veterinarian, usando dados padrão');
+        }
       }
     } catch (error) {
       console.error('Erro ao carregar dados do veterinário:', error);
@@ -110,6 +134,9 @@ const VeterinarianSection = () => {
                     onError={(e) => {
                       console.log('Erro ao carregar imagem:', veterinarianData.image);
                       (e.target as HTMLImageElement).src = '/placeholder.svg';
+                    }}
+                    onLoad={() => {
+                      console.log('Imagem carregada com sucesso:', veterinarianData.image);
                     }}
                   />
                 </div>

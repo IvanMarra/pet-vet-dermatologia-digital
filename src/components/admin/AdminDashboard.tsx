@@ -19,18 +19,24 @@ const AdminDashboard = () => {
   const { toast } = useToast();
   const { logout } = useAuth();
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     try {
-      logout();
+      console.log('Iniciando processo de logout...');
+      
+      // Mostrar toast de confirmação
       toast({
-        title: "Logout realizado",
-        description: "Você foi desconectado com sucesso!",
+        title: "Fazendo logout...",
+        description: "Você está sendo desconectado.",
       });
+      
+      // Executar logout
+      logout();
+      
     } catch (error) {
       console.error('Erro no logout:', error);
       toast({
         title: "Erro",
-        description: "Erro ao fazer logout",
+        description: "Erro ao fazer logout. Tente novamente.",
         variant: "destructive",
       });
     }
@@ -54,8 +60,12 @@ const AdminDashboard = () => {
               >
                 Ver Site
               </Button>
-              <Button variant="outline" onClick={handleLogout}>
-                <LogOut className="h-4 w-4 mr-2" />
+              <Button 
+                variant="outline" 
+                onClick={handleLogout}
+                className="flex items-center gap-2"
+              >
+                <LogOut className="h-4 w-4" />
                 Sair
               </Button>
             </div>

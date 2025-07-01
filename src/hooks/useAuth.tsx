@@ -38,7 +38,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const checkUser = async () => {
     try {
       console.log('Verificando usuário logado...');
-      // Verificar se há um usuário logado no localStorage
       const storedUser = localStorage.getItem('admin_user');
       if (storedUser) {
         const userData = JSON.parse(storedUser);
@@ -59,7 +58,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       console.log('Tentando fazer login com:', email);
       
-      // Usar a função do banco para verificar as credenciais
       const { data, error } = await supabase.rpc('verify_admin_password', {
         p_email: email,
         p_password: password
@@ -73,7 +71,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
 
       if (data && data.length > 0 && data[0].is_valid) {
-        // Buscar os dados completos do usuário
         const { data: adminUser, error: userError } = await supabase
           .from('admin_users')
           .select('*')
@@ -111,11 +108,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const logout = () => {
-    console.log('Fazendo logout...');
+    console.log('Executando logout...');
+    
+    // Limpar estado do usuário
     setUser(null);
+    
+    // Limpar localStorage
     localStorage.removeItem('admin_user');
-    // Força o recarregamento da página para garantir que o estado seja limpo
-    window.location.href = '/admin';
+    
+    // Forçar reload da página para garantir limpeza completa
+    setTimeout(() => {
+      window.location.reload();
+    }, 100);
   };
 
   const isAdmin = user?.is_approved || false;
