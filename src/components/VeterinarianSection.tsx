@@ -10,9 +10,10 @@ const VeterinarianSection = () => {
     title: 'Médica Veterinária',
     description: 'Especialista em clínica geral e cirurgia de pequenos animais. Com mais de 10 anos de experiência, dedica-se ao cuidado integral dos pets com muito amor e profissionalismo.',
     image: '/placeholder.svg',
-    experience: '10+ anos',
-    specialties: ['Clínica Geral', 'Cirurgia', 'Emergências'],
-    education: 'FMVZ-USP'
+    experience: '',
+    specialties: [] as string[],
+    education: '',
+    linkedin: ''
   });
   const [loading, setLoading] = useState(true);
 
@@ -80,17 +81,16 @@ const VeterinarianSection = () => {
 
         console.log('🖼️ URL da foto a ser usada:', photoUrl);
 
-        // Atualizar os dados do veterinário
+        // Atualizar os dados do veterinário com APENAS os dados do banco
         const newData = {
           name: settingsObj.name || 'Dra. Karine Silva',
-          title: settingsObj.specialty || 'Dermatologia Veterinária',
-          description: settingsObj.description || 'Médica veterinária especializada em dermatologia com mais de 10 anos de experiência.',
+          title: settingsObj.specialty || 'Médica Veterinária',
+          description: settingsObj.description || 'Especialista em cuidados veterinários.',
           image: photoUrl,
-          experience: settingsObj.experience || '10+ anos',
-          specialties: Array.isArray(settingsObj.specialties) ? settingsObj.specialties : 
-                      (Array.isArray(settingsObj.education) ? settingsObj.education : ['Dermatologia', 'Clínica Geral']),
-          education: typeof settingsObj.education === 'string' ? settingsObj.education : 
-                    (Array.isArray(settingsObj.education) ? settingsObj.education.join(', ') : 'FMVZ-USP')
+          experience: settingsObj.experience || '', // Não mostrar se não foi cadastrado
+          specialties: settingsObj.specialties || [], // Usar apenas se foi cadastrado
+          education: settingsObj.education || '', // Usar apenas se foi cadastrado
+          linkedin: settingsObj.linkedin || '' // Adicionar LinkedIn
         };
 
         console.log('🚀 Dados finais que serão aplicados:', newData);
@@ -157,32 +157,56 @@ const VeterinarianSection = () => {
                   </div>
 
                   <div className="space-y-4">
-                    <div className="flex items-center space-x-3">
-                      <Award className="h-5 w-5 text-primary" />
-                      <span className="font-medium">Experiência: {veterinarianData.experience}</span>
-                    </div>
+                    {veterinarianData.experience && (
+                      <div className="flex items-center space-x-3">
+                        <Award className="h-5 w-5 text-primary" />
+                        <span className="font-medium">Experiência: {veterinarianData.experience}</span>
+                      </div>
+                    )}
                     
-                    <div className="flex items-center space-x-3">
-                      <Stethoscope className="h-5 w-5 text-primary" />
-                      <span className="font-medium">Formação: {veterinarianData.education}</span>
-                    </div>
+                    {veterinarianData.education && (
+                      <div className="flex items-center space-x-3">
+                        <Stethoscope className="h-5 w-5 text-primary" />
+                        <span className="font-medium">
+                          Formação: {Array.isArray(veterinarianData.education) 
+                            ? veterinarianData.education.join(', ') 
+                            : veterinarianData.education}
+                        </span>
+                      </div>
+                    )}
                     
-                    <div className="flex items-start space-x-3">
-                      <Heart className="h-5 w-5 text-primary mt-1" />
-                      <div>
-                        <span className="font-medium block mb-1">Especialidades:</span>
-                        <div className="flex flex-wrap gap-2">
-                          {veterinarianData.specialties.map((specialty, index) => (
-                            <span
-                              key={index}
-                              className="bg-primary/10 text-primary px-3 py-1 rounded-full text-sm"
-                            >
-                              {specialty}
-                            </span>
-                          ))}
+                    {veterinarianData.specialties && veterinarianData.specialties.length > 0 && (
+                      <div className="flex items-start space-x-3">
+                        <Heart className="h-5 w-5 text-primary mt-1" />
+                        <div>
+                          <span className="font-medium block mb-1">Especialidades:</span>
+                          <div className="flex flex-wrap gap-2">
+                            {veterinarianData.specialties.map((specialty, index) => (
+                              <span
+                                key={index}
+                                className="bg-primary/10 text-primary px-3 py-1 rounded-full text-sm"
+                              >
+                                {specialty}
+                              </span>
+                            ))}
+                          </div>
                         </div>
                       </div>
-                    </div>
+                    )}
+
+                    {veterinarianData.linkedin && (
+                      <div className="flex items-center space-x-3">
+                        <Heart className="h-5 w-5 text-primary" />
+                        <a 
+                          href={veterinarianData.linkedin} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="font-medium text-primary hover:underline"
+                        >
+                          LinkedIn
+                        </a>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>

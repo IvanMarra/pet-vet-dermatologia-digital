@@ -25,9 +25,13 @@ const SiteSettingsTab = () => {
 
   const loadSettings = async () => {
     try {
+      console.log('🔧 Carregando configurações do painel administrativo...');
+      
       const { data } = await supabase
         .from('site_settings')
         .select('*');
+      
+      console.log('📋 Dados brutos recebidos:', data);
       
       if (data) {
         const settingsObj: Settings = {};
@@ -37,12 +41,24 @@ const SiteSettingsTab = () => {
           }
           let parsedValue;
           try {
-            parsedValue = typeof item.value === 'string' ? JSON.parse(item.value) : item.value;
+            // Para strings JSON, fazer parse
+            if (typeof item.value === 'string' && (item.value.startsWith('[') || item.value.startsWith('{'))) {
+              parsedValue = JSON.parse(item.value);
+            } else if (typeof item.value === 'string' && item.value.startsWith('"') && item.value.endsWith('"')) {
+              // Para strings com aspas duplas, remover as aspas
+              parsedValue = item.value.slice(1, -1);
+            } else {
+              parsedValue = item.value;
+            }
           } catch {
             parsedValue = item.value;
           }
           settingsObj[item.section][item.key] = parsedValue;
+          
+          console.log(`🏷️ ${item.section}.${item.key} = ${parsedValue}`);
         });
+        
+        console.log('✅ Configurações processadas:', settingsObj);
         setSettings(settingsObj);
         
         // Count existing slides
@@ -53,7 +69,7 @@ const SiteSettingsTab = () => {
         setSlideCount(Math.max(1, count));
       }
     } catch (error) {
-      console.error('Erro ao carregar configurações:', error);
+      console.error('❌ Erro ao carregar configurações:', error);
     }
   };
 
