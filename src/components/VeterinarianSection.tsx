@@ -34,62 +34,75 @@ const VeterinarianSection = () => {
 
   const loadVeterinarianData = async () => {
     try {
-      console.log('Carregando dados do veterinário...');
+      console.log('🔍 Iniciando carregamento dos dados do veterinário...');
       
       const { data, error } = await supabase
         .from('site_settings')
         .select('*')
         .eq('section', 'veterinarian');
       
+      console.log('📋 Resposta da query:', { data, error });
+      
       if (error) {
-        console.error('Erro ao carregar dados do veterinário:', error);
+        console.error('❌ Erro ao carregar dados do veterinário:', error);
         return;
       }
 
-      console.log('Dados do veterinário encontrados:', data);
-      
       if (data && data.length > 0) {
+        console.log('✅ Dados encontrados:', data.length, 'itens');
+        
         const settingsObj: { [key: string]: any } = {};
         
         // Processar dados do banco
         data.forEach(item => {
+          console.log('🔧 Processando item:', item.key, '=', item.value);
+          
           let value = item.value;
           
           // Se o valor é uma string que parece ser JSON, tentar fazer parse
           if (typeof value === 'string' && (value.startsWith('[') || value.startsWith('{'))) {
             try {
               value = JSON.parse(value);
+              console.log('📝 JSON parsed para', item.key, ':', value);
             } catch {
-              // Se não conseguir fazer parse, manter como string
+              console.log('⚠️ Não foi possível fazer parse do JSON para', item.key);
             }
           }
           
           settingsObj[item.key] = value;
         });
 
-        console.log('Dados processados do veterinário:', settingsObj);
+        console.log('🎯 Objeto final dos dados:', settingsObj);
+
+        // Buscar URL da foto mais recente do bucket
+        const photoUrl = settingsObj.photo || 
+                        'https://goopwdwyvhpoqqerrqbg.supabase.co/storage/v1/object/public/veterinarian-photos/1751336736810-7g5hjycx6f2.jpeg';
+
+        console.log('🖼️ URL da foto a ser usada:', photoUrl);
 
         // Atualizar os dados do veterinário
-        setVeterinarianData(prev => ({
-          ...prev,
-          name: settingsObj.name || prev.name,
-          title: settingsObj.specialty || settingsObj.title || prev.title,
-          description: settingsObj.description || prev.description,
-          image: settingsObj.photo || 
-                 'https://goopwdwyvhpoqqerrqbg.supabase.co/storage/v1/object/public/veterinarian-photos/1751336736810-7g5hjycx6f2.jpeg',
-          experience: settingsObj.experience || prev.experience,
+        const newData = {
+          name: settingsObj.name || 'Dra. Karine Silva',
+          title: settingsObj.specialty || 'Dermatologia Veterinária',
+          description: settingsObj.description || 'Médica veterinária especializada em dermatologia com mais de 10 anos de experiência.',
+          image: photoUrl,
+          experience: settingsObj.experience || '10+ anos',
           specialties: Array.isArray(settingsObj.specialties) ? settingsObj.specialties : 
-                      (settingsObj.education && Array.isArray(settingsObj.education) ? settingsObj.education : prev.specialties),
+                      (Array.isArray(settingsObj.education) ? settingsObj.education : ['Dermatologia', 'Clínica Geral']),
           education: typeof settingsObj.education === 'string' ? settingsObj.education : 
-                    (Array.isArray(settingsObj.education) ? settingsObj.education.join(', ') : prev.education)
-        }));
+                    (Array.isArray(settingsObj.education) ? settingsObj.education.join(', ') : 'FMVZ-USP')
+        };
+
+        console.log('🚀 Dados finais que serão aplicados:', newData);
         
-        console.log('Dados do veterinário atualizados com sucesso');
+        setVeterinarianData(newData);
+        
+        console.log('✅ Dados do veterinário atualizados com sucesso!');
       } else {
-        console.log('Nenhum dado encontrado para veterinarian, usando dados padrão');
+        console.log('❌ Nenhum dado encontrado para veterinarian, usando dados padrão');
       }
     } catch (error) {
-      console.error('Erro ao carregar dados do veterinário:', error);
+      console.error('💥 Erro inesperado ao carregar dados do veterinário:', error);
     } finally {
       setLoading(false);
     }
