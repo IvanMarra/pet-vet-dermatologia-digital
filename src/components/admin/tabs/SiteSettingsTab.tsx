@@ -285,32 +285,185 @@ const SiteSettingsTab = () => {
         </CardHeader>
         <CardContent className="space-y-4">
           <div>
-            <Label>Nome</Label>
-            <Input
-              value={getSetting('veterinarian', 'name')}
-              onChange={(e) => updateSetting('veterinarian', 'name', e.target.value)}
-            />
+            <Label>Título da Seção</Label>
+            <div className="relative">
+              <Input
+                value={getSetting('veterinarian', 'section_title')}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  if (value.length <= 50) {
+                    updateSetting('veterinarian', 'section_title', value);
+                  } else {
+                    toast({
+                      title: "Limite atingido",
+                      description: "Título da seção deve ter no máximo 50 caracteres",
+                      variant: "destructive",
+                    });
+                  }
+                }}
+                placeholder="Ex: Nossa Veterinária"
+                maxLength={50}
+              />
+              <div className="text-right text-xs text-muted-foreground mt-1">
+                {getSetting('veterinarian', 'section_title').length}/50
+              </div>
+            </div>
           </div>
+          
+          <div>
+            <Label>Subtítulo da Seção</Label>
+            <div className="relative">
+              <Textarea
+                value={getSetting('veterinarian', 'section_subtitle')}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  if (value.length <= 200) {
+                    updateSetting('veterinarian', 'section_subtitle', value);
+                  } else {
+                    toast({
+                      title: "Limite atingido",
+                      description: "Subtítulo deve ter no máximo 200 caracteres",
+                      variant: "destructive",
+                    });
+                  }
+                }}
+                placeholder="Descrição breve sobre a seção"
+                rows={2}
+                maxLength={200}
+              />
+              <div className="text-right text-xs text-muted-foreground mt-1">
+                {getSetting('veterinarian', 'section_subtitle').length}/200
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <Label>Nome</Label>
+            <div className="relative">
+              <Input
+                value={getSetting('veterinarian', 'name')}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  if (value.length <= 100) {
+                    updateSetting('veterinarian', 'name', value);
+                  } else {
+                    toast({
+                      title: "Limite atingido",
+                      description: "Nome deve ter no máximo 100 caracteres",
+                      variant: "destructive",
+                    });
+                  }
+                }}
+                maxLength={100}
+              />
+              <div className="text-right text-xs text-muted-foreground mt-1">
+                {getSetting('veterinarian', 'name').length}/100
+              </div>
+            </div>
+          </div>
+          
           <div>
             <Label>Especialidade</Label>
-            <Input
-              value={getSetting('veterinarian', 'specialty')}
-              onChange={(e) => updateSetting('veterinarian', 'specialty', e.target.value)}
-            />
+            <div className="relative">
+              <Input
+                value={getSetting('veterinarian', 'specialty')}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  if (value.length <= 150) {
+                    updateSetting('veterinarian', 'specialty', value);
+                  } else {
+                    toast({
+                      title: "Limite atingido",
+                      description: "Especialidade deve ter no máximo 150 caracteres",
+                      variant: "destructive",
+                    });
+                  }
+                }}
+                maxLength={150}
+              />
+              <div className="text-right text-xs text-muted-foreground mt-1">
+                {getSetting('veterinarian', 'specialty').length}/150
+              </div>
+            </div>
           </div>
+          
+          <div>
+            <Label>Formação</Label>
+            <div className="relative">
+              <Textarea
+                value={getSetting('veterinarian', 'education')}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  if (value.length <= 500) {
+                    updateSetting('veterinarian', 'education', value);
+                  } else {
+                    toast({
+                      title: "Limite atingido",
+                      description: "Formação deve ter no máximo 500 caracteres",
+                      variant: "destructive",
+                    });
+                  }
+                }}
+                placeholder="Formação acadêmica e profissional"
+                rows={3}
+                maxLength={500}
+              />
+              <div className="text-right text-xs text-muted-foreground mt-1">
+                {getSetting('veterinarian', 'education').length}/500
+              </div>
+            </div>
+          </div>
+          
           <div>
             <Label>Descrição</Label>
-            <Textarea
-              value={getSetting('veterinarian', 'description')}
-              onChange={(e) => updateSetting('veterinarian', 'description', e.target.value)}
-            />
+            <div className="relative">
+              <Textarea
+                value={getSetting('veterinarian', 'description')}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  if (value.length <= 800) {
+                    updateSetting('veterinarian', 'description', value);
+                  } else {
+                    toast({
+                      title: "Limite atingido",
+                      description: "Descrição deve ter no máximo 800 caracteres",
+                      variant: "destructive",
+                    });
+                  }
+                }}
+                rows={4}
+                maxLength={800}
+              />
+              <div className="text-right text-xs text-muted-foreground mt-1">
+                {getSetting('veterinarian', 'description').length}/800
+              </div>
+            </div>
           </div>
+          
           <div>
             <Label>LinkedIn</Label>
-            <Input
-              value={getSetting('veterinarian', 'linkedin')}
-              onChange={(e) => updateSetting('veterinarian', 'linkedin', e.target.value)}
-            />
+            <div className="relative">
+              <Input
+                value={getSetting('veterinarian', 'linkedin')}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  if (value.length <= 200) {
+                    updateSetting('veterinarian', 'linkedin', value);
+                  } else {
+                    toast({
+                      title: "Limite atingido",
+                      description: "LinkedIn deve ter no máximo 200 caracteres",
+                      variant: "destructive",
+                    });
+                  }
+                }}
+                placeholder="https://linkedin.com/in/..."
+                maxLength={200}
+              />
+              <div className="text-right text-xs text-muted-foreground mt-1">
+                {getSetting('veterinarian', 'linkedin').length}/200
+              </div>
+            </div>
           </div>
           
           <ImageUpload

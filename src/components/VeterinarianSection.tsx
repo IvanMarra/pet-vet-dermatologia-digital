@@ -13,7 +13,9 @@ const VeterinarianSection = () => {
     experience: '',
     specialties: [] as string[],
     education: '',
-    linkedin: ''
+    linkedin: '',
+    sectionTitle: '',
+    sectionSubtitle: ''
   });
   const [loading, setLoading] = useState(true);
 
@@ -90,7 +92,9 @@ const VeterinarianSection = () => {
           experience: settingsObj.experience || '', // Não mostrar se não foi cadastrado
           specialties: settingsObj.specialties || [], // Usar apenas se foi cadastrado
           education: settingsObj.education || '', // Usar apenas se foi cadastrado
-          linkedin: settingsObj.linkedin || '' // Adicionar LinkedIn
+          linkedin: settingsObj.linkedin || '', // Adicionar LinkedIn
+          sectionTitle: settingsObj.section_title || '',
+          sectionSubtitle: settingsObj.section_subtitle || ''
         };
 
         console.log('🚀 Dados finais que serão aplicados:', newData);
@@ -123,9 +127,11 @@ const VeterinarianSection = () => {
     <section id="veterinaria" className="py-20">
       <div className="container mx-auto px-4">
         <div className="text-center mb-16">
-          <h2 className="text-4xl font-bold mb-4">Nossa Veterinária</h2>
+          <h2 className="text-4xl font-bold mb-4">
+            {veterinarianData.sectionTitle || 'Nossa Veterinária'}
+          </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            Conheça a profissional dedicada que cuida do seu pet com carinho e expertise.
+            {veterinarianData.sectionSubtitle || 'Conheça a profissional dedicada que cuida do seu pet com carinho e expertise.'}
           </p>
         </div>
 
