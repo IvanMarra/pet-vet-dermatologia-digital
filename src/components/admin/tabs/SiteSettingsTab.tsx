@@ -466,15 +466,33 @@ const SiteSettingsTab = () => {
             </div>
           </div>
           
-          <ImageUpload
-            bucket="veterinarian-photos"
-            currentImageUrl={getSetting('veterinarian', 'photo')}
-            onImageUploaded={(url) => updateSetting('veterinarian', 'photo', url)}
-            onImageRemoved={() => updateSetting('veterinarian', 'photo', '')}
-            label="Foto da Dra. Karine"
-            recommendedSize="400x500 pixels (formato retrato)"
-            maxSizeMB={2}
-          />
+          <div className="space-y-2">
+            <ImageUpload
+              bucket="veterinarian-photos"
+              currentImageUrl={getSetting('veterinarian', 'photo')}
+              onImageUploaded={(url) => {
+                console.log('📸 Foto da Dra. Karine enviada:', url);
+                updateSetting('veterinarian', 'photo', url);
+              }}
+              onImageRemoved={() => {
+                console.log('🗑️ Foto da Dra. Karine removida');
+                updateSetting('veterinarian', 'photo', '');
+              }}
+              label="Foto da Dra. Karine"
+              recommendedSize="400x500 pixels (formato retrato)"
+              maxSizeMB={2}
+            />
+            {getSetting('veterinarian', 'photo') && (
+              <div className="text-xs text-muted-foreground">
+                Foto atual: {getSetting('veterinarian', 'photo').substring(0, 50)}...
+              </div>
+            )}
+            {!getSetting('veterinarian', 'photo') && (
+              <div className="text-xs text-orange-600">
+                Nenhuma foto cadastrada ainda
+              </div>
+            )}
+          </div>
         </CardContent>
       </Card>
 
