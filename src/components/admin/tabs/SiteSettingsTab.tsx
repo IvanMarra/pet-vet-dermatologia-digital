@@ -480,14 +480,104 @@ const SiteSettingsTab = () => {
 
       <Card>
         <CardHeader>
+          <CardTitle>Rodapé - Informações da Empresa</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div>
+            <Label>Nome da Empresa</Label>
+            <Input
+              value={getSetting('footer', 'company_name')}
+              onChange={(e) => updateSetting('footer', 'company_name', e.target.value)}
+              placeholder="VetCare"
+            />
+          </div>
+          <div>
+            <Label>Subtítulo da Empresa</Label>
+            <Input
+              value={getSetting('footer', 'company_subtitle')}
+              onChange={(e) => updateSetting('footer', 'company_subtitle', e.target.value)}
+              placeholder="Clínica Veterinária"
+            />
+          </div>
+          <div>
+            <Label>Descrição da Empresa</Label>
+            <Textarea
+              value={getSetting('footer', 'company_description')}
+              onChange={(e) => updateSetting('footer', 'company_description', e.target.value)}
+              placeholder="A primeira clínica veterinária especializada em dermatologia da região."
+              rows={3}
+            />
+          </div>
+          <div>
+            <Label>Copyright</Label>
+            <Input
+              value={getSetting('footer', 'copyright')}
+              onChange={(e) => updateSetting('footer', 'copyright', e.target.value)}
+              placeholder="© 2024 VetCare Clínica Veterinária. Todos os direitos reservados."
+            />
+          </div>
+          <div>
+            <Label>CRMV</Label>
+            <Input
+              value={getSetting('footer', 'crmv')}
+              onChange={(e) => updateSetting('footer', 'crmv', e.target.value)}
+              placeholder="CRMV-SP: 12345"
+            />
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Rodapé - Redes Sociais</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div>
+            <Label>Instagram</Label>
+            <Input
+              value={getSetting('footer', 'instagram_url')}
+              onChange={(e) => updateSetting('footer', 'instagram_url', e.target.value)}
+              placeholder="https://instagram.com/vetcare"
+            />
+          </div>
+          <div>
+            <Label>Facebook</Label>
+            <Input
+              value={getSetting('footer', 'facebook_url')}
+              onChange={(e) => updateSetting('footer', 'facebook_url', e.target.value)}
+              placeholder="https://facebook.com/vetcare"
+            />
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
           <CardTitle>Contato</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div>
-            <Label>Endereço</Label>
+            <Label>Endereço - Rua</Label>
             <Input
-              value={getSetting('contact', 'address')}
-              onChange={(e) => updateSetting('contact', 'address', e.target.value)}
+              value={getSetting('contact', 'street')}
+              onChange={(e) => updateSetting('contact', 'street', e.target.value)}
+              placeholder="Rua das Flores, 123"
+            />
+          </div>
+          <div>
+            <Label>Endereço - Cidade/Estado</Label>
+            <Input
+              value={getSetting('contact', 'city_state')}
+              onChange={(e) => updateSetting('contact', 'city_state', e.target.value)}
+              placeholder="Centro - São Paulo - SP"
+            />
+          </div>
+          <div>
+            <Label>CEP</Label>
+            <Input
+              value={getSetting('contact', 'cep')}
+              onChange={(e) => updateSetting('contact', 'cep', e.target.value)}
+              placeholder="01234-567"
             />
           </div>
           <div>
@@ -495,6 +585,7 @@ const SiteSettingsTab = () => {
             <Input
               value={getSetting('contact', 'phone')}
               onChange={(e) => updateSetting('contact', 'phone', e.target.value)}
+              placeholder="(11) 9999-9999"
             />
           </div>
           <div>
@@ -502,13 +593,31 @@ const SiteSettingsTab = () => {
             <Input
               value={getSetting('contact', 'email')}
               onChange={(e) => updateSetting('contact', 'email', e.target.value)}
+              placeholder="contato@vetcare.com.br"
             />
           </div>
           <div>
-            <Label>Horário de Funcionamento</Label>
-            <Textarea
-              value={getSetting('contact', 'hours')}
-              onChange={(e) => updateSetting('contact', 'hours', e.target.value)}
+            <Label>Horário - Segunda a Sexta</Label>
+            <Input
+              value={getSetting('contact', 'hours_weekdays')}
+              onChange={(e) => updateSetting('contact', 'hours_weekdays', e.target.value)}
+              placeholder="Seg-Sex: 8h às 18h"
+            />
+          </div>
+          <div>
+            <Label>Horário - Sábado</Label>
+            <Input
+              value={getSetting('contact', 'hours_saturday')}
+              onChange={(e) => updateSetting('contact', 'hours_saturday', e.target.value)}
+              placeholder="Sábado: 8h às 14h"
+            />
+          </div>
+          <div>
+            <Label>Emergências</Label>
+            <Input
+              value={getSetting('contact', 'emergency_hours')}
+              onChange={(e) => updateSetting('contact', 'emergency_hours', e.target.value)}
+              placeholder="Emergências 24h"
             />
           </div>
         </CardContent>

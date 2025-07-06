@@ -77,9 +77,18 @@ const VeterinarianSection = () => {
 
         console.log('🎯 Objeto final dos dados:', settingsObj);
 
-        // Buscar URL da foto mais recente do bucket
-        const photoUrl = settingsObj.photo || 
-                        'https://goopwdwyvhpoqqerrqbg.supabase.co/storage/v1/object/public/veterinarian-photos/1751336736810-7g5hjycx6f2.jpeg';
+        // Processar URL da foto
+        let photoUrl = settingsObj.photo;
+        
+        // Verificar se photo é uma string válida ou se precisa ser processada
+        if (typeof photoUrl === 'string' && photoUrl.startsWith('"') && photoUrl.endsWith('"')) {
+          photoUrl = photoUrl.slice(1, -1);
+        }
+        
+        // Se não tiver foto ou for placeholder, usar a última foto cadastrada
+        if (!photoUrl || photoUrl === '/placeholder.svg') {
+          photoUrl = 'https://goopwdwyvhpoqqerrqbg.supabase.co/storage/v1/object/public/veterinarian-photos/1751336736810-7g5hjycx6f2.jpeg';
+        }
 
         console.log('🖼️ URL da foto a ser usada:', photoUrl);
 
