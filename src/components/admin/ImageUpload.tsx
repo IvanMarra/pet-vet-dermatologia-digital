@@ -124,21 +124,41 @@ const ImageUpload = ({
       )}
       
       {currentImageUrl ? (
-        <div className="relative">
-          <img
-            src={currentImageUrl}
-            alt="Preview"
-            className="w-full max-w-xs h-32 object-cover rounded-lg border"
-          />
-          <Button
-            type="button"
-            variant="destructive"
-            size="sm"
-            className="absolute top-2 right-2"
-            onClick={removeImage}
-          >
-            <X className="h-4 w-4" />
-          </Button>
+        <div className="space-y-4">
+          <div className="relative inline-block">
+            <img
+              src={currentImageUrl}
+              alt="Imagem atual"
+              className="w-full max-w-md h-48 object-cover rounded-lg border shadow-sm"
+              onError={(e) => {
+                console.error('Erro ao carregar imagem:', currentImageUrl);
+                (e.target as HTMLImageElement).src = '/placeholder.svg';
+              }}
+            />
+            <Button
+              type="button"
+              variant="destructive"
+              size="sm"
+              className="absolute top-2 right-2 shadow-md"
+              onClick={removeImage}
+              title="Remover imagem"
+            >
+              <X className="h-4 w-4" />
+            </Button>
+          </div>
+          
+          <div className="flex gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => document.getElementById(`file-input-${bucket}`)?.click()}
+              disabled={uploading}
+              className="flex-1"
+            >
+              <Upload className="h-4 w-4 mr-2" />
+              {uploading ? 'Enviando...' : 'Substituir Imagem'}
+            </Button>
+          </div>
         </div>
       ) : (
         <div
