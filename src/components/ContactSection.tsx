@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -24,8 +24,63 @@ const ContactSection = () => {
     phone: '',
     message: ''
   });
+  const [contactData, setContactData] = useState({
+    address: 'Rua das Flores, 123\nCentro, São Paulo - SP\nCEP: 01234-567',
+    phone: '(11) 9999-9999',
+    email: 'contato@clinicaveterinaria.com',
+    hours: 'Segunda a Sexta: 8h às 18h\nSábado: 8h às 12h\nEmergências: 24h'
+  });
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
+
+  useEffect(() => {
+    loadContactData();
+  }, []);
+
+  const loadContactData = async () => {
+    try {
+      console.log('🔍 Carregando dados de contato...');
+      
+      const { data, error } = await supabase
+        .from('site_settings')
+        .select('*')
+        .eq('section', 'contact');
+      
+      if (error) {
+        console.error('❌ Erro ao carregar dados de contato:', error);
+        return;
+      }
+
+      console.log('📋 Dados de contato encontrados:', data);
+      
+      if (data && data.length > 0) {
+        const settingsObj: { [key: string]: any } = {};
+        
+        data.forEach(item => {
+          let value = item.value;
+          
+          // Processar strings com quebras de linha
+          if (typeof value === 'string' && value.includes('<br>')) {
+            value = value.replace(/<br>/g, '\n');
+          }
+          
+          settingsObj[item.key] = value;
+        });
+
+        console.log('✅ Dados de contato processados:', settingsObj);
+
+        setContactData(prev => ({
+          ...prev,
+          address: settingsObj.address || prev.address,
+          phone: settingsObj.phone || prev.phone,
+          email: settingsObj.email || prev.email,
+          hours: settingsObj.hours || prev.hours
+        }));
+      }
+    } catch (error) {
+      console.error('💥 Erro inesperado ao carregar contato:', error);
+    }
+  };
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -107,10 +162,8 @@ const ContactSection = () => {
                   <MapPin className="h-6 w-6 text-primary" />
                   <div>
                     <h3 className="font-semibold">Endereço</h3>
-                    <p className="text-muted-foreground">
-                      Rua das Flores, 123<br />
-                      Centro, São Paulo - SP<br />
-                      CEP: 01234-567
+                    <p className="text-muted-foreground whitespace-pre-line">
+                      {contactData.address}
                     </p>
                   </div>
                 </div>
@@ -119,7 +172,7 @@ const ContactSection = () => {
                   <Phone className="h-6 w-6 text-primary" />
                   <div>
                     <h3 className="font-semibold">Telefone</h3>
-                    <p className="text-muted-foreground">(11) 9999-9999</p>
+                    <p className="text-muted-foreground">{contactData.phone}</p>
                   </div>
                 </div>
 
@@ -127,7 +180,7 @@ const ContactSection = () => {
                   <Mail className="h-6 w-6 text-primary" />
                   <div>
                     <h3 className="font-semibold">E-mail</h3>
-                    <p className="text-muted-foreground">contato@clinicaveterinaria.com</p>
+                    <p className="text-muted-foreground">{contactData.email}</p>
                   </div>
                 </div>
 
@@ -135,10 +188,8 @@ const ContactSection = () => {
                   <Clock className="h-6 w-6 text-primary" />
                   <div>
                     <h3 className="font-semibold">Horário de Funcionamento</h3>
-                    <p className="text-muted-foreground">
-                      Segunda a Sexta: 8h às 18h<br />
-                      Sábado: 8h às 12h<br />
-                      Emergências: 24h
+                    <p className="text-muted-foreground whitespace-pre-line">
+                      {contactData.hours}
                     </p>
                   </div>
                 </div>

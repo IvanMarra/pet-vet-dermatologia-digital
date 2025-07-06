@@ -2,18 +2,43 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Heart, Menu, X, Phone, MapPin } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [contactData, setContactData] = useState({
+    phone: '(11) 9999-9999'
+  });
 
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 50);
     };
     window.addEventListener('scroll', handleScroll);
+    
+    // Carregar dados de contato
+    loadContactData();
+    
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  const loadContactData = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('site_settings')
+        .select('*')
+        .eq('section', 'contact')
+        .eq('key', 'phone')
+        .single();
+      
+      if (!error && data) {
+        setContactData({ phone: String(data.value) });
+      }
+    } catch (error) {
+      console.log('Erro ao carregar telefone do header:', error);
+    }
+  };
 
   const scrollToSection = (sectionId: string) => {
     const element = document.getElementById(sectionId);
@@ -42,7 +67,7 @@ const Header = () => {
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2">
               <Phone className="h-4 w-4" />
-              <span>(11) 9999-9999</span>
+              <span>{contactData.phone}</span>
             </div>
             <div className="hidden md:flex items-center gap-2">
               <MapPin className="h-4 w-4" />
