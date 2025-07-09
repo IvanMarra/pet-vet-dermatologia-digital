@@ -85,13 +85,14 @@ export const useVeterinarianData = () => {
         }
         
         // Garantir que a URL é válida e não está vazia
-        if (!photoUrl || photoUrl === '""' || photoUrl === 'null' || photoUrl === 'undefined') {
+        if (!photoUrl || photoUrl === '""' || photoUrl === 'null' || photoUrl === 'undefined' || photoUrl === '') {
           photoUrl = '';
+          console.log('🚫 URL da foto está vazia ou inválida, usando placeholder');
+        } else {
+          console.log('🖼️ URL da foto processada:', photoUrl);
+          console.log('🔍 Tipo da URL:', typeof photoUrl);
+          console.log('🔍 Comprimento da URL:', photoUrl.length);
         }
-        
-        console.log('🖼️ URL da foto processada:', photoUrl);
-        console.log('🔍 Tipo da URL:', typeof photoUrl);
-        console.log('🔍 Comprimento da URL:', photoUrl.length);
 
         // Atualizar os dados do veterinário com APENAS os dados do banco
         const newData = {
