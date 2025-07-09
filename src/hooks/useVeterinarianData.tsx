@@ -74,6 +74,8 @@ export const useVeterinarianData = () => {
         // Processar URL da foto - garantir que seja uma string limpa
         let photoUrl = settingsObj.photo || '';
         
+        console.log('🔍 Valor bruto da foto:', photoUrl, 'Tipo:', typeof photoUrl);
+        
         // Limpar completamente qualquer formatação de JSON
         if (typeof photoUrl === 'string') {
           // Remove aspas duplas do início e fim
@@ -85,13 +87,14 @@ export const useVeterinarianData = () => {
         }
         
         // Garantir que a URL é válida e não está vazia
-        if (!photoUrl || photoUrl === '""' || photoUrl === 'null' || photoUrl === 'undefined' || photoUrl === '') {
+        if (!photoUrl || photoUrl === '""' || photoUrl === 'null' || photoUrl === 'undefined' || photoUrl === '' || photoUrl === '{}') {
           photoUrl = '';
           console.log('🚫 URL da foto está vazia ou inválida, usando placeholder');
+        } else if (!photoUrl.startsWith('http')) {
+          photoUrl = '';
+          console.log('🚫 URL da foto não é válida (não começa com http), usando placeholder');
         } else {
-          console.log('🖼️ URL da foto processada:', photoUrl);
-          console.log('🔍 Tipo da URL:', typeof photoUrl);
-          console.log('🔍 Comprimento da URL:', photoUrl.length);
+          console.log('✅ URL da foto válida encontrada:', photoUrl);
         }
 
         // Atualizar os dados do veterinário com APENAS os dados do banco

@@ -118,9 +118,19 @@ const SiteSettingsTab = () => {
   const getSetting = (section: string, key: string, defaultValue: string = '') => {
     let value = settings[section]?.[key] || defaultValue;
     
+    console.log(`🔍 getSetting(${section}, ${key}):`, value, 'Tipo:', typeof value);
+    
     // Se é a URL da foto, processar corretamente
-    if (key === 'photo' && typeof value === 'string' && value.startsWith('"') && value.endsWith('"')) {
-      value = value.slice(1, -1);
+    if (key === 'photo' && typeof value === 'string') {
+      // Remove aspas duplas se existirem
+      if (value.startsWith('"') && value.endsWith('"')) {
+        value = value.slice(1, -1);
+      }
+      // Se está vazio ou é inválido, retornar string vazia
+      if (!value || value === '""' || value === 'null' || !value.startsWith('http')) {
+        value = '';
+      }
+      console.log(`📸 Foto processada:`, value);
     }
     
     return value;
