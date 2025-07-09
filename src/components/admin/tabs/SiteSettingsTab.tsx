@@ -76,17 +76,72 @@ const SiteSettingsTab = () => {
   const saveSettings = async () => {
     setLoading(true);
     try {
+      console.log('💾 Iniciando salvamento das configurações...');
+      
       for (const section in settings) {
         for (const key in settings[section]) {
-          await supabase
+          console.log(`💾 Salvando ${section}.${key}:`, settings[section][key]);
+          
+          // Preparar o valor para salvamento
+          let valueToSave = settings[section][key];
+          
+          // Se for string simples, adicionar aspas duplas
+          if (typeof valueToSave === 'string' && 
+              !valueToSave.startsWith('"') && 
+              !valueToSave.startsWith('[') && 
+              !valueToSave.startsWith('{')) {
+            valueToSave = `"${valueToSave}"`;
+          } else if (typeof valueToSave === 'object') {
+            valueToSave = JSON.stringify(valueToSave);
+          }
+          
+          console.log(`💾 Valor final para ${section}.${key}:`, valueToSave);
+          
+          // Verificar se o registro já existe
+          const { data: existing } = await supabase
             .from('site_settings')
-            .upsert({
-              section,
-              key,
-              value: JSON.stringify(settings[section][key])
-            });
+            .select('id')
+            .eq('section', section)
+            .eq('key', key)
+            .single();
+          
+          if (existing) {
+            // Atualizar registro existente
+            const { error } = await supabase
+              .from('site_settings')
+              .update({ 
+                value: valueToSave,
+                updated_at: new Date().toISOString()
+              })
+              .eq('section', section)
+              .eq('key', key);
+              
+            if (error) {
+              console.error(`❌ Erro ao atualizar ${section}.${key}:`, error);
+              throw error;
+            }
+            console.log(`✅ Atualizado ${section}.${key}`);
+          } else {
+            // Inserir novo registro
+            const { error } = await supabase
+              .from('site_settings')
+              .insert({
+                section,
+                key,
+                value: valueToSave
+              });
+              
+            if (error) {
+              console.error(`❌ Erro ao inserir ${section}.${key}:`, error);
+              throw error;
+            }
+            console.log(`✅ Inserido ${section}.${key}`);
+          }
         }
       }
+      
+      console.log('✅ Todas as configurações foram salvas!');
+      
       toast({
         title: "Sucesso",
         description: "Configurações salvas com sucesso!",
@@ -101,7 +156,7 @@ const SiteSettingsTab = () => {
         loadSettings();
       }, 500);
     } catch (error) {
-      console.error('Erro ao salvar configurações:', error);
+      console.error('❌ Erro ao salvar configurações:', error);
       toast({
         title: "Erro",
         description: "Erro ao salvar configurações",
