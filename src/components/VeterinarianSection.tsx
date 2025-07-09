@@ -85,8 +85,20 @@ const VeterinarianSection = () => {
           photoUrl = photoUrl.slice(1, -1);
         }
         
-        console.log('🖼️ URL da foto processada:', photoUrl);
-
+        // Corrigir URLs antigas com domínio incorreto
+        if (typeof photoUrl === 'string' && photoUrl.includes('goopwdwyvhpoqqerrqbg.supabase.co')) {
+          const fileName = photoUrl.split('/').pop();
+          const bucketName = photoUrl.includes('veterinarian-photos') ? 'veterinarian-photos' : 'site-images';
+          
+          // Gerar nova URL com o domínio correto
+          const { data: { publicUrl } } = supabase.storage
+            .from(bucketName)
+            .getPublicUrl(fileName || '');
+          
+          photoUrl = publicUrl;
+          console.log('🔧 URL corrigida de:', settingsObj.photo, 'para:', photoUrl);
+        }
+        
         console.log('🖼️ URL da foto a ser usada:', photoUrl);
 
         // Atualizar os dados do veterinário com APENAS os dados do banco

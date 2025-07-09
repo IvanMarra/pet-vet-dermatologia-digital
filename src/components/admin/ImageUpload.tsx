@@ -59,11 +59,12 @@ const ImageUpload = ({
         throw error;
       }
 
-      // Obter URL pública
+      // Obter URL pública correta
       const { data: { publicUrl } } = supabase.storage
         .from(bucket)
         .getPublicUrl(fileName);
 
+      console.log('📸 URL da imagem gerada:', publicUrl);
       onImageUploaded(publicUrl);
       
       toast({
