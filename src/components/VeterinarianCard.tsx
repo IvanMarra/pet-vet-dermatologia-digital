@@ -28,21 +28,22 @@ const VeterinarianCard: React.FC<VeterinarianCardProps> = ({
       <CardContent className="p-0">
         <div className="grid md:grid-cols-2 gap-0">
           <div className="aspect-square md:aspect-auto">
-            {image ? (
+            {image && image.trim() !== '' ? (
               <img
                 src={image}
                 alt={name}
                 className="w-full h-full object-cover"
                 onError={(e) => {
-                  console.log('Erro ao carregar imagem:', image);
+                  console.error('❌ Erro ao carregar imagem:', image);
+                  console.error('❌ Evento de erro:', e);
                 }}
                 onLoad={() => {
-                  console.log('Imagem carregada com sucesso:', image);
+                  console.log('✅ Imagem carregada com sucesso:', image);
                 }}
               />
             ) : (
               <div className="w-full h-full bg-muted flex items-center justify-center">
-                <span className="text-muted-foreground">Sem foto</span>
+                <span className="text-muted-foreground">Nenhuma foto disponível</span>
               </div>
             )}
           </div>

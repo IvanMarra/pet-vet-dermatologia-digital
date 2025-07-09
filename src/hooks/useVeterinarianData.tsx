@@ -71,15 +71,20 @@ export const useVeterinarianData = () => {
 
         console.log('🎯 Objeto final dos dados:', settingsObj);
 
-        // Processar URL da foto
-        let photoUrl = settingsObj.photo;
+        // Processar URL da foto - garantir que seja uma string válida
+        let photoUrl = settingsObj.photo || '';
         
-        // Verificar se photo é uma string válida ou se precisa ser processada
+        // Se a URL vem com aspas duplas, remover
         if (typeof photoUrl === 'string' && photoUrl.startsWith('"') && photoUrl.endsWith('"')) {
           photoUrl = photoUrl.slice(1, -1);
         }
         
-        console.log('🖼️ URL da foto a ser usada:', photoUrl);
+        // Garantir que a URL é válida e não está vazia
+        if (!photoUrl || photoUrl === '""' || photoUrl === 'null') {
+          photoUrl = '';
+        }
+        
+        console.log('🖼️ URL da foto final:', photoUrl);
 
         // Atualizar os dados do veterinário com APENAS os dados do banco
         const newData = {
