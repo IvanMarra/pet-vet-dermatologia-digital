@@ -28,22 +28,27 @@ const VeterinarianCard: React.FC<VeterinarianCardProps> = ({
       <CardContent className="p-0">
         <div className="grid md:grid-cols-2 gap-0">
           <div className="aspect-square md:aspect-auto">
-            {image && image.trim() !== '' ? (
+            {image && image.trim() !== '' && image !== '""' ? (
               <img
                 src={image}
                 alt={name}
                 className="w-full h-full object-cover"
                 onError={(e) => {
                   console.error('❌ Erro ao carregar imagem:', image);
-                  console.error('❌ Evento de erro:', e);
+                  console.error('❌ A imagem não existe no storage');
                 }}
                 onLoad={() => {
                   console.log('✅ Imagem carregada com sucesso:', image);
                 }}
               />
             ) : (
-              <div className="w-full h-full bg-muted flex items-center justify-center">
-                <span className="text-muted-foreground">Nenhuma foto disponível</span>
+              <div className="w-full h-full bg-gradient-to-br from-primary/10 to-primary/5 flex items-center justify-center">
+                <div className="text-center p-8">
+                  <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-primary/20 flex items-center justify-center">
+                    <span className="text-2xl">👩‍⚕️</span>
+                  </div>
+                  <p className="text-muted-foreground font-medium">Foto em breve</p>
+                </div>
               </div>
             )}
           </div>
