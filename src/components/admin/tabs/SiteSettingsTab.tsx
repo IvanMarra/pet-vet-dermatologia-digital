@@ -116,7 +116,14 @@ const SiteSettingsTab = () => {
   };
 
   const getSetting = (section: string, key: string, defaultValue: string = '') => {
-    return settings[section]?.[key] || defaultValue;
+    let value = settings[section]?.[key] || defaultValue;
+    
+    // Se é a URL da foto, processar corretamente
+    if (key === 'photo' && typeof value === 'string' && value.startsWith('"') && value.endsWith('"')) {
+      value = value.slice(1, -1);
+    }
+    
+    return value;
   };
 
   const addSlide = () => {
