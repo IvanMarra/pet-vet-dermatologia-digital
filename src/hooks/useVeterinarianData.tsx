@@ -131,14 +131,22 @@ export const useVeterinarianData = () => {
     
     // Listen for settings updates
     const handleSettingsUpdate = () => {
-      console.log('Configurações atualizadas, recarregando dados do veterinário...');
+      console.log('🔄 Configurações atualizadas, recarregando dados do veterinário...');
+      loadVeterinarianData();
+    };
+    
+    // Listen for manual refresh
+    const handleManualRefresh = () => {
+      console.log('🔄 Refresh manual solicitado, recarregando dados...');
       loadVeterinarianData();
     };
     
     window.addEventListener('settingsUpdated', handleSettingsUpdate);
+    window.addEventListener('forceRefresh', handleManualRefresh);
     
     return () => {
       window.removeEventListener('settingsUpdated', handleSettingsUpdate);
+      window.removeEventListener('forceRefresh', handleManualRefresh);
     };
   }, []);
 

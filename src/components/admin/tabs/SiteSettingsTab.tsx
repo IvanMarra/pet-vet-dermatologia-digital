@@ -94,6 +94,12 @@ const SiteSettingsTab = () => {
       
       // Trigger a reload of settings in other components
       window.dispatchEvent(new CustomEvent('settingsUpdated'));
+      window.dispatchEvent(new CustomEvent('forceRefresh'));
+      
+      // Force reload of this component's data
+      setTimeout(() => {
+        loadSettings();
+      }, 500);
     } catch (error) {
       console.error('Erro ao salvar configurações:', error);
       toast({
@@ -658,7 +664,17 @@ const SiteSettingsTab = () => {
         </CardContent>
       </Card>
 
-      <div className="flex justify-end">
+      <div className="flex justify-between">
+        <Button 
+          onClick={() => {
+            console.log('🔄 Forçando atualização manual...');
+            window.dispatchEvent(new CustomEvent('forceRefresh'));
+            loadSettings();
+          }} 
+          variant="outline"
+        >
+          Atualizar Dados
+        </Button>
         <Button onClick={saveSettings} disabled={loading}>
           {loading ? 'Salvando...' : 'Salvar Configurações'}
         </Button>
