@@ -9,7 +9,7 @@ const VeterinarianSection = () => {
     name: 'Dra. Karine Silva',
     title: 'Médica Veterinária',
     description: 'Especialista em clínica geral e cirurgia de pequenos animais. Com mais de 10 anos de experiência, dedica-se ao cuidado integral dos pets com muito amor e profissionalismo.',
-    image: '/placeholder.svg',
+    image: '',
     experience: '',
     specialties: [] as string[],
     education: '',
@@ -144,18 +144,23 @@ const VeterinarianSection = () => {
             <CardContent className="p-0">
               <div className="grid md:grid-cols-2 gap-0">
                 <div className="aspect-square md:aspect-auto">
-                  <img
-                    src={veterinarianData.image}
-                    alt={veterinarianData.name}
-                    className="w-full h-full object-cover"
-                    onError={(e) => {
-                      console.log('Erro ao carregar imagem:', veterinarianData.image);
-                      (e.target as HTMLImageElement).src = '/placeholder.svg';
-                    }}
-                    onLoad={() => {
-                      console.log('Imagem carregada com sucesso:', veterinarianData.image);
-                    }}
-                  />
+                   {veterinarianData.image ? (
+                     <img
+                       src={veterinarianData.image}
+                       alt={veterinarianData.name}
+                       className="w-full h-full object-cover"
+                       onError={(e) => {
+                         console.log('Erro ao carregar imagem:', veterinarianData.image);
+                       }}
+                       onLoad={() => {
+                         console.log('Imagem carregada com sucesso:', veterinarianData.image);
+                       }}
+                     />
+                   ) : (
+                     <div className="w-full h-full bg-muted flex items-center justify-center">
+                       <span className="text-muted-foreground">Sem foto</span>
+                     </div>
+                   )}
                 </div>
                 <div className="p-8 md:p-12 flex flex-col justify-center">
                   <div className="mb-6">
