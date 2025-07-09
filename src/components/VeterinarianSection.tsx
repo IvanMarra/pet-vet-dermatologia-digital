@@ -85,10 +85,7 @@ const VeterinarianSection = () => {
           photoUrl = photoUrl.slice(1, -1);
         }
         
-        // Se não tiver foto ou for placeholder, usar a última foto cadastrada
-        if (!photoUrl || photoUrl === '/placeholder.svg') {
-          photoUrl = 'https://goopwdwyvhpoqqerrqbg.supabase.co/storage/v1/object/public/veterinarian-photos/1751336736810-7g5hjycx6f2.jpeg';
-        }
+        console.log('🖼️ URL da foto processada:', photoUrl);
 
         console.log('🖼️ URL da foto a ser usada:', photoUrl);
 

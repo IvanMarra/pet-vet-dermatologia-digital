@@ -69,13 +69,39 @@ const ContactSection = () => {
 
         console.log('✅ Dados de contato processados:', settingsObj);
 
-        setContactData(prev => ({
-          ...prev,
-          address: settingsObj.address || prev.address,
-          phone: settingsObj.phone || prev.phone,
-          email: settingsObj.email || prev.email,
-          hours: settingsObj.hours || prev.hours
-        }));
+        setContactData(prev => {
+          // Processar endereço completo ou campos separados
+          let fullAddress = prev.address;
+          if (settingsObj.address) {
+            fullAddress = settingsObj.address;
+          } else if (settingsObj.street || settingsObj.city_state || settingsObj.cep) {
+            const addressParts = [];
+            if (settingsObj.street) addressParts.push(settingsObj.street);
+            if (settingsObj.city_state) addressParts.push(settingsObj.city_state);
+            if (settingsObj.cep) addressParts.push(`CEP: ${settingsObj.cep}`);
+            fullAddress = addressParts.join('\n');
+          }
+
+          // Processar horários
+          let fullHours = prev.hours;
+          if (settingsObj.hours) {
+            fullHours = settingsObj.hours;
+          } else if (settingsObj.hours_weekdays || settingsObj.hours_saturday || settingsObj.emergency_hours) {
+            const hoursParts = [];
+            if (settingsObj.hours_weekdays) hoursParts.push(settingsObj.hours_weekdays);
+            if (settingsObj.hours_saturday) hoursParts.push(settingsObj.hours_saturday);
+            if (settingsObj.emergency_hours) hoursParts.push(settingsObj.emergency_hours);
+            fullHours = hoursParts.join('\n');
+          }
+
+          return {
+            ...prev,
+            address: fullAddress,
+            phone: settingsObj.phone || prev.phone,
+            email: settingsObj.email || prev.email,
+            hours: fullHours
+          };
+        });
       }
     } catch (error) {
       console.error('💥 Erro inesperado ao carregar contato:', error);
