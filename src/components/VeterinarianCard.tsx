@@ -23,16 +23,23 @@ const VeterinarianCard: React.FC<VeterinarianCardProps> = ({
   education,
   linkedin
 }) => {
+  // Debug: log da imagem recebida
+  React.useEffect(() => {
+    console.log('🔍 VeterinarianCard - Imagem recebida:', image);
+    console.log('🔍 VeterinarianCard - Tipo da imagem:', typeof image);
+    console.log('🔍 VeterinarianCard - Length da imagem:', image?.length);
+  }, [image]);
   return (
     <Card className="overflow-hidden">
       <CardContent className="p-0">
         <div className="grid md:grid-cols-2 gap-0">
           <div className="aspect-square md:aspect-auto">
-            {image && image.trim() !== '' && image !== '""' ? (
+            {image && image.trim() !== '' && image !== '""' && image !== 'null' && image !== 'undefined' ? (
               <img
                 src={image}
                 alt={name}
                 className="w-full h-full object-cover"
+                key={image} // Force re-render when image changes
                 onError={(e) => {
                   console.error('❌ Erro ao carregar imagem:', image);
                   console.error('❌ A imagem não existe no storage');
