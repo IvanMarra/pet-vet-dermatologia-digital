@@ -85,18 +85,32 @@ const VeterinarianSection = () => {
           photoUrl = photoUrl.slice(1, -1);
         }
         
-        // Corrigir URLs antigas com domínio incorreto
-        if (typeof photoUrl === 'string' && photoUrl.includes('goopwdwyvhpoqqerrqbg.supabase.co')) {
+        // Corrigir URLs antigas com domínio incorreto ou regenerar se necessário
+        if (typeof photoUrl === 'string' && photoUrl && !photoUrl.includes('05ecb38f-4591-431f-9739-9a253581126e')) {
+          // Se a URL tem um domínio antigo, extrair apenas o nome do arquivo
           const fileName = photoUrl.split('/').pop();
-          const bucketName = photoUrl.includes('veterinarian-photos') ? 'veterinarian-photos' : 'site-images';
           
-          // Gerar nova URL com o domínio correto
-          const { data: { publicUrl } } = supabase.storage
-            .from(bucketName)
-            .getPublicUrl(fileName || '');
-          
-          photoUrl = publicUrl;
-          console.log('🔧 URL corrigida de:', settingsObj.photo, 'para:', photoUrl);
+          if (fileName) {
+            // Gerar nova URL com o domínio correto
+            const { data: { publicUrl } } = supabase.storage
+              .from('veterinarian-photos')
+              .getPublicUrl(fileName);
+            
+            photoUrl = publicUrl;
+            console.log('🔧 URL corrigida de:', settingsObj.photo, 'para:', photoUrl);
+            
+            // Atualizar a URL no banco de dados automaticamente
+            try {
+              await supabase
+                .from('site_settings')
+                .update({ value: JSON.stringify(photoUrl) })
+                .eq('section', 'veterinarian')
+                .eq('key', 'photo');
+              console.log('💾 URL atualizada no banco de dados');
+            } catch (error) {
+              console.error('❌ Erro ao atualizar URL no banco:', error);
+            }
+          }
         }
         
         console.log('🖼️ URL da foto a ser usada:', photoUrl);
