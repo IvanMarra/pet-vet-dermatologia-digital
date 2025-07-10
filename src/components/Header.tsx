@@ -10,6 +10,12 @@ const Header = () => {
   const [contactData, setContactData] = useState({
     phone: '(11) 9999-9999'
   });
+  
+  const [logoData, setLogoData] = useState({
+    text: 'VetCare',
+    subtitle: 'Clínica Veterinária',
+    image_url: ''
+  });
 
   useEffect(() => {
     const handleScroll = () => {
@@ -17,8 +23,9 @@ const Header = () => {
     };
     window.addEventListener('scroll', handleScroll);
     
-    // Carregar dados de contato
+    // Carregar dados de contato e logo
     loadContactData();
+    loadLogoData();
     
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
@@ -37,6 +44,31 @@ const Header = () => {
       }
     } catch (error) {
       console.log('Erro ao carregar telefone do header:', error);
+    }
+  };
+
+  const loadLogoData = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('site_settings')
+        .select('*')
+        .eq('section', 'logo');
+      
+      if (!error && data) {
+        const logoSettings = data.reduce((acc, item) => {
+          acc[item.key] = typeof item.value === 'string' ? 
+            item.value.replace(/^"|"$/g, '') : item.value;
+          return acc;
+        }, {} as Record<string, any>);
+        
+        setLogoData({
+          text: logoSettings.text || 'VetCare',
+          subtitle: logoSettings.subtitle || 'Clínica Veterinária',
+          image_url: logoSettings.image_url || ''
+        });
+      }
+    } catch (error) {
+      console.log('Erro ao carregar dados da logo:', error);
     }
   };
 
@@ -85,12 +117,28 @@ const Header = () => {
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
             <div className="flex items-center gap-2">
-              <div className="bg-primary rounded-full p-2">
-                <Heart className="h-6 w-6 text-primary-foreground" />
-              </div>
+              {logoData.image_url ? (
+                <img 
+                  src={logoData.image_url} 
+                  alt="Logo" 
+                  className="h-10 w-10 object-contain rounded-full"
+                  onError={(e) => {
+                    // Fallback para o ícone padrão se a imagem falhar
+                    e.currentTarget.style.display = 'none';
+                    const nextElement = e.currentTarget.nextElementSibling as HTMLElement;
+                    if (nextElement) {
+                      nextElement.style.display = 'block';
+                    }
+                  }}
+                />
+              ) : (
+                <div className="bg-primary rounded-full p-2">
+                  <Heart className="h-6 w-6 text-primary-foreground" />
+                </div>
+              )}
               <div>
-                <h1 className="text-xl font-bold text-primary">VetCare</h1>
-                <p className="text-xs text-muted-foreground">Clínica Veterinária</p>
+                <h1 className="text-xl font-bold text-primary">{logoData.text}</h1>
+                <p className="text-xs text-muted-foreground">{logoData.subtitle}</p>
               </div>
             </div>
 

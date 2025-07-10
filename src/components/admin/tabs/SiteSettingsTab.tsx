@@ -579,6 +579,46 @@ const SiteSettingsTab = () => {
           <CardTitle>Rodapé - Informações da Empresa</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
+          {/* Seção Logo */}
+          <div className="border-b pb-4 mb-4">
+            <h4 className="font-semibold mb-3">Configurações da Logo</h4>
+            <div className="space-y-4">
+              <div>
+                <Label>Nome/Texto da Logo</Label>
+                <Input
+                  value={getSetting('logo', 'text')}
+                  onChange={(e) => updateSetting('logo', 'text', e.target.value)}
+                  placeholder="VetCare"
+                />
+                <p className="text-sm text-muted-foreground mt-1">
+                  Texto que aparecerá como logo principal
+                </p>
+              </div>
+              <div>
+                <Label>Subtítulo da Logo</Label>
+                <Input
+                  value={getSetting('logo', 'subtitle')}
+                  onChange={(e) => updateSetting('logo', 'subtitle', e.target.value)}
+                  placeholder="Clínica Veterinária"
+                />
+                <p className="text-sm text-muted-foreground mt-1">
+                  Texto que aparecerá abaixo da logo
+                </p>
+              </div>
+              <div>
+                <Label>URL da Imagem da Logo (opcional)</Label>
+                <Input
+                  value={getSetting('logo', 'image_url')}
+                  onChange={(e) => updateSetting('logo', 'image_url', e.target.value)}
+                  placeholder="https://exemplo.com/logo.png"
+                />
+                <p className="text-sm text-muted-foreground mt-1">
+                  Se preenchida, será usada no lugar do ícone padrão
+                </p>
+              </div>
+            </div>
+          </div>
+          
           <div>
             <Label>Nome da Empresa</Label>
             <Input
