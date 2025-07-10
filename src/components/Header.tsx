@@ -14,7 +14,9 @@ const Header = () => {
   const [logoData, setLogoData] = useState({
     text: 'VetCare',
     subtitle: 'Clínica Veterinária',
-    image_url: ''
+    imageUrl: '',
+    linkUrl: '',
+    altText: 'Logo da Clínica Veterinária'
   });
 
   useEffect(() => {
@@ -52,7 +54,7 @@ const Header = () => {
       const { data, error } = await supabase
         .from('site_settings')
         .select('*')
-        .eq('section', 'logo');
+        .eq('section', 'general');
       
       if (!error && data) {
         const logoSettings = data.reduce((acc, item) => {
@@ -62,9 +64,11 @@ const Header = () => {
         }, {} as Record<string, any>);
         
         setLogoData({
-          text: logoSettings.text || 'VetCare',
-          subtitle: logoSettings.subtitle || 'Clínica Veterinária',
-          image_url: logoSettings.image_url || ''
+          text: logoSettings.logo_text || 'VetCare',
+          subtitle: logoSettings.logo_subtitle || 'Clínica Veterinária',
+          imageUrl: logoSettings.logo_image_url || '',
+          linkUrl: logoSettings.logo_link_url || '',
+          altText: logoSettings.logo_alt_text || 'Logo da Clínica Veterinária'
         });
       }
     } catch (error) {
@@ -84,7 +88,7 @@ const Header = () => {
     { id: 'home', label: 'Home' },
     { id: 'about', label: 'Sobre Nós' },
     { id: 'services', label: 'Procedimentos' },
-    { id: 'products', label: 'Produtos' },
+    { id: 'loja', label: 'Loja Online' },
     { id: 'lost-pets', label: 'Pets Perdidos' },
     { id: 'veterinaria', label: 'Dra. Karine' }, // Corrigido para corresponder ao ID da seção
     { id: 'testimonials', label: 'Depoimentos' },
@@ -116,11 +120,11 @@ const Header = () => {
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
-            <div className="flex items-center gap-2">
-              {logoData.image_url ? (
+            <a href={logoData.linkUrl || "#"} className="flex items-center gap-2">
+              {logoData.imageUrl ? (
                 <img 
-                  src={logoData.image_url} 
-                  alt="Logo" 
+                  src={logoData.imageUrl} 
+                  alt={logoData.altText} 
                   className="h-10 w-10 object-contain rounded-full"
                   onError={(e) => {
                     // Fallback para o ícone padrão se a imagem falhar
@@ -140,7 +144,7 @@ const Header = () => {
                 <h1 className="text-xl font-bold text-primary">{logoData.text}</h1>
                 <p className="text-xs text-muted-foreground">{logoData.subtitle}</p>
               </div>
-            </div>
+            </a>
 
             {/* Desktop Menu */}
             <nav className="hidden lg:flex items-center space-x-8">

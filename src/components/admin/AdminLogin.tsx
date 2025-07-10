@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -7,6 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useAuth } from '@/hooks/useAuth';
 import ReCAPTCHA from 'react-google-recaptcha';
+import { supabase } from '@/integrations/supabase/client';
 
 const AdminLogin = () => {
   const [email, setEmail] = useState('');
@@ -14,7 +15,29 @@ const AdminLogin = () => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [captchaToken, setCaptchaToken] = useState<string | null>(null);
+  const [recaptchaSiteKey, setRecaptchaSiteKey] = useState('6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI');
   const { login } = useAuth();
+
+  useEffect(() => {
+    loadRecaptchaConfig();
+  }, []);
+
+  const loadRecaptchaConfig = async () => {
+    try {
+      const { data } = await supabase
+        .from('site_settings')
+        .select('value')
+        .eq('section', 'general')
+        .eq('key', 'recaptcha_site_key')
+        .maybeSingle();
+      
+      if (data?.value) {
+        setRecaptchaSiteKey(String(data.value));
+      }
+    } catch (error) {
+      console.error('Erro ao carregar configuração do reCAPTCHA:', error);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -64,7 +87,7 @@ const AdminLogin = () => {
             
             <div className="flex justify-center">
               <ReCAPTCHA
-                sitekey="6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI"
+                sitekey={recaptchaSiteKey}
                 onChange={setCaptchaToken}
               />
             </div>

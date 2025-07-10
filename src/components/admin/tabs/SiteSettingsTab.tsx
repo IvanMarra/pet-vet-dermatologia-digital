@@ -759,6 +759,125 @@ const SiteSettingsTab = () => {
         </CardContent>
       </Card>
 
+      {/* Logo Section */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Logo e Identidade</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div>
+            <Label htmlFor="logo_text">Texto da Logo</Label>
+            <Input
+              id="logo_text"
+              value={getSetting('general', 'logo_text')}
+              onChange={(e) => updateSetting('general', 'logo_text', e.target.value)}
+              placeholder="VetCare"
+            />
+            <p className="text-sm text-muted-foreground mt-1">
+              Texto principal que aparecerá como logo (usado quando não há imagem)
+            </p>
+          </div>
+          
+          <div>
+            <Label htmlFor="logo_subtitle">Subtítulo da Logo</Label>
+            <Input
+              id="logo_subtitle"
+              value={getSetting('general', 'logo_subtitle')}
+              onChange={(e) => updateSetting('general', 'logo_subtitle', e.target.value)}
+              placeholder="Clínica Veterinária"
+            />
+            <p className="text-sm text-muted-foreground mt-1">
+              Texto secundário que aparece abaixo do logo
+            </p>
+          </div>
+          
+          <div>
+            <Label htmlFor="logo_image_url">URL da Imagem da Logo</Label>
+            <Input
+              id="logo_image_url"
+              value={getSetting('general', 'logo_image_url')}
+              onChange={(e) => updateSetting('general', 'logo_image_url', e.target.value)}
+              placeholder="https://exemplo.com/logo.png"
+            />
+            <p className="text-sm text-muted-foreground mt-1">
+              Se fornecida, a imagem será usada no lugar do texto. Recomendado: PNG com fundo transparente
+            </p>
+          </div>
+
+          <div>
+            <Label htmlFor="logo_link_url">Link da Logo (opcional)</Label>
+            <Input
+              id="logo_link_url"
+              value={getSetting('general', 'logo_link_url')}
+              onChange={(e) => updateSetting('general', 'logo_link_url', e.target.value)}
+              placeholder="https://meusite.com"
+            />
+            <p className="text-sm text-muted-foreground mt-1">
+              URL para onde a logo deve direcionar quando clicada (deixe vazio para página inicial)
+            </p>
+          </div>
+
+          <div>
+            <Label htmlFor="logo_alt_text">Texto Alternativo da Logo</Label>
+            <Input
+              id="logo_alt_text"
+              value={getSetting('general', 'logo_alt_text')}
+              onChange={(e) => updateSetting('general', 'logo_alt_text', e.target.value)}
+              placeholder="Logo da Clínica Veterinária"
+            />
+            <p className="text-sm text-muted-foreground mt-1">
+              Texto que aparece para leitores de tela e quando a imagem não carrega
+            </p>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* ReCAPTCHA Section */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Configurações do reCAPTCHA</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div>
+            <Label htmlFor="recaptcha_site_key">Site Key do reCAPTCHA</Label>
+            <Input
+              id="recaptcha_site_key"
+              value={getSetting('general', 'recaptcha_site_key')}
+              onChange={(e) => updateSetting('general', 'recaptcha_site_key', e.target.value)}
+              placeholder="6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI"
+            />
+            <p className="text-sm text-muted-foreground mt-1">
+              Chave pública do Google reCAPTCHA v2 para proteção contra spam
+            </p>
+          </div>
+          
+          <div>
+            <Label htmlFor="recaptcha_secret_key">Secret Key do reCAPTCHA</Label>
+            <Input
+              id="recaptcha_secret_key"
+              type="password"
+              value={getSetting('general', 'recaptcha_secret_key')}
+              onChange={(e) => updateSetting('general', 'recaptcha_secret_key', e.target.value)}
+              placeholder="6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe"
+            />
+            <p className="text-sm text-muted-foreground mt-1">
+              Chave secreta do Google reCAPTCHA v2 (mantida em segurança no servidor)
+            </p>
+          </div>
+
+          <div className="bg-blue-50 p-4 rounded-lg">
+            <h4 className="font-medium text-blue-900 mb-2">Como configurar o reCAPTCHA:</h4>
+            <ol className="text-sm text-blue-800 space-y-1 list-decimal list-inside">
+              <li>Acesse <a href="https://www.google.com/recaptcha/admin" target="_blank" rel="noopener noreferrer" className="underline">Google reCAPTCHA Console</a></li>
+              <li>Crie um novo site ou use um existente</li>
+              <li>Selecione "reCAPTCHA v2" → "Caixa de seleção 'Não sou um robô'"</li>
+              <li>Adicione o domínio do seu site</li>
+              <li>Copie as chaves geradas para os campos acima</li>
+            </ol>
+          </div>
+        </CardContent>
+      </Card>
+
       <div className="flex justify-between">
         <Button 
           onClick={() => {
