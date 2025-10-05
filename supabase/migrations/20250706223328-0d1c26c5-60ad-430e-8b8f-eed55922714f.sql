@@ -1,0 +1,2 @@
+INSERT INTO site_settings (section, key, value) 
+VALUES ('veterinarian', 'photo', '"https://goopwdwyvhpoqqerrqbg.supabase.co/storage/v1/object/public/veterinarian-photos/1751336736810-7g5hjycx6f2.jpeg"');
