@@ -5,7 +5,7 @@ import { supabase } from '@/integrations/supabase/client';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isScrolled, setIsScrolled] = useState(false);
+  // isScrolled state e useEffect removidos, pois o header será sempre fixo e transparente
   const [contactData, setContactData] = useState({
     phone: '(11) 9999-9999'
   });
@@ -13,23 +13,16 @@ const Header = () => {
   const [logoData, setLogoData] = useState({
     text: 'PopularVET',
     subtitle: 'Aqui tem cuidados para todos os pets',
-    imageUrl: '/images/logo-popularvet.jpeg', // Nova URL da imagem
+    imageUrl: '/images/logo-popularvet-resize-min.png', // Nova URL da imagem PNG
     linkUrl: '/',
     altText: 'Logo PopularVET'
   });
 
   useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
-    };
-    window.addEventListener('scroll', handleScroll);
-    
     // Carregar dados de contato e logo
     loadContactData();
     loadLogoData();
-    
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  }, []); // Removido o listener de scroll
 
   const loadContactData = async () => {
     try {
@@ -65,7 +58,7 @@ const Header = () => {
         setLogoData({
           text: logoSettings.logo_text || 'PopularVET',
           subtitle: logoSettings.logo_subtitle || 'Aqui tem cuidados para todos os pets',
-          imageUrl: logoSettings.logo_image_url || '/images/logo-popularvet.jpeg', // Fallback para a nova logo
+          imageUrl: logoSettings.logo_image_url || '/images/logo-popularvet-resize-min.png', // Fallback para a nova logo PNG
           linkUrl: logoSettings.logo_link_url || '/',
           altText: logoSettings.logo_alt_text || 'Logo PopularVET'
         });
@@ -84,19 +77,19 @@ const Header = () => {
   };
 
   const menuItems = [
-    { id: 'home', label: 'Home' },
+    { id: 'inicio', label: 'Home' }, // Alterado para 'inicio' para corresponder ao id da seção Hero
     { id: 'about', label: 'Sobre Nós' },
     { id: 'services', label: 'Procedimentos' },
     { id: 'loja', label: 'Loja Online' },
     { id: 'lost-pets', label: 'Pets Perdidos' },
     { id: 'veterinaria', label: 'Dra. Karine' },
     { id: 'testimonials', label: 'Depoimentos' },
-    { id: 'contact', label: 'Contato' },
+    { id: 'contato', label: 'Contato' }, // Alterado para 'contato' para corresponder ao id da seção Contact
   ];
 
   return (
-    <>
-      {/* Top Bar */}
+    <header className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-sm shadow-lg transition-all duration-300">
+      {/* Top Bar integrada */}
       <div className="bg-primary text-primary-foreground py-2 px-4 text-sm">
         <div className="container mx-auto flex justify-between items-center">
           <div className="flex items-center gap-4">
@@ -112,85 +105,79 @@ const Header = () => {
         </div>
       </div>
 
-      {/* Main Header */}
-      <header className={`fixed top-8 left-0 right-0 z-50 transition-all duration-300 ${
-        isScrolled ? 'bg-white/95 backdrop-blur-md shadow-lg' : 'bg-transparent'
-      }`}>
-        <div className="container mx-auto px-4">
-          <div className="flex items-center justify-between h-16">
-            {/* Logo */}
-            <a href={logoData.linkUrl || "#"} className="flex items-center gap-2">
-              {logoData.imageUrl ? (
-                <img 
-                  src={logoData.imageUrl} 
-                  alt={logoData.altText} 
-                  className="h-12 w-auto object-contain" // Ajustado para altura fixa e largura automática
-                  onError={(e) => {
-                    // Fallback para o ícone padrão se a imagem falhar
-                    e.currentTarget.style.display = 'none';
-                    const nextElement = e.currentTarget.nextElementSibling as HTMLElement;
-                    if (nextElement) {
-                      nextElement.style.display = 'block';
-                    }
-                  }}
-                />
-              ) : (
-                <div className="bg-primary rounded-full p-2">
-                  <Heart className="h-6 w-6 text-primary-foreground" />
-                </div>
-              )}
-              {/* O texto da logo só aparece se não houver imagem ou se a imagem falhar */}
-              {!logoData.imageUrl && (
-                <div>
-                  <h1 className="text-xl font-bold text-primary">{logoData.text}</h1>
-                  <p className="text-xs text-muted-foreground">{logoData.subtitle}</p>
-                </div>
-              )}
-            </a>
+      {/* Main Header Content */}
+      <div className="container mx-auto px-4">
+        <div className="flex items-center justify-between h-16">
+          {/* Logo */}
+          <a href={logoData.linkUrl || "#"} className="flex items-center gap-2">
+            {logoData.imageUrl ? (
+              <img 
+                src={logoData.imageUrl} 
+                alt={logoData.altText} 
+                className="h-12 w-auto object-contain"
+                onError={(e) => {
+                  e.currentTarget.style.display = 'none';
+                  const nextElement = e.currentTarget.nextElementSibling as HTMLElement;
+                  if (nextElement) {
+                    nextElement.style.display = 'block';
+                  }
+                }}
+              />
+            ) : (
+              <div className="bg-primary rounded-full p-2">
+                <Heart className="h-6 w-6 text-primary-foreground" />
+              </div>
+            )}
+            {!logoData.imageUrl && (
+              <div>
+                <h1 className="text-xl font-bold text-primary">{logoData.text}</h1>
+                <p className="text-xs text-muted-foreground">{logoData.subtitle}</p>
+              </div>
+            )}
+          </a>
 
-            {/* Desktop Menu */}
-            <nav className="hidden lg:flex items-center space-x-8">
-              {menuItems.map((item) => (
-                <button
-                  key={item.id}
-                  onClick={() => scrollToSection(item.id)}
-                  className="text-foreground hover:text-primary transition-colors font-medium"
-                >
-                  {item.label}
-                </button>
-              ))}
-            </nav>
+          {/* Desktop Menu */}
+          <nav className="hidden lg:flex items-center space-x-8">
+            {menuItems.map((item) => (
+              <button
+                key={item.id}
+                onClick={() => scrollToSection(item.id)}
+                className="text-foreground hover:text-primary transition-colors font-medium"
+              >
+                {item.label}
+              </button>
+            ))}
+          </nav>
 
-            {/* Mobile Menu Button */}
-            <Button
-              variant="outline"
-              size="sm"
-              className="lg:hidden"
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
-            >
-              {isMenuOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
-            </Button>
-          </div>
+          {/* Mobile Menu Button */}
+          <Button
+            variant="outline"
+            size="sm"
+            className="lg:hidden"
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+          >
+            {isMenuOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
+          </Button>
         </div>
+      </div>
 
-        {/* Mobile Menu */}
-        {isMenuOpen && (
-          <div className="lg:hidden bg-white/95 backdrop-blur-md border-t">
-            <nav className="container mx-auto px-4 py-4 space-y-2">
-              {menuItems.map((item) => (
-                <button
-                  key={item.id}
-                  onClick={() => scrollToSection(item.id)}
-                  className="block w-full text-left px-4 py-2 text-foreground hover:text-primary hover:bg-primary/5 rounded-md transition-colors"
-                >
-                  {item.label}
-                </button>
-              ))}
-            </nav>
-          </div>
-        )}
-      </header>
-    </>
+      {/* Mobile Menu */}
+      {isMenuOpen && (
+        <div className="lg:hidden bg-white/95 backdrop-blur-md border-t">
+          <nav className="container mx-auto px-4 py-4 space-y-2">
+            {menuItems.map((item) => (
+              <button
+                key={item.id}
+                onClick={() => scrollToSection(item.id)}
+                className="block w-full text-left px-4 py-2 text-foreground hover:text-primary hover:bg-primary/5 rounded-md transition-colors"
+              >
+                {item.label}
+              </button>
+            ))}
+          </nav>
+        </div>
+      )}
+    </header>
   );
 };
 

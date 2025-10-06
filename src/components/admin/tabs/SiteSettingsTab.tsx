@@ -609,7 +609,7 @@ const SiteSettingsTab = () => {
               <div>
                 <Label>URL da Imagem da Logo (opcional)</Label>
                 <Input
-                  value={getSetting('general', 'logo_image_url', '/images/logo-popularvet.jpeg')}
+                  value={getSetting('general', 'logo_image_url', '/images/logo-popularvet-resize-min.png')}
                   onChange={(e) => updateSetting('general', 'logo_image_url', e.target.value)}
                   placeholder="https://exemplo.com/logo.png"
                 />
@@ -796,7 +796,7 @@ const SiteSettingsTab = () => {
             <Label htmlFor="logo_image_url">URL da Imagem da Logo (opcional)</Label>
             <Input
               id="logo_image_url"
-              value={getSetting('general', 'logo_image_url', '/images/logo-popularvet.jpeg')}
+              value={getSetting('general', 'logo_image_url', '/images/logo-popularvet-resize-min.png')}
               onChange={(e) => updateSetting('general', 'logo_image_url', e.target.value)}
               placeholder="https://exemplo.com/logo.png"
             />
