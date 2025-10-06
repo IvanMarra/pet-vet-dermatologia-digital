@@ -8,7 +8,7 @@ const Footer = () => {
     company_subtitle: 'Aqui tem cuidados para todos os pets',
     company_description: 'A primeira clínica veterinária especializada em dermatologia da região. Cuidando dos seus melhores amigos com amor e profissionalismo.',
     copyright: '© 2024 PopularVET Clínica Veterinária. Todos os direitos reservados.',
-    crmv: 'CRMV-MG: 26.710', // Atualizado para CRMV da Dra. Karine
+    crmv: 'CRM-MG 26.710', // Atualizado para CRMV da Dra. Karine
     instagram_url: '',
     facebook_url: '',
   });
@@ -23,6 +23,8 @@ const Footer = () => {
     hours_saturday: 'Sábado: 9h às 14h30',
     emergency_hours: 'Emergências e Urgências: ligar para verificar disponibilidade',
   });
+
+  const [logoImageUrl, setLogoImageUrl] = useState('/images/logo-popularvet-resize-min.png');
 
   useEffect(() => {
     loadFooterData();
@@ -58,13 +60,16 @@ const Footer = () => {
         // Combine general settings for company name/subtitle if available
         const companyName = generalSettings.logo_text || footerSettings.company_name || 'PopularVET';
         const companySubtitle = generalSettings.logo_subtitle || footerSettings.company_subtitle || 'Aqui tem cuidados para todos os pets';
+        const logoImg = generalSettings.logo_image_url || '/images/logo-popularvet-resize-min.png';
 
         setFooterData(prev => ({ 
           ...prev, 
           ...footerSettings,
           company_name: companyName,
           company_subtitle: companySubtitle,
+          crmv: footerSettings.crmv || 'CRM-MG 26.710', // Garantir que o CRMV seja o correto
         }));
+        setLogoImageUrl(logoImg);
 
         // Processar endereço e horários para exibir corretamente
         let fullAddress = contactSettings.address;
@@ -110,13 +115,30 @@ const Footer = () => {
           {/* Logo e Descrição */}
           <div>
             <div className="flex items-center gap-2 mb-4">
-              <div className="bg-primary rounded-full p-2">
-                <Heart className="h-6 w-6 text-primary-foreground" />
-              </div>
-              <div>
-                <h3 className="text-xl font-bold">{footerData.company_name}</h3>
-                <p className="text-xs text-gray-400">{footerData.company_subtitle}</p>
-              </div>
+              {logoImageUrl ? (
+                <img 
+                  src={logoImageUrl} 
+                  alt={footerData.company_name} 
+                  className="h-12 w-auto object-contain"
+                  onError={(e) => {
+                    e.currentTarget.style.display = 'none';
+                    const nextElement = e.currentTarget.nextElementSibling as HTMLElement;
+                    if (nextElement) {
+                      nextElement.style.display = 'block';
+                    }
+                  }}
+                />
+              ) : (
+                <div className="bg-primary rounded-full p-2">
+                  <Heart className="h-6 w-6 text-primary-foreground" />
+                </div>
+              )}
+              {!logoImageUrl && (
+                <div>
+                  <h3 className="text-xl font-bold">{footerData.company_name}</h3>
+                  <p className="text-xs text-gray-400">{footerData.company_subtitle}</p>
+                </div>
+              )}
             </div>
             <p className="text-gray-400 mb-4">
               {footerData.company_description}

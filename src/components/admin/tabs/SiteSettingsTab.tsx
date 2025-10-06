@@ -656,9 +656,9 @@ const SiteSettingsTab = () => {
           <div>
             <Label>CRMV</Label>
             <Input
-              value={getSetting('footer', 'crmv', 'CRMV-SP: 12345')}
+              value={getSetting('footer', 'crmv', 'CRM-MG 26.710')}
               onChange={(e) => updateSetting('footer', 'crmv', e.target.value)}
-              placeholder="CRMV-SP: 12345"
+              placeholder="CRM-MG 26.710"
             />
           </div>
         </CardContent>
