@@ -1,4 +1,3 @@
-
 import React from 'react';
 import Header from '@/components/Header';
 import HeroSection from '@/components/HeroSection';
@@ -11,6 +10,7 @@ import TestimonialsSection from '@/components/TestimonialsSection';
 import ContactSection from '@/components/ContactSection';
 import Footer from '@/components/Footer';
 import ScrollToTop from '@/components/ScrollToTop';
+import WhatsAppFloatingButton from '@/components/WhatsAppFloatingButton'; // Importar o novo componente
 
 const Index = () => {
   return (
@@ -26,6 +26,7 @@ const Index = () => {
       <ContactSection />
       <Footer />
       <ScrollToTop />
+      <WhatsAppFloatingButton /> {/* Adicionar o botão flutuante */}
     </div>
   );
 };

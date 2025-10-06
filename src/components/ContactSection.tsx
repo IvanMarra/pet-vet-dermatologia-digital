@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -8,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { MapPin, Phone, Mail, Clock } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import MapComponent from './MapComponent'; // Importar o MapComponent
 
 interface ContactFormData {
   name: string;
@@ -18,20 +18,17 @@ interface ContactFormData {
 }
 
 const ContactSection = () => {
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    message: ''
-  });
   const [contactData, setContactData] = useState({
-    address: 'Rua das Flores, 123\nCentro, São Paulo - SP\nCEP: 01234-567',
-    phone: '(11) 9999-9999',
-    email: 'contato@clinicaveterinaria.com',
-    hours: 'Segunda a Sexta: 8h às 18h\nSábado: 8h às 12h\nEmergências: 24h'
+    address: 'Rua Francisco Passos 645 Lj 2\nBairro Pedra Azul, CEP: 32185-090',
+    phone: '(31) 99550-2094',
+    email: 'contato@popularvet.com',
+    hours: 'Terça a Sexta: 10h às 20h30\nSábado: 9h às 14h30\nEmergências e Urgências: ligar para verificar disponibilidade'
   });
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
+
+  // Coordenadas aproximadas para o novo endereço (Contagem, MG)
+  const clinicCoordinates: [number, number] = [-44.0542, -19.9339]; 
 
   useEffect(() => {
     loadContactData();
@@ -108,6 +105,9 @@ const ContactSection = () => {
     }
   };
 
+  // O formulário foi removido, então handleInputChange e handleSubmit não são mais necessários.
+  // Mantendo-os comentados caso precise de referência futura.
+  /*
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
@@ -166,6 +166,7 @@ const ContactSection = () => {
       setLoading(false);
     }
   };
+  */
 
   return (
     <section id="contato" className="py-20 bg-gray-50">
@@ -223,59 +224,22 @@ const ContactSection = () => {
             </Card>
           </div>
 
+          {/* Substituindo o formulário pelo MapComponent */}
           <Card>
             <CardHeader>
-              <CardTitle>Envie sua Mensagem</CardTitle>
+              <CardTitle>Nossa Localização</CardTitle>
             </CardHeader>
             <CardContent>
-              <form onSubmit={handleSubmit} className="space-y-6">
-                <div className="grid md:grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="name">Nome *</Label>
-                    <Input
-                      id="name"
-                      value={formData.name}
-                      onChange={(e) => handleInputChange('name', e.target.value)}
-                      required
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="phone">Telefone</Label>
-                    <Input
-                      id="phone"
-                      value={formData.phone}
-                      onChange={(e) => handleInputChange('phone', e.target.value)}
-                      placeholder="(11) 99999-9999"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <Label htmlFor="email">E-mail *</Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    value={formData.email}
-                    onChange={(e) => handleInputChange('email', e.target.value)}
-                    required
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="message">Mensagem *</Label>
-                  <Textarea
-                    id="message"
-                    value={formData.message}
-                    onChange={(e) => handleInputChange('message', e.target.value)}
-                    rows={5}
-                    required
-                  />
-                </div>
-
-                <Button type="submit" className="w-full" disabled={loading}>
-                  {loading ? 'Enviando...' : 'Enviar Mensagem'}
-                </Button>
-              </form>
+              <MapComponent
+                initialCoordinates={clinicCoordinates}
+                initialAddress={contactData.address.replace(/\n/g, ', ')} // Passa o endereço formatado para o mapa
+                height="400px"
+                interactive={false} // O mapa não será interativo para o usuário final
+                showSearch={false} // Não mostra a barra de busca no mapa
+              />
+              <p className="text-sm text-muted-foreground mt-4 text-center">
+                Clique no mapa para abrir no Google Maps ou arraste para explorar.
+              </p>
             </CardContent>
           </Card>
         </div>
