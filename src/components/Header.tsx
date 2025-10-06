@@ -1,45 +1,31 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { Heart, Menu, X, Phone, MapPin } from 'lucide-react';
+import { Heart, Menu, X, Phone, MapPin, MessageCircle } from 'lucide-react'; // Adicionado MessageCircle
 import { supabase } from '@/integrations/supabase/client';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  // isScrolled state e useEffect removidos, pois o header será sempre fixo e transparente
-  const [contactData, setContactData] = useState({
-    phone: '(11) 9999-9999'
+  
+  // Telefones agora definidos diretamente no estado do componente
+  const [contactData] = useState({
+    phones: [
+      { number: '31 99550-2094', whatsapp: true },
+      { number: '(31) 99416-2094', whatsapp: true },
+    ],
   });
   
   const [logoData, setLogoData] = useState({
     text: 'PopularVET',
     subtitle: 'Aqui tem cuidados para todos os pets',
-    imageUrl: '/images/logo-popularvet-resize-min.png', // Nova URL da imagem PNG
+    imageUrl: '/images/logo-popularvet-resize-min.png',
     linkUrl: '/',
     altText: 'Logo PopularVET'
   });
 
   useEffect(() => {
-    // Carregar dados de contato e logo
-    loadContactData();
+    // Carregar dados da logo (dados de contato do Supabase removidos para o header)
     loadLogoData();
-  }, []); // Removido o listener de scroll
-
-  const loadContactData = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('site_settings')
-        .select('*')
-        .eq('section', 'contact')
-        .eq('key', 'phone')
-        .single();
-      
-      if (!error && data) {
-        setContactData({ phone: String(data.value) });
-      }
-    } catch (error) {
-      console.log('Erro ao carregar telefone do header:', error);
-    }
-  };
+  }, []);
 
   const loadLogoData = async () => {
     try {
@@ -58,7 +44,7 @@ const Header = () => {
         setLogoData({
           text: logoSettings.logo_text || 'PopularVET',
           subtitle: logoSettings.logo_subtitle || 'Aqui tem cuidados para todos os pets',
-          imageUrl: logoSettings.logo_image_url || '/images/logo-popularvet-resize-min.png', // Fallback para a nova logo PNG
+          imageUrl: logoSettings.logo_image_url || '/images/logo-popularvet-resize-min.png',
           linkUrl: logoSettings.logo_link_url || '/',
           altText: logoSettings.logo_alt_text || 'Logo PopularVET'
         });
@@ -77,26 +63,39 @@ const Header = () => {
   };
 
   const menuItems = [
-    { id: 'inicio', label: 'Home' }, // Alterado para 'inicio' para corresponder ao id da seção Hero
+    { id: 'inicio', label: 'Home' },
     { id: 'about', label: 'Sobre Nós' },
     { id: 'services', label: 'Procedimentos' },
     { id: 'loja', label: 'Loja Online' },
     { id: 'lost-pets', label: 'Pets Perdidos' },
     { id: 'veterinaria', label: 'Dra. Karine' },
     { id: 'testimonials', label: 'Depoimentos' },
-    { id: 'contato', label: 'Contato' }, // Alterado para 'contato' para corresponder ao id da seção Contact
+    { id: 'contato', label: 'Contato' },
   ];
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-sm shadow-lg transition-all duration-300">
       {/* Top Bar integrada */}
-      <div className="bg-primary text-primary-foreground py-2 px-4 text-sm">
+      <div className="bg-danger-red text-primary-foreground py-2 px-4 text-sm"> {/* Cor alterada para danger-red */}
         <div className="container mx-auto flex justify-between items-center">
           <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2">
-              <Phone className="h-4 w-4" />
-              <span>{contactData.phone}</span>
-            </div>
+            {contactData.phones.map((phone, index) => (
+              <div key={index} className="flex items-center gap-2">
+                <Phone className="h-4 w-4" />
+                <span>{phone.number}</span>
+                {phone.whatsapp && (
+                  <a 
+                    href={`https://wa.me/${phone.number.replace(/\D/g, '')}`} 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    className="ml-1 text-green-300 hover:text-green-100 transition-colors"
+                    title="Enviar mensagem via WhatsApp"
+                  >
+                    <MessageCircle className="h-4 w-4" />
+                  </a>
+                )}
+              </div>
+            ))}
             <div className="hidden md:flex items-center gap-2">
               <MapPin className="h-4 w-4" />
               <span>Primeira clínica especializada em dermatologia da região!</span>
