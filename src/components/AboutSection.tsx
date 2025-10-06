@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Heart, Target, Award, Users } from 'lucide-react';
@@ -97,7 +96,7 @@ const AboutSection = () => {
           <div>
             <h3 className="text-3xl font-bold mb-6">Nossa História</h3>
             <p className="text-lg mb-6 text-muted-foreground">
-              A VetCare nasceu da paixão pelo cuidado animal e da necessidade de oferecer 
+              A PopularVet nasceu da paixão pelo cuidado animal e da necessidade de oferecer 
               serviços veterinários especializados em nossa região. Somos pioneiros em 
               dermatologia veterinária, trazendo tratamentos inovadores e cuidados 
               especializados para pets com problemas de pele.

@@ -104,7 +104,7 @@ export const useVeterinarianData = () => {
           description: settingsObj.description || 'Especialista em cuidados veterinários.',
           image: photoUrl,
           experience: settingsObj.experience || '', // Não mostrar se não foi cadastrado
-          specialties: settingsObj.specialties || [], // Usar apenas se foi cadastrado
+          specialties: Array.isArray(settingsObj.specialties) ? settingsObj.specialties : (typeof settingsObj.specialty === 'string' ? settingsObj.specialty.split(',').map((s: string) => s.trim()) : []), // Usar apenas se foi cadastrado
           education: settingsObj.education || '', // Usar apenas se foi cadastrado
           linkedin: settingsObj.linkedin || '', // Adicionar LinkedIn
           sectionTitle: settingsObj.section_title || '',

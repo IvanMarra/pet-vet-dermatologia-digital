@@ -280,7 +280,7 @@ const SiteSettingsTab = () => {
                 </div>
                 
                 <ImageUpload
-                  bucket="site-images"
+                  bucket="hero-images"
                   currentImageUrl={getSetting('hero', `slide_${slideNum}_image`)}
                   onImageUploaded={(url) => updateSetting('hero', `slide_${slideNum}_image`, url)}
                   onImageRemoved={() => updateSetting('hero', `slide_${slideNum}_image`, '')}
@@ -419,7 +419,7 @@ const SiteSettingsTab = () => {
             <Label>Nome</Label>
             <div className="relative">
               <Input
-                value={getSetting('veterinarian', 'name')}
+                value={getSetting('veterinarian', 'name', 'Karine M. F. Marra')}
                 onChange={(e) => {
                   const value = e.target.value;
                   if (value.length <= 100) {
@@ -444,24 +444,24 @@ const SiteSettingsTab = () => {
             <Label>Especialidade</Label>
             <div className="relative">
               <Input
-                value={getSetting('veterinarian', 'specialty')}
+                value={getSetting('veterinarian', 'specialty', 'Clínica Geral, Pós graduada em Dermatológia, Pós graduada em Fitoterápicos e Homeopáticos')}
                 onChange={(e) => {
                   const value = e.target.value;
-                  if (value.length <= 150) {
+                  if (value.length <= 250) { // Increased max length
                     updateSetting('veterinarian', 'specialty', value);
                   } else {
                     toast({
                       title: "Limite atingido",
-                      description: "Especialidade deve ter no máximo 150 caracteres",
+                      description: "Especialidade deve ter no máximo 250 caracteres",
                       variant: "destructive",
                     });
                   }
                 }}
                 placeholder="Formação acadêmica e profissional"
-                maxLength={150}
+                maxLength={250}
               />
               <div className="text-right text-xs text-muted-foreground mt-1">
-                {getSetting('veterinarian', 'specialty').length}/150
+                {getSetting('veterinarian', 'specialty').length}/250
               </div>
             </div>
           </div>
@@ -470,7 +470,7 @@ const SiteSettingsTab = () => {
             <Label>Formação</Label>
             <div className="relative">
               <Textarea
-                value={getSetting('veterinarian', 'education')}
+                value={getSetting('veterinarian', 'education', 'MBA em Gestão de clínicas.')}
                 onChange={(e) => {
                   const value = e.target.value;
                   if (value.length <= 500) {
@@ -497,7 +497,7 @@ const SiteSettingsTab = () => {
             <Label>Descrição</Label>
             <div className="relative">
               <Textarea
-                value={getSetting('veterinarian', 'description')}
+                value={getSetting('veterinarian', 'description', 'CRM-MG 26.710. CEO da POPULARVET e da petvetfarma.com')}
                 onChange={(e) => {
                   const value = e.target.value;
                   if (value.length <= 800) {
@@ -568,7 +568,7 @@ const SiteSettingsTab = () => {
             )}
             {!getSetting('veterinarian', 'photo') && (
               <div className="text-xs text-orange-600">
-                Nenhuma foto cadastrada ainda
+                Nenhuma foto cadastrada ainda. Por favor, faça o upload da imagem `dr-karine.jpeg` aqui.
               </div>
             )}
           </div>
@@ -623,7 +623,7 @@ const SiteSettingsTab = () => {
           <div>
             <Label>Nome da Empresa</Label>
             <Input
-              value={getSetting('footer', 'company_name')}
+              value={getSetting('footer', 'company_name', 'PopularVET')}
               onChange={(e) => updateSetting('footer', 'company_name', e.target.value)}
               placeholder="PopularVET"
             />
@@ -631,7 +631,7 @@ const SiteSettingsTab = () => {
           <div>
             <Label>Subtítulo da Empresa</Label>
             <Input
-              value={getSetting('footer', 'company_subtitle')}
+              value={getSetting('footer', 'company_subtitle', 'Clínica Veterinária')}
               onChange={(e) => updateSetting('footer', 'company_subtitle', e.target.value)}
               placeholder="Clínica Veterinária"
             />
@@ -639,7 +639,7 @@ const SiteSettingsTab = () => {
           <div>
             <Label>Descrição da Empresa</Label>
             <Textarea
-              value={getSetting('footer', 'company_description')}
+              value={getSetting('footer', 'company_description', 'A primeira clínica veterinária especializada em dermatologia da região.')}
               onChange={(e) => updateSetting('footer', 'company_description', e.target.value)}
               placeholder="A primeira clínica veterinária especializada em dermatologia da região."
               rows={3}
@@ -648,7 +648,7 @@ const SiteSettingsTab = () => {
           <div>
             <Label>Copyright</Label>
             <Input
-              value={getSetting('footer', 'copyright')}
+              value={getSetting('footer', 'copyright', '© 2024 PopularVET Clínica Veterinária. Todos os direitos reservados.')}
               onChange={(e) => updateSetting('footer', 'copyright', e.target.value)}
               placeholder="© 2024 PopularVET Clínica Veterinária. Todos os direitos reservados."
             />
@@ -656,7 +656,7 @@ const SiteSettingsTab = () => {
           <div>
             <Label>CRMV</Label>
             <Input
-              value={getSetting('footer', 'crmv')}
+              value={getSetting('footer', 'crmv', 'CRMV-SP: 12345')}
               onChange={(e) => updateSetting('footer', 'crmv', e.target.value)}
               placeholder="CRMV-SP: 12345"
             />
@@ -696,31 +696,23 @@ const SiteSettingsTab = () => {
           <div>
             <Label>Endereço - Rua</Label>
             <Input
-              value={getSetting('contact', 'street')}
+              value={getSetting('contact', 'street', 'Rua Francisco Passos 645 Lj 2')}
               onChange={(e) => updateSetting('contact', 'street', e.target.value)}
               placeholder="Rua das Flores, 123"
             />
           </div>
           <div>
-            <Label>Endereço - Cidade/Estado</Label>
+            <Label>Endereço - Bairro/CEP</Label>
             <Input
-              value={getSetting('contact', 'city_state')}
+              value={getSetting('contact', 'city_state', 'Bairro Pedra Azul, CEP: 32185-090')}
               onChange={(e) => updateSetting('contact', 'city_state', e.target.value)}
               placeholder="Centro - São Paulo - SP"
             />
           </div>
           <div>
-            <Label>CEP</Label>
-            <Input
-              value={getSetting('contact', 'cep')}
-              onChange={(e) => updateSetting('contact', 'cep', e.target.value)}
-              placeholder="01234-567"
-            />
-          </div>
-          <div>
             <Label>Telefone</Label>
             <Input
-              value={getSetting('contact', 'phone')}
+              value={getSetting('contact', 'phone', '(31) 99550-2094')}
               onChange={(e) => updateSetting('contact', 'phone', e.target.value)}
               placeholder="(11) 9999-9999"
             />
@@ -728,15 +720,15 @@ const SiteSettingsTab = () => {
           <div>
             <Label>Email</Label>
             <Input
-              value={getSetting('contact', 'email')}
+              value={getSetting('contact', 'email', 'contato@popularvet.com')}
               onChange={(e) => updateSetting('contact', 'email', e.target.value)}
               placeholder="contato@popularvet.com.br"
             />
           </div>
           <div>
-            <Label>Horário - Segunda a Sexta</Label>
+            <Label>Horário - Terça a Sexta</Label>
             <Input
-              value={getSetting('contact', 'hours_weekdays')}
+              value={getSetting('contact', 'hours_weekdays', 'Terça a Sexta: 10h às 20h30')}
               onChange={(e) => updateSetting('contact', 'hours_weekdays', e.target.value)}
               placeholder="Seg-Sex: 8h às 18h"
             />
@@ -744,7 +736,7 @@ const SiteSettingsTab = () => {
           <div>
             <Label>Horário - Sábado</Label>
             <Input
-              value={getSetting('contact', 'hours_saturday')}
+              value={getSetting('contact', 'hours_saturday', 'Sábado: 9h às 14h30')}
               onChange={(e) => updateSetting('contact', 'hours_saturday', e.target.value)}
               placeholder="Sábado: 8h às 14h"
             />
@@ -752,7 +744,7 @@ const SiteSettingsTab = () => {
           <div>
             <Label>Emergências</Label>
             <Input
-              value={getSetting('contact', 'emergency_hours')}
+              value={getSetting('contact', 'emergency_hours', 'Emergências e Urgências: ligar para verificar disponibilidade')}
               onChange={(e) => updateSetting('contact', 'emergency_hours', e.target.value)}
               placeholder="Emergências 24h"
             />

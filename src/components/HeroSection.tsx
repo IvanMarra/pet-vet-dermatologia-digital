@@ -7,6 +7,7 @@ import { Heart, Award, Clock } from 'lucide-react';
 const HeroSection = () => {
   const youtubeVideoId = 'N7TX7mp871M';
   const embedUrl = `https://www.youtube.com/embed/${youtubeVideoId}?controls=0&autoplay=1&mute=1&loop=1&playlist=${youtubeVideoId}&modestbranding=1&showinfo=0&rel=0&iv_load_policy=3`;
+  const whatsappNumber = '31995502094'; // Número sem formatação para o link do WhatsApp
 
   return (
     <section id="inicio" className="relative h-screen overflow-hidden flex items-center justify-center">
@@ -35,7 +36,11 @@ const HeroSection = () => {
           <p className="text-lg mb-8 text-gray-300 leading-relaxed">
             Atendimento humanizado, equipamentos modernos e profissionais qualificados para garantir a saúde e bem-estar do seu companheiro.
           </p>
-          <Button size="lg" className="text-lg px-8 py-6">
+          <Button 
+            size="lg" 
+            className="text-lg px-8 py-6"
+            onClick={() => window.open(`https://wa.me/${whatsappNumber}`, '_blank')}
+          >
             Agendar Consulta
           </Button>
         </div>
