@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { ChevronUp } from 'lucide-react';
@@ -34,7 +33,7 @@ const ScrollToTop = () => {
     <Button
       onClick={scrollToTop}
       size="icon"
-      className="fixed bottom-8 right-8 z-50 rounded-full shadow-lg hover:shadow-xl transition-shadow"
+      className="fixed bottom-24 right-8 z-50 rounded-full shadow-lg hover:shadow-xl transition-shadow" // Ajustado para bottom-24
     >
       <ChevronUp className="h-4 w-4" />
     </Button>

@@ -5,7 +5,7 @@ import { Heart, Award, Clock } from 'lucide-react';
 // A importação do supabase não é mais necessária para esta seção
 
 const HeroSection = () => {
-  const youtubeVideoId = 'N7TX7mp871M';
+  const youtubeVideoId = 'Modcqw2bsdg'; // Novo ID do vídeo do YouTube
   const embedUrl = `https://www.youtube.com/embed/${youtubeVideoId}?controls=0&autoplay=1&mute=1&loop=1&playlist=${youtubeVideoId}&modestbranding=1&showinfo=0&rel=0&iv_load_policy=3`;
   const whatsappNumber = '31995502094'; // Número sem formatação para o link do WhatsApp
 
