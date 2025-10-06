@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { Heart, Menu, X, Phone, MapPin, MessageCircle } from 'lucide-react'; // Adicionado MessageCircle
+import { Heart, Menu, X, Phone, MapPin, MessageCircle } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   
-  // Telefones agora definidos diretamente no estado do componente
   const [contactData] = useState({
     phones: [
       { number: '31 99550-2094', whatsapp: true },
@@ -23,7 +22,6 @@ const Header = () => {
   });
 
   useEffect(() => {
-    // Carregar dados da logo (dados de contato do Supabase removidos para o header)
     loadLogoData();
   }, []);
 
@@ -76,13 +74,19 @@ const Header = () => {
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-sm shadow-lg transition-all duration-300">
       {/* Top Bar integrada */}
-      <div className="bg-danger-red text-primary-foreground py-2 px-4 text-sm"> {/* Cor alterada para danger-red */}
+      <div className="bg-danger-red text-primary-foreground py-2 px-4 text-sm">
         <div className="container mx-auto flex justify-between items-center">
           <div className="flex items-center gap-4">
             {contactData.phones.map((phone, index) => (
               <div key={index} className="flex items-center gap-2">
                 <Phone className="h-4 w-4" />
-                <span>{phone.number}</span>
+                <a 
+                  href={`tel:${phone.number.replace(/\D/g, '')}`} 
+                  className="hover:underline"
+                  title={`Ligar para ${phone.number}`}
+                >
+                  {phone.number}
+                </a>
                 {phone.whatsapp && (
                   <a 
                     href={`https://wa.me/${phone.number.replace(/\D/g, '')}`} 
