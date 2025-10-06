@@ -46,7 +46,7 @@ const HeroSection = () => {
         </div>
 
         {/* Cartões de recursos */}
-        <div className="w-full max-w-4xl px-4 absolute bottom-20 left-1/2 transform -translate-x-1/2">
+        <div className="w-full max-w-4xl px-4 absolute bottom-4 md:bottom-20 left-1/2 transform -translate-x-1/2">
           <div className="grid md:grid-cols-3 gap-4">
             <Card className="bg-white/80 backdrop-blur-sm shadow-xl transition-all duration-300 hover:bg-white/90 hover:shadow-2xl">
               <CardContent className="p-4 text-center">
