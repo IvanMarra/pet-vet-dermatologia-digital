@@ -11,8 +11,9 @@ const HeroSection = () => {
   return (
     <section id="inicio" className="relative h-screen overflow-hidden flex items-center justify-center">
       {/* Vídeo do YouTube como Background */}
+      {/* 'object-cover' removido aqui */}
       <iframe
-        className="absolute inset-0 w-full h-full object-cover z-0"
+        className="absolute inset-0 w-full h-full z-0"
         src={embedUrl}
         frameBorder="0"
         allow="autoplay; encrypted-media"
