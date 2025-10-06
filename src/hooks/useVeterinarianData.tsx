@@ -16,16 +16,16 @@ interface VeterinarianData {
 
 export const useVeterinarianData = () => {
   const [veterinarianData, setVeterinarianData] = useState<VeterinarianData>({
-    name: 'Dra. Karine Silva',
-    title: 'Médica Veterinária',
-    description: 'Especialista em clínica geral e cirurgia de pequenos animais. Com mais de 10 anos de experiência, dedica-se ao cuidado integral dos pets com muito amor e profissionalismo.',
-    image: '',
+    name: 'Karine M. F. Marra',
+    title: 'Clínica Geral, Pós graduada em Dermatológia, Pós graduada em Fitoterápicos e Homeopáticos',
+    description: 'CRM-MG 26.710. MBA em Gestão de clínicas. CEO da POPULARVET e da petvetfarma.com',
+    image: '/images/dr-karine.jpeg', // Caminho da nova imagem
     experience: '',
-    specialties: [],
-    education: '',
+    specialties: ['Clínica Geral', 'Dermatologia', 'Fitoterápicos', 'Homeopáticos'],
+    education: 'MBA em Gestão de clínicas.',
     linkedin: '',
-    sectionTitle: '',
-    sectionSubtitle: ''
+    sectionTitle: 'Nossa Veterinária',
+    sectionSubtitle: 'Conheça a profissional dedicada que cuida do seu pet com carinho e expertise.'
   });
   const [loading, setLoading] = useState(true);
 
@@ -88,27 +88,27 @@ export const useVeterinarianData = () => {
         
         // Garantir que a URL é válida e não está vazia
         if (!photoUrl || photoUrl === '""' || photoUrl === 'null' || photoUrl === 'undefined' || photoUrl === '' || photoUrl === '{}') {
-          photoUrl = '';
+          photoUrl = '/images/dr-karine.jpeg'; // Usar a imagem padrão se não houver uma válida
           console.log('🚫 URL da foto está vazia ou inválida, usando placeholder');
-        } else if (!photoUrl.startsWith('http')) {
-          photoUrl = '';
-          console.log('🚫 URL da foto não é válida (não começa com http), usando placeholder');
+        } else if (!photoUrl.startsWith('http') && !photoUrl.startsWith('/images/')) { // Permitir caminhos locais
+          photoUrl = '/images/dr-karine.jpeg'; // Usar a imagem padrão se não for uma URL ou caminho local válido
+          console.log('🚫 URL da foto não é válida (não começa com http ou /images/), usando placeholder');
         } else {
           console.log('✅ URL da foto válida encontrada:', photoUrl);
         }
 
         // Atualizar os dados do veterinário com APENAS os dados do banco
         const newData = {
-          name: settingsObj.name || 'Dra. Karine Silva',
-          title: settingsObj.specialty || 'Médica Veterinária',
-          description: settingsObj.description || 'Especialista em cuidados veterinários.',
+          name: settingsObj.name || 'Karine M. F. Marra',
+          title: settingsObj.specialty || 'Clínica Geral, Pós graduada em Dermatológia, Pós graduada em Fitoterápicos e Homeopáticos',
+          description: settingsObj.description || 'CRM-MG 26.710. MBA em Gestão de clínicas. CEO da POPULARVET e da petvetfarma.com',
           image: photoUrl,
           experience: settingsObj.experience || '', // Não mostrar se não foi cadastrado
-          specialties: Array.isArray(settingsObj.specialties) ? settingsObj.specialties : (typeof settingsObj.specialty === 'string' ? settingsObj.specialty.split(',').map((s: string) => s.trim()) : []), // Usar apenas se foi cadastrado
-          education: settingsObj.education || '', // Usar apenas se foi cadastrado
+          specialties: Array.isArray(settingsObj.specialties) ? settingsObj.specialties : (typeof settingsObj.specialty === 'string' ? settingsObj.specialty.split(',').map((s: string) => s.trim()) : ['Clínica Geral', 'Dermatologia', 'Fitoterápicos', 'Homeopáticos']), // Usar apenas se foi cadastrado
+          education: settingsObj.education || 'MBA em Gestão de clínicas.', // Usar apenas se foi cadastrado
           linkedin: settingsObj.linkedin || '', // Adicionar LinkedIn
-          sectionTitle: settingsObj.section_title || '',
-          sectionSubtitle: settingsObj.section_subtitle || ''
+          sectionTitle: settingsObj.section_title || 'Nossa Veterinária',
+          sectionSubtitle: settingsObj.section_subtitle || 'Conheça a profissional dedicada que cuida do seu pet com carinho e expertise.'
         };
 
         console.log('🚀 Dados finais que serão aplicados:', newData);

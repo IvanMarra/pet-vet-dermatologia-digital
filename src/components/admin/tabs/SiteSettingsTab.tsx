@@ -188,7 +188,7 @@ const SiteSettingsTab = () => {
         value = value.slice(1, -1);
       }
       // Se está vazio ou é inválido, retornar string vazia
-      if (!value || value === '""' || value === 'null' || !value.startsWith('http')) {
+      if (!value || value === '""' || value === 'null' || !value.startsWith('http') && !value.startsWith('/images/')) {
         value = '';
       }
       console.log(`📸 Foto processada:`, value);
@@ -366,7 +366,7 @@ const SiteSettingsTab = () => {
             <Label>Título da Seção</Label>
             <div className="relative">
               <Input
-                value={getSetting('veterinarian', 'section_title')}
+                value={getSetting('veterinarian', 'section_title', 'Nossa Veterinária')}
                 onChange={(e) => {
                   const value = e.target.value;
                   if (value.length <= 50) {
@@ -392,7 +392,7 @@ const SiteSettingsTab = () => {
             <Label>Subtítulo da Seção</Label>
             <div className="relative">
               <Textarea
-                value={getSetting('veterinarian', 'section_subtitle')}
+                value={getSetting('veterinarian', 'section_subtitle', 'Conheça a profissional dedicada que cuida do seu pet com carinho e expertise.')}
                 onChange={(e) => {
                   const value = e.target.value;
                   if (value.length <= 200) {
@@ -497,7 +497,7 @@ const SiteSettingsTab = () => {
             <Label>Descrição</Label>
             <div className="relative">
               <Textarea
-                value={getSetting('veterinarian', 'description', 'CRM-MG 26.710. CEO da POPULARVET e da petvetfarma.com')}
+                value={getSetting('veterinarian', 'description', 'CRM-MG 26.710. MBA em Gestão de clínicas. CEO da POPULARVET e da petvetfarma.com')}
                 onChange={(e) => {
                   const value = e.target.value;
                   if (value.length <= 800) {
@@ -548,7 +548,7 @@ const SiteSettingsTab = () => {
           <div className="space-y-2">
             <ImageUpload
               bucket="veterinarian-photos"
-              currentImageUrl={getSetting('veterinarian', 'photo')}
+              currentImageUrl={getSetting('veterinarian', 'photo', '/images/dr-karine.jpeg')}
               onImageUploaded={(url) => {
                 console.log('📸 Foto da Dra. Karine enviada:', url);
                 updateSetting('veterinarian', 'photo', url);
@@ -609,12 +609,13 @@ const SiteSettingsTab = () => {
               <div>
                 <Label>URL da Imagem da Logo (opcional)</Label>
                 <Input
+                  id="logo_image_url"
                   value={getSetting('general', 'logo_image_url', '/images/logo-popularvet-resize-min.png')}
                   onChange={(e) => updateSetting('general', 'logo_image_url', e.target.value)}
                   placeholder="https://exemplo.com/logo.png"
                 />
                 <p className="text-sm text-muted-foreground mt-1">
-                  Se preenchida, será usada no lugar do ícone padrão
+                  Se fornecida, a imagem será usada no lugar do texto. Recomendado: PNG com fundo transparente
                 </p>
               </div>
             </div>
