@@ -1,28 +1,27 @@
-
 import React, { useState, useEffect } from 'react';
 import { Heart, Phone, Mail, MapPin, Instagram, Facebook, Clock } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 
 const Footer = () => {
   const [footerData, setFooterData] = useState({
-    company_name: 'VetCare',
-    company_subtitle: 'Clínica Veterinária',
+    company_name: 'PopularVET',
+    company_subtitle: 'Aqui tem cuidados para todos os pets',
     company_description: 'A primeira clínica veterinária especializada em dermatologia da região. Cuidando dos seus melhores amigos com amor e profissionalismo.',
-    copyright: '© 2024 VetCare Clínica Veterinária. Todos os direitos reservados.',
-    crmv: 'CRMV-SP: 12345',
+    copyright: '© 2024 PopularVET Clínica Veterinária. Todos os direitos reservados.',
+    crmv: 'CRMV-MG: 26.710', // Atualizado para CRMV da Dra. Karine
     instagram_url: '',
     facebook_url: '',
   });
 
   const [contactData, setContactData] = useState({
-    street: 'Rua das Flores, 123',
-    city_state: 'Centro - São Paulo - SP',
-    cep: '01234-567',
-    phone: '(11) 9999-9999',
-    email: 'contato@vetcare.com.br',
-    hours_weekdays: 'Seg-Sex: 8h às 18h',
-    hours_saturday: 'Sábado: 8h às 14h',
-    emergency_hours: 'Emergências 24h',
+    street: 'Rua Francisco Passos 645 Lj 2',
+    city_state: 'Bairro Pedra Azul, CEP: 32185-090',
+    cep: '32185-090', // Adicionado CEP explicitamente
+    phone: '(31) 99550-2094',
+    email: 'contato@popularvet.com',
+    hours_weekdays: 'Terça a Sexta: 10h às 20h30',
+    hours_saturday: 'Sábado: 9h às 14h30',
+    emergency_hours: 'Emergências e Urgências: ligar para verificar disponibilidade',
   });
 
   useEffect(() => {
@@ -34,11 +33,12 @@ const Footer = () => {
       const { data } = await supabase
         .from('site_settings')
         .select('*')
-        .in('section', ['footer', 'contact']);
+        .in('section', ['footer', 'contact', 'general']); // Incluir 'general' para logo_text/subtitle
       
       if (data) {
         const footerSettings: any = {};
         const contactSettings: any = {};
+        const generalSettings: any = {};
         
         data.forEach(item => {
           let value = item.value;
@@ -50,11 +50,53 @@ const Footer = () => {
             footerSettings[item.key] = value;
           } else if (item.section === 'contact') {
             contactSettings[item.key] = value;
+          } else if (item.section === 'general') {
+            generalSettings[item.key] = value;
           }
         });
         
-        setFooterData(prev => ({ ...prev, ...footerSettings }));
-        setContactData(prev => ({ ...prev, ...contactSettings }));
+        // Combine general settings for company name/subtitle if available
+        const companyName = generalSettings.logo_text || footerSettings.company_name || 'PopularVET';
+        const companySubtitle = generalSettings.logo_subtitle || footerSettings.company_subtitle || 'Aqui tem cuidados para todos os pets';
+
+        setFooterData(prev => ({ 
+          ...prev, 
+          ...footerSettings,
+          company_name: companyName,
+          company_subtitle: companySubtitle,
+        }));
+
+        // Processar endereço e horários para exibir corretamente
+        let fullAddress = contactSettings.address;
+        if (!fullAddress && (contactSettings.street || contactSettings.city_state || contactSettings.cep)) {
+          const addressParts = [];
+          if (contactSettings.street) addressParts.push(contactSettings.street);
+          if (contactSettings.city_state) addressParts.push(contactSettings.city_state);
+          if (contactSettings.cep) addressParts.push(`CEP: ${contactSettings.cep}`);
+          fullAddress = addressParts.join('\n');
+        }
+
+        let fullHours = contactSettings.hours;
+        if (!fullHours && (contactSettings.hours_weekdays || contactSettings.hours_saturday || contactSettings.emergency_hours)) {
+          const hoursParts = [];
+          if (contactSettings.hours_weekdays) hoursParts.push(contactSettings.hours_weekdays);
+          if (contactSettings.hours_saturday) hoursParts.push(contactSettings.hours_saturday);
+          if (contactSettings.emergency_hours) hoursParts.push(contactSettings.emergency_hours);
+          fullHours = hoursParts.join('\n');
+        }
+
+        setContactData(prev => ({ 
+          ...prev, 
+          ...contactSettings,
+          street: contactSettings.street || prev.street,
+          city_state: contactSettings.city_state || prev.city_state,
+          cep: contactSettings.cep || prev.cep,
+          phone: contactSettings.phone || prev.phone,
+          email: contactSettings.email || prev.email,
+          hours_weekdays: contactSettings.hours_weekdays || prev.hours_weekdays,
+          hours_saturday: contactSettings.hours_saturday || prev.hours_saturday,
+          emergency_hours: contactSettings.emergency_hours || prev.emergency_hours,
+        }));
       }
     } catch (error) {
       console.error('Erro ao carregar dados do rodapé:', error);
@@ -146,7 +188,7 @@ const Footer = () => {
                 <div>
                   <p>{contactData.street}</p>
                   <p>{contactData.city_state}</p>
-                  <p>CEP: {contactData.cep}</p>
+                  {contactData.cep && <p>CEP: {contactData.cep}</p>}
                 </div>
               </div>
               <div className="flex items-start gap-3">
