@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Heart, Menu, X, Phone, MapPin } from 'lucide-react';
@@ -12,11 +11,11 @@ const Header = () => {
   });
   
   const [logoData, setLogoData] = useState({
-    text: 'VetCare',
-    subtitle: 'Clínica Veterinária',
-    imageUrl: '',
-    linkUrl: '',
-    altText: 'Logo da Clínica Veterinária'
+    text: 'PopularVET',
+    subtitle: 'Aqui tem cuidados para todos os pets',
+    imageUrl: '/images/logo-popularvet.jpeg', // Nova URL da imagem
+    linkUrl: '/',
+    altText: 'Logo PopularVET'
   });
 
   useEffect(() => {
@@ -64,11 +63,11 @@ const Header = () => {
         }, {} as Record<string, any>);
         
         setLogoData({
-          text: logoSettings.logo_text || 'VetCare',
-          subtitle: logoSettings.logo_subtitle || 'Clínica Veterinária',
-          imageUrl: logoSettings.logo_image_url || '',
-          linkUrl: logoSettings.logo_link_url || '',
-          altText: logoSettings.logo_alt_text || 'Logo da Clínica Veterinária'
+          text: logoSettings.logo_text || 'PopularVET',
+          subtitle: logoSettings.logo_subtitle || 'Aqui tem cuidados para todos os pets',
+          imageUrl: logoSettings.logo_image_url || '/images/logo-popularvet.jpeg', // Fallback para a nova logo
+          linkUrl: logoSettings.logo_link_url || '/',
+          altText: logoSettings.logo_alt_text || 'Logo PopularVET'
         });
       }
     } catch (error) {
@@ -90,7 +89,7 @@ const Header = () => {
     { id: 'services', label: 'Procedimentos' },
     { id: 'loja', label: 'Loja Online' },
     { id: 'lost-pets', label: 'Pets Perdidos' },
-    { id: 'veterinaria', label: 'Dra. Karine' }, // Corrigido para corresponder ao ID da seção
+    { id: 'veterinaria', label: 'Dra. Karine' },
     { id: 'testimonials', label: 'Depoimentos' },
     { id: 'contact', label: 'Contato' },
   ];
@@ -125,7 +124,7 @@ const Header = () => {
                 <img 
                   src={logoData.imageUrl} 
                   alt={logoData.altText} 
-                  className="h-10 w-10 object-contain rounded-full"
+                  className="h-12 w-auto object-contain" // Ajustado para altura fixa e largura automática
                   onError={(e) => {
                     // Fallback para o ícone padrão se a imagem falhar
                     e.currentTarget.style.display = 'none';
@@ -140,10 +139,13 @@ const Header = () => {
                   <Heart className="h-6 w-6 text-primary-foreground" />
                 </div>
               )}
-              <div>
-                <h1 className="text-xl font-bold text-primary">{logoData.text}</h1>
-                <p className="text-xs text-muted-foreground">{logoData.subtitle}</p>
-              </div>
+              {/* O texto da logo só aparece se não houver imagem ou se a imagem falhar */}
+              {!logoData.imageUrl && (
+                <div>
+                  <h1 className="text-xl font-bold text-primary">{logoData.text}</h1>
+                  <p className="text-xs text-muted-foreground">{logoData.subtitle}</p>
+                </div>
+              )}
             </a>
 
             {/* Desktop Menu */}

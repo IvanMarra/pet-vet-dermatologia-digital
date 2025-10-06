@@ -457,6 +457,7 @@ const SiteSettingsTab = () => {
                     });
                   }
                 }}
+                placeholder="Formação acadêmica e profissional"
                 maxLength={150}
               />
               <div className="text-right text-xs text-muted-foreground mt-1">
@@ -586,9 +587,9 @@ const SiteSettingsTab = () => {
               <div>
                 <Label>Nome/Texto da Logo</Label>
                 <Input
-                  value={getSetting('logo', 'text')}
-                  onChange={(e) => updateSetting('logo', 'text', e.target.value)}
-                  placeholder="VetCare"
+                  value={getSetting('general', 'logo_text', 'PopularVET')}
+                  onChange={(e) => updateSetting('general', 'logo_text', e.target.value)}
+                  placeholder="PopularVET"
                 />
                 <p className="text-sm text-muted-foreground mt-1">
                   Texto que aparecerá como logo principal
@@ -597,9 +598,9 @@ const SiteSettingsTab = () => {
               <div>
                 <Label>Subtítulo da Logo</Label>
                 <Input
-                  value={getSetting('logo', 'subtitle')}
-                  onChange={(e) => updateSetting('logo', 'subtitle', e.target.value)}
-                  placeholder="Clínica Veterinária"
+                  value={getSetting('general', 'logo_subtitle', 'Aqui tem cuidados para todos os pets')}
+                  onChange={(e) => updateSetting('general', 'logo_subtitle', e.target.value)}
+                  placeholder="Aqui tem cuidados para todos os pets"
                 />
                 <p className="text-sm text-muted-foreground mt-1">
                   Texto que aparecerá abaixo da logo
@@ -608,8 +609,8 @@ const SiteSettingsTab = () => {
               <div>
                 <Label>URL da Imagem da Logo (opcional)</Label>
                 <Input
-                  value={getSetting('logo', 'image_url')}
-                  onChange={(e) => updateSetting('logo', 'image_url', e.target.value)}
+                  value={getSetting('general', 'logo_image_url', '/images/logo-popularvet.jpeg')}
+                  onChange={(e) => updateSetting('general', 'logo_image_url', e.target.value)}
                   placeholder="https://exemplo.com/logo.png"
                 />
                 <p className="text-sm text-muted-foreground mt-1">
@@ -624,7 +625,7 @@ const SiteSettingsTab = () => {
             <Input
               value={getSetting('footer', 'company_name')}
               onChange={(e) => updateSetting('footer', 'company_name', e.target.value)}
-              placeholder="VetCare"
+              placeholder="PopularVET"
             />
           </div>
           <div>
@@ -649,7 +650,7 @@ const SiteSettingsTab = () => {
             <Input
               value={getSetting('footer', 'copyright')}
               onChange={(e) => updateSetting('footer', 'copyright', e.target.value)}
-              placeholder="© 2024 VetCare Clínica Veterinária. Todos os direitos reservados."
+              placeholder="© 2024 PopularVET Clínica Veterinária. Todos os direitos reservados."
             />
           </div>
           <div>
@@ -673,7 +674,7 @@ const SiteSettingsTab = () => {
             <Input
               value={getSetting('footer', 'instagram_url')}
               onChange={(e) => updateSetting('footer', 'instagram_url', e.target.value)}
-              placeholder="https://instagram.com/vetcare"
+              placeholder="https://instagram.com/popularvet"
             />
           </div>
           <div>
@@ -681,7 +682,7 @@ const SiteSettingsTab = () => {
             <Input
               value={getSetting('footer', 'facebook_url')}
               onChange={(e) => updateSetting('footer', 'facebook_url', e.target.value)}
-              placeholder="https://facebook.com/vetcare"
+              placeholder="https://facebook.com/popularvet"
             />
           </div>
         </CardContent>
@@ -729,7 +730,7 @@ const SiteSettingsTab = () => {
             <Input
               value={getSetting('contact', 'email')}
               onChange={(e) => updateSetting('contact', 'email', e.target.value)}
-              placeholder="contato@vetcare.com.br"
+              placeholder="contato@popularvet.com.br"
             />
           </div>
           <div>
@@ -769,9 +770,9 @@ const SiteSettingsTab = () => {
             <Label htmlFor="logo_text">Texto da Logo</Label>
             <Input
               id="logo_text"
-              value={getSetting('general', 'logo_text')}
+              value={getSetting('general', 'logo_text', 'PopularVET')}
               onChange={(e) => updateSetting('general', 'logo_text', e.target.value)}
-              placeholder="VetCare"
+              placeholder="PopularVET"
             />
             <p className="text-sm text-muted-foreground mt-1">
               Texto principal que aparecerá como logo (usado quando não há imagem)
@@ -782,9 +783,9 @@ const SiteSettingsTab = () => {
             <Label htmlFor="logo_subtitle">Subtítulo da Logo</Label>
             <Input
               id="logo_subtitle"
-              value={getSetting('general', 'logo_subtitle')}
+              value={getSetting('general', 'logo_subtitle', 'Aqui tem cuidados para todos os pets')}
               onChange={(e) => updateSetting('general', 'logo_subtitle', e.target.value)}
-              placeholder="Clínica Veterinária"
+              placeholder="Aqui tem cuidados para todos os pets"
             />
             <p className="text-sm text-muted-foreground mt-1">
               Texto secundário que aparece abaixo do logo
@@ -792,10 +793,10 @@ const SiteSettingsTab = () => {
           </div>
           
           <div>
-            <Label htmlFor="logo_image_url">URL da Imagem da Logo</Label>
+            <Label htmlFor="logo_image_url">URL da Imagem da Logo (opcional)</Label>
             <Input
               id="logo_image_url"
-              value={getSetting('general', 'logo_image_url')}
+              value={getSetting('general', 'logo_image_url', '/images/logo-popularvet.jpeg')}
               onChange={(e) => updateSetting('general', 'logo_image_url', e.target.value)}
               placeholder="https://exemplo.com/logo.png"
             />
@@ -821,7 +822,7 @@ const SiteSettingsTab = () => {
             <Label htmlFor="logo_alt_text">Texto Alternativo da Logo</Label>
             <Input
               id="logo_alt_text"
-              value={getSetting('general', 'logo_alt_text')}
+              value={getSetting('general', 'logo_alt_text', 'Logo PopularVET')}
               onChange={(e) => updateSetting('general', 'logo_alt_text', e.target.value)}
               placeholder="Logo da Clínica Veterinária"
             />
