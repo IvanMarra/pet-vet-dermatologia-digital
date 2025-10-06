@@ -43,21 +43,21 @@ const HeroSection = () => {
         {/* Cartões de recursos */}
         <div className="w-full max-w-4xl px-4 absolute bottom-20 left-1/2 transform -translate-x-1/2">
           <div className="grid md:grid-cols-3 gap-4">
-            <Card className="bg-white/80 backdrop-blur-sm shadow-xl">
+            <Card className="bg-white/80 backdrop-blur-sm shadow-xl transition-all duration-300 hover:bg-white/90 hover:shadow-2xl">
               <CardContent className="p-4 text-center">
                 <Heart className="h-8 w-8 text-primary mx-auto mb-2" />
                 <h3 className="font-semibold text-gray-800">Cuidado Especializado</h3>
                 <p className="text-sm text-gray-600">Atendimento personalizado para cada pet</p>
               </CardContent>
             </Card>
-            <Card className="bg-white/80 backdrop-blur-sm shadow-xl">
+            <Card className="bg-white/80 backdrop-blur-sm shadow-xl transition-all duration-300 hover:bg-white/90 hover:shadow-2xl">
               <CardContent className="p-4 text-center">
                 <Award className="h-8 w-8 text-primary mx-auto mb-2" />
                 <h3 className="font-semibold text-gray-800">Profissionais Qualificados</h3>
                 <p className="text-sm text-gray-600">Equipe experiente e dedicada</p>
               </CardContent>
             </Card>
-            <Card className="bg-white/80 backdrop-blur-sm shadow-xl">
+            <Card className="bg-white/80 backdrop-blur-sm shadow-xl transition-all duration-300 hover:bg-white/90 hover:shadow-2xl">
               <CardContent className="p-4 text-center">
                 <Clock className="h-8 w-8 text-primary mx-auto mb-2" />
                 <h3 className="font-semibold text-gray-800">Emergência 24h</h3>
