@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { Heart, Menu, X, Phone, MapPin, MessageCircle } from 'lucide-react';
+import { Heart, Menu, X, Phone, MapPin } from 'lucide-react'; // Removido MessageCircle
 import { supabase } from '@/integrations/supabase/client';
+import WhatsAppIcon from './WhatsAppIcon'; // Importar o novo componente de ícone
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -95,7 +96,7 @@ const Header = () => {
                     className="ml-1 text-green-300 hover:text-green-100 transition-colors"
                     title="Enviar mensagem via WhatsApp"
                   >
-                    <MessageCircle className="h-4 w-4" />
+                    <WhatsAppIcon className="h-4 w-4" /> {/* Usando o componente WhatsAppIcon */}
                   </a>
                 )}
               </div>

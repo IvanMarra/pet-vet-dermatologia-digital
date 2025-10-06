@@ -188,7 +188,7 @@ const SiteSettingsTab = () => {
         value = value.slice(1, -1);
       }
       // Se está vazio ou é inválido, retornar string vazia
-      if (!value || value === '""' || value === 'null' || !value.startsWith('http') && !value.startsWith('/images/')) {
+      if (!value || value === '""' || value === 'null' || (!value.startsWith('http') && !value.startsWith('/images/'))) {
         value = '';
       }
       console.log(`📸 Foto processada:`, value);
@@ -226,6 +226,13 @@ const SiteSettingsTab = () => {
         <CardContent className="space-y-6">
           {Array.from({ length: slideCount }, (_, index) => {
             const slideNum = index + 1;
+            // Extraindo template literals para variáveis para evitar erros de compilação
+            const slideTitleKey = `slide_${slideNum}_title`;
+            const slideCtaKey = `slide_${slideNum}_cta`;
+            const slideSubtitleKey = `slide_${slideNum}_subtitle`;
+            const slideDescriptionKey = `slide_${slideNum}_description`;
+            const slideImageKey = `slide_${slideNum}_image`;
+
             return (
               <div key={slideNum} className="border rounded-lg p-4 space-y-4">
                 <div className="flex justify-between items-center">
@@ -245,16 +252,16 @@ const SiteSettingsTab = () => {
                   <div>
                     <Label>Título</Label>
                     <Input
-                      value={getSetting('hero', `slide_${slideNum}_title`)}
-                      onChange={(e) => updateSetting('hero', `slide_${slideNum}_title`, e.target.value)}
+                      value={getSetting('hero', slideTitleKey)}
+                      onChange={(e) => updateSetting('hero', slideTitleKey, e.target.value)}
                       placeholder="Título do slide"
                     />
                   </div>
                   <div>
                     <Label>Botão CTA</Label>
                     <Input
-                      value={getSetting('hero', `slide_${slideNum}_cta`)}
-                      onChange={(e) => updateSetting('hero', `slide_${slideNum}_cta`, e.target.value)}
+                      value={getSetting('hero', slideCtaKey)}
+                      onChange={(e) => updateSetting('hero', slideCtaKey, e.target.value)}
                       placeholder="Texto do botão"
                     />
                   </div>
@@ -263,8 +270,8 @@ const SiteSettingsTab = () => {
                 <div>
                   <Label>Subtítulo</Label>
                   <Input
-                    value={getSetting('hero', `slide_${slideNum}_subtitle`)}
-                    onChange={(e) => updateSetting('hero', `slide_${slideNum}_subtitle`, e.target.value)}
+                    value={getSetting('hero', slideSubtitleKey)}
+                    onChange={(e) => updateSetting('hero', slideSubtitleKey, e.target.value)}
                     placeholder="Subtítulo do slide"
                   />
                 </div>
@@ -272,8 +279,8 @@ const SiteSettingsTab = () => {
                 <div>
                   <Label>Descrição</Label>
                   <Textarea
-                    value={getSetting('hero', `slide_${slideNum}_description`)}
-                    onChange={(e) => updateSetting('hero', `slide_${slideNum}_description`, e.target.value)}
+                    value={getSetting('hero', slideDescriptionKey)}
+                    onChange={(e) => updateSetting('hero', slideDescriptionKey, e.target.value)}
                     placeholder="Descrição detalhada"
                     rows={3}
                   />
@@ -281,9 +288,9 @@ const SiteSettingsTab = () => {
                 
                 <ImageUpload
                   bucket="hero-images"
-                  currentImageUrl={getSetting('hero', `slide_${slideNum}_image`)}
-                  onImageUploaded={(url) => updateSetting('hero', `slide_${slideNum}_image`, url)}
-                  onImageRemoved={() => updateSetting('hero', `slide_${slideNum}_image`, '')}
+                  currentImageUrl={getSetting('hero', slideImageKey)}
+                  onImageUploaded={(url) => updateSetting('hero', slideImageKey, url)}
+                  onImageRemoved={() => updateSetting('hero', slideImageKey, '')}
                   label={`Imagem do Slide ${slideNum}`}
                   recommendedSize="1920x1080 pixels (formato paisagem)"
                   maxSizeMB={5}
@@ -607,7 +614,7 @@ const SiteSettingsTab = () => {
                 </p>
               </div>
               <div>
-                <Label>URL da Imagem da Logo (opcional)</Label>
+                <Label htmlFor="logo_image_url">URL da Imagem da Logo (opcional)</Label>
                 <Input
                   id="logo_image_url"
                   value={getSetting('general', 'logo_image_url', '/images/logo-popularvet-resize-min.png')}

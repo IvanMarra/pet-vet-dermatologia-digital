@@ -42,7 +42,7 @@ const VeterinarianCard: React.FC<VeterinarianCardProps> = ({
                 key={image} // Force re-render when image changes
                 onError={(e) => {
                   console.error('❌ Erro ao carregar imagem:', image);
-                  console.error('❌ A imagem não existe no storage');
+                  (e.target as HTMLImageElement).src = '/placeholder.svg'; // Fallback para placeholder
                 }}
                 onLoad={() => {
                   console.log('✅ Imagem carregada com sucesso:', image);
