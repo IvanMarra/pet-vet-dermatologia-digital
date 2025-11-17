@@ -65,20 +65,35 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const loadUserProfile = async (authUser: SupabaseUser) => {
     try {
+      console.log('🔍 Loading profile for user:', authUser.email);
+      
       // Get user profile
-      const { data: profile } = await supabase
+      const { data: profile, error: profileError } = await supabase
         .from('profiles')
         .select('*')
         .eq('id', authUser.id)
         .maybeSingle();
 
+      if (profileError) {
+        console.error('❌ Error loading profile:', profileError);
+      } else {
+        console.log('✅ Profile loaded:', profile);
+      }
+
       // Check if user is admin
-      const { data: roles } = await supabase
+      const { data: roles, error: rolesError } = await supabase
         .from('user_roles')
         .select('role')
         .eq('user_id', authUser.id);
 
+      if (rolesError) {
+        console.error('❌ Error loading roles:', rolesError);
+      } else {
+        console.log('✅ Roles loaded:', roles);
+      }
+
       const hasAdminRole = roles?.some(r => r.role === 'admin') || false;
+      console.log('👤 Is Admin?', hasAdminRole);
 
       setUser({
         id: authUser.id,
@@ -86,10 +101,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         name: profile?.name || authUser.email?.split('@')[0] || 'User',
       });
       setIsAdmin(hasAdminRole);
+      console.log('✅ User state updated, setting loading to false');
     } catch (error) {
-      console.error('Error loading user profile:', error);
+      console.error('❌ Error loading user profile:', error);
     } finally {
       setLoading(false);
+      console.log('✅ Loading set to false');
     }
   };
 
