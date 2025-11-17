@@ -6,8 +6,9 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-const TARGET_SIZE = 800;
+const MAX_DIMENSION = 600; // Maximum width or height
 const MAX_FILE_SIZE = 10 * 1024 * 1024;
+const TARGET_FILE_SIZE = 200 * 1024; // Target 200kb
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -93,10 +94,11 @@ serve(async (req) => {
               {
                 type: 'text',
                 text: `Optimize this pet photo by:
-1. Resize it to exactly ${TARGET_SIZE}x${TARGET_SIZE} pixels (square crop, maintaining the pet as the focal point)
-2. Add a subtle watermark with the text "Popular Vet" in the bottom right corner (semi-transparent, professional looking)
-3. Enhance image quality and reduce file size
-Return the optimized image.`
+1. Resize to maximum ${MAX_DIMENSION}px on the longest side (maintain aspect ratio, do NOT crop)
+2. Add a subtle watermark "Popular Vet" in bottom right (semi-transparent)
+3. Compress heavily to JPEG quality 70% - final file MUST be under ${TARGET_FILE_SIZE / 1024}KB
+4. Return as optimized JPEG format
+CRITICAL: The output file size MUST be under 200KB. Prioritize small file size over quality.`
               },
               {
                 type: 'image_url',
