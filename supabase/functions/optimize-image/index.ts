@@ -12,6 +12,7 @@ serve(async (req) => {
   }
 
   try {
+    // Client for user authentication
     const supabaseClient = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_ANON_KEY') ?? '',
@@ -37,6 +38,17 @@ serve(async (req) => {
       throw new Error('Unauthorized');
     }
 
+    // Client with service role for storage operations (bypasses RLS)
+    const supabaseAdmin = createClient(
+      Deno.env.get('SUPABASE_URL') ?? '',
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
+      {
+        auth: {
+          persistSession: false,
+        },
+      }
+    );
+
     const formData = await req.formData();
     const file = formData.get('file') as File;
 
@@ -60,8 +72,8 @@ serve(async (req) => {
     const extension = file.name.split('.').pop() || 'jpg';
     const fileName = `${timestamp}-${randomStr}.${extension}`;
 
-    // Upload image directly to storage
-    const { data: uploadData, error: uploadError } = await supabaseClient
+    // Upload image directly to storage using admin client
+    const { data: uploadData, error: uploadError } = await supabaseAdmin
       .storage
       .from('pet-gallery')
       .upload(fileName, arrayBuffer, {
@@ -75,7 +87,7 @@ serve(async (req) => {
     }
 
     // Get public URL
-    const { data: { publicUrl } } = supabaseClient
+    const { data: { publicUrl } } = supabaseAdmin
       .storage
       .from('pet-gallery')
       .getPublicUrl(fileName);
