@@ -61,8 +61,16 @@ serve(async (req) => {
 
     console.log(`Processing image: ${file.name}, size: ${file.size} bytes`);
 
+    // Convert to base64 in chunks to avoid stack overflow
     const arrayBuffer = await file.arrayBuffer();
-    const base64 = btoa(String.fromCharCode(...new Uint8Array(arrayBuffer)));
+    const bytes = new Uint8Array(arrayBuffer);
+    let binary = '';
+    const chunkSize = 8192;
+    for (let i = 0; i < bytes.length; i += chunkSize) {
+      const chunk = bytes.subarray(i, Math.min(i + chunkSize, bytes.length));
+      binary += String.fromCharCode.apply(null, Array.from(chunk));
+    }
+    const base64 = btoa(binary);
     const imageDataUrl = `data:${file.type};base64,${base64}`;
 
     const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
@@ -120,8 +128,13 @@ Return the optimized image.`
 
     console.log('Image processed successfully by AI');
 
+    // Decode base64 in chunks to avoid stack overflow
     const optimizedBase64 = optimizedImageUrl.split(',')[1];
-    const optimizedBuffer = Uint8Array.from(atob(optimizedBase64), c => c.charCodeAt(0));
+    const binaryString = atob(optimizedBase64);
+    const optimizedBuffer = new Uint8Array(binaryString.length);
+    for (let i = 0; i < binaryString.length; i++) {
+      optimizedBuffer[i] = binaryString.charCodeAt(i);
+    }
 
     const timestamp = Date.now();
     const randomStr = Math.random().toString(36).substring(2, 9);
