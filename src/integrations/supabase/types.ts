@@ -14,7 +14,327 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      contacts: {
+        Row: {
+          created_at: string | null
+          email: string
+          id: string
+          message: string
+          name: string
+          phone: string | null
+          status: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          email: string
+          id?: string
+          message: string
+          name: string
+          phone?: string | null
+          status?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          email?: string
+          id?: string
+          message?: string
+          name?: string
+          phone?: string | null
+          status?: string | null
+        }
+        Relationships: []
+      }
+      hero_slides: {
+        Row: {
+          created_at: string | null
+          cta_text: string | null
+          description: string | null
+          display_order: number | null
+          id: string
+          image_url: string | null
+          is_active: boolean | null
+          subtitle: string | null
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          cta_text?: string | null
+          description?: string | null
+          display_order?: number | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean | null
+          subtitle?: string | null
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          cta_text?: string | null
+          description?: string | null
+          display_order?: number | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean | null
+          subtitle?: string | null
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      lost_pets: {
+        Row: {
+          breed: string | null
+          color: string | null
+          contact_email: string | null
+          contact_name: string
+          contact_phone: string
+          coordinates: Json | null
+          created_at: string | null
+          description: string | null
+          id: string
+          image_url: string | null
+          location: string
+          pet_name: string
+          pet_type: string
+          size: string | null
+          status: string | null
+          type: string
+          updated_at: string | null
+        }
+        Insert: {
+          breed?: string | null
+          color?: string | null
+          contact_email?: string | null
+          contact_name: string
+          contact_phone: string
+          coordinates?: Json | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          location: string
+          pet_name: string
+          pet_type: string
+          size?: string | null
+          status?: string | null
+          type: string
+          updated_at?: string | null
+        }
+        Update: {
+          breed?: string | null
+          color?: string | null
+          contact_email?: string | null
+          contact_name?: string
+          contact_phone?: string
+          coordinates?: Json | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          location?: string
+          pet_name?: string
+          pet_type?: string
+          size?: string | null
+          status?: string | null
+          type?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      pet_gallery: {
+        Row: {
+          category: string
+          created_at: string | null
+          id: string
+          image_url: string
+          image_with_watermark: string | null
+          owner_name: string | null
+          pet_name: string
+          service_date: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          category: string
+          created_at?: string | null
+          id?: string
+          image_url: string
+          image_with_watermark?: string | null
+          owner_name?: string | null
+          pet_name: string
+          service_date?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          category?: string
+          created_at?: string | null
+          id?: string
+          image_url?: string
+          image_with_watermark?: string | null
+          owner_name?: string | null
+          pet_name?: string
+          service_date?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      products: {
+        Row: {
+          category: string | null
+          created_at: string | null
+          description: string | null
+          id: string
+          image_url: string | null
+          is_active: boolean | null
+          name: string
+          price: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean | null
+          name: string
+          price?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          category?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean | null
+          name?: string
+          price?: number | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      services: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          display_order: number | null
+          icon: string | null
+          id: string
+          is_active: boolean | null
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          display_order?: number | null
+          icon?: string | null
+          id?: string
+          is_active?: boolean | null
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          display_order?: number | null
+          icon?: string | null
+          id?: string
+          is_active?: boolean | null
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      site_analytics: {
+        Row: {
+          created_at: string | null
+          event_type: string
+          id: string
+          page_path: string | null
+          session_id: string | null
+          user_agent: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          event_type: string
+          id?: string
+          page_path?: string | null
+          session_id?: string | null
+          user_agent?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          event_type?: string
+          id?: string
+          page_path?: string | null
+          session_id?: string | null
+          user_agent?: string | null
+        }
+        Relationships: []
+      }
+      site_settings: {
+        Row: {
+          created_at: string | null
+          id: string
+          key: string
+          section: string | null
+          updated_at: string | null
+          value: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          key: string
+          section?: string | null
+          updated_at?: string | null
+          value?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          key?: string
+          section?: string | null
+          updated_at?: string | null
+          value?: string | null
+        }
+        Relationships: []
+      }
+      testimonials: {
+        Row: {
+          author_image: string | null
+          author_name: string
+          content: string
+          created_at: string | null
+          id: string
+          is_active: boolean | null
+          rating: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          author_image?: string | null
+          author_name: string
+          content: string
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          rating?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          author_image?: string | null
+          author_name?: string
+          content?: string
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          rating?: number | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
