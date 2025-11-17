@@ -2,7 +2,6 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { LogOut, BarChart3, MessageSquare, Settings, PawPrint, Star, Package, Users, Image } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/useAuth';
 import SiteSettingsTab from './tabs/SiteSettingsTab';
@@ -13,6 +12,7 @@ import LostPetsTab from './tabs/LostPetsTab';
 import DashboardTab from './tabs/DashboardTab';
 import ContactsTab from './tabs/ContactsTab';
 import HeroSlidesTab from './tabs/HeroSlidesTab';
+import PetGalleryTab from './tabs/PetGalleryTab';
 
 const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -76,11 +76,9 @@ const AdminDashboard = () => {
       <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
         <div className="px-4 py-6 sm:px-0">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-            <TabsList className="grid w-full grid-cols-4 lg:grid-cols-8">
-              <TabsTrigger value="dashboard" className="flex items-center gap-2">
-                <BarChart3 className="h-4 w-4" />
-                <span className="hidden sm:inline">Dashboard</span>
-              </TabsTrigger>
+            <TabsList className="grid w-full grid-cols-4 lg:grid-cols-9">
+              <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
+              <TabsTrigger value="gallery">Galeria</TabsTrigger>
               <TabsTrigger value="hero-slides" className="flex items-center gap-2">
                 <Image className="h-4 w-4" />
                 <span className="hidden sm:inline">Slides</span>

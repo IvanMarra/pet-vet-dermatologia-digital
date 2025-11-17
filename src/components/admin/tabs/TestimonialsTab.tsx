@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -10,16 +9,9 @@ import { Badge } from '@/components/ui/badge';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { Plus, Edit, Trash2, Star } from 'lucide-react';
+import type { Tables } from '@/integrations/supabase/types';
 
-interface Testimonial {
-  id: string;
-  client_name: string;
-  pet_name: string;
-  rating: number;
-  comment: string;
-  is_featured: boolean;
-  is_active: boolean;
-}
+type Testimonial = Tables<'testimonials'>;
 
 const TestimonialsTab = () => {
   const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
@@ -29,11 +21,10 @@ const TestimonialsTab = () => {
   const { toast } = useToast();
 
   const [formData, setFormData] = useState({
-    client_name: '',
-    pet_name: '',
+    author_name: '',
+    content: '',
     rating: 5,
-    comment: '',
-    is_featured: false,
+    author_image: '',
     is_active: true
   });
 
@@ -111,11 +102,10 @@ const TestimonialsTab = () => {
 
   const resetForm = () => {
     setFormData({
-      client_name: '',
-      pet_name: '',
+      author_name: '',
+      content: '',
       rating: 5,
-      comment: '',
-      is_featured: false,
+      author_image: '',
       is_active: true
     });
     setEditingTestimonial(null);
@@ -124,12 +114,11 @@ const TestimonialsTab = () => {
 
   const editTestimonial = (testimonial: Testimonial) => {
     setFormData({
-      client_name: testimonial.client_name,
-      pet_name: testimonial.pet_name || '',
-      rating: testimonial.rating,
-      comment: testimonial.comment,
-      is_featured: testimonial.is_featured,
-      is_active: testimonial.is_active
+      author_name: testimonial.author_name,
+      content: testimonial.content,
+      rating: testimonial.rating || 5,
+      author_image: testimonial.author_image || '',
+      is_active: testimonial.is_active ?? true
     });
     setEditingTestimonial(testimonial);
     setShowForm(true);
@@ -168,26 +157,30 @@ const TestimonialsTab = () => {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="grid md:grid-cols-2 gap-4">
-              <div>
-                <Label>Nome do Cliente</Label>
-                <Input
-                  value={formData.client_name}
-                  onChange={(e) => setFormData({...formData, client_name: e.target.value})}
-                />
-              </div>
-              <div>
-                <Label>Nome do Pet</Label>
-                <Input
-                  value={formData.pet_name}
-                  onChange={(e) => setFormData({...formData, pet_name: e.target.value})}
-                />
-              </div>
-            </div>
-            
-            <div>
-              <Label>Avaliação (1-5 estrelas)</Label>
+            <div className="space-y-2">
+              <Label htmlFor="author_name">Nome do Cliente</Label>
               <Input
+                id="author_name"
+                value={formData.author_name}
+                onChange={(e) => setFormData({...formData, author_name: e.target.value})}
+                placeholder="Nome completo"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="author_image">URL da Foto (opcional)</Label>
+              <Input
+                id="author_image"
+                value={formData.author_image}
+                onChange={(e) => setFormData({...formData, author_image: e.target.value})}
+                placeholder="https://..."
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="rating">Avaliação</Label>
+              <Input
+                id="rating"
                 type="number"
                 min="1"
                 max="5"
@@ -195,31 +188,24 @@ const TestimonialsTab = () => {
                 onChange={(e) => setFormData({...formData, rating: parseInt(e.target.value)})}
               />
             </div>
-            
-            <div>
-              <Label>Comentário</Label>
+
+            <div className="space-y-2">
+              <Label htmlFor="content">Depoimento</Label>
               <Textarea
-                value={formData.comment}
-                onChange={(e) => setFormData({...formData, comment: e.target.value})}
+                id="content"
+                value={formData.content}
+                onChange={(e) => setFormData({...formData, content: e.target.value})}
+                placeholder="Escreva o depoimento aqui..."
                 rows={4}
               />
             </div>
-            
-            <div className="flex items-center space-x-4">
-              <div className="flex items-center space-x-2">
-                <Switch
-                  checked={formData.is_featured}
-                  onCheckedChange={(checked) => setFormData({...formData, is_featured: checked})}
-                />
-                <Label>Destacar</Label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <Switch
-                  checked={formData.is_active}
-                  onCheckedChange={(checked) => setFormData({...formData, is_active: checked})}
-                />
-                <Label>Ativo</Label>
-              </div>
+
+            <div className="flex items-center space-x-2">
+              <Switch
+                checked={formData.is_active}
+                onCheckedChange={(checked) => setFormData({...formData, is_active: checked})}
+              />
+              <Label>Ativo</Label>
             </div>
             
             <div className="flex gap-2">
@@ -238,42 +224,45 @@ const TestimonialsTab = () => {
         {testimonials.map((testimonial) => (
           <Card key={testimonial.id}>
             <CardContent className="p-4">
-              <div className="flex justify-between items-start mb-4">
-                <div>
-                  <h3 className="font-semibold">{testimonial.client_name}</h3>
-                  {testimonial.pet_name && (
-                    <p className="text-sm text-gray-600">Pet: {testimonial.pet_name}</p>
+              <div className="flex justify-between items-start mb-2">
+                <div className="flex items-start gap-3">
+                  {testimonial.author_image && (
+                    <img 
+                      src={testimonial.author_image} 
+                      alt={testimonial.author_name}
+                      className="w-12 h-12 rounded-full object-cover"
+                    />
                   )}
-                  <div className="flex items-center gap-2 mt-1">
-                    {renderStars(testimonial.rating)}
-                    <div className="flex gap-2">
-                      {testimonial.is_featured && (
-                        <Badge variant="secondary">Destacado</Badge>
-                      )}
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <h3 className="font-semibold">{testimonial.author_name}</h3>
                       {!testimonial.is_active && (
-                        <Badge variant="outline">Inativo</Badge>
+                        <Badge variant="secondary">Inativo</Badge>
                       )}
+                    </div>
+                    <div className="flex gap-1 my-1">
+                      {renderStars(testimonial.rating || 5)}
                     </div>
                   </div>
                 </div>
                 <div className="flex gap-2">
                   <Button
-                    size="sm"
+                    size="icon"
                     variant="outline"
                     onClick={() => editTestimonial(testimonial)}
                   >
                     <Edit className="h-4 w-4" />
                   </Button>
                   <Button
-                    size="sm"
-                    variant="destructive"
+                    size="icon"
+                    variant="outline"
                     onClick={() => deleteTestimonial(testimonial.id)}
                   >
                     <Trash2 className="h-4 w-4" />
                   </Button>
                 </div>
               </div>
-              <p className="text-gray-700 italic">"{testimonial.comment}"</p>
+              <p className="text-gray-600">{testimonial.content}</p>
             </CardContent>
           </Card>
         ))}

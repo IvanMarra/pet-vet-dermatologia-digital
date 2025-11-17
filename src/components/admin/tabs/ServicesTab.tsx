@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -8,15 +7,10 @@ import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { Plus, Edit, Trash2, GripVertical } from 'lucide-react';
+import { Plus, Edit, Trash2 } from 'lucide-react';
 import type { Tables } from '@/integrations/supabase/types';
 
-// Use the actual database type and extend it
-type ServiceRow = Tables<'services'>;
-
-interface Service extends Omit<ServiceRow, 'services_list'> {
-  services_list: string[];
-}
+type Service = Tables<'services'>;
 
 const ServicesTab = () => {
   const [services, setServices] = useState<Service[]>([]);
@@ -29,8 +23,6 @@ const ServicesTab = () => {
     title: '',
     description: '',
     icon: '',
-    category: '',
-    services_list: [''],
     is_active: true,
     display_order: 0
   });
@@ -52,14 +44,7 @@ const ServicesTab = () => {
       }
       
       if (data) {
-        // Convert the database data to our Service interface
-        const formattedServices: Service[] = data.map(service => ({
-          ...service,
-          services_list: Array.isArray(service.services_list) 
-            ? (service.services_list as string[])
-            : []
-        }));
-        setServices(formattedServices);
+        setServices(data);
       }
     } catch (error) {
       console.error('Erro ao carregar serviços:', error);
@@ -70,29 +55,15 @@ const ServicesTab = () => {
 
   const saveService = async () => {
     try {
-      const serviceData = {
-        title: formData.title,
-        description: formData.description,
-        icon: formData.icon || null,
-        category: formData.category,
-        services_list: formData.services_list.filter(item => item.trim() !== ''),
-        is_active: formData.is_active,
-        display_order: formData.display_order
-      };
-
       if (editingService) {
-        const { error } = await supabase
+        await supabase
           .from('services')
-          .update(serviceData)
+          .update(formData)
           .eq('id', editingService.id);
-          
-        if (error) throw error;
       } else {
-        const { error } = await supabase
+        await supabase
           .from('services')
-          .insert([serviceData]);
-          
-        if (error) throw error;
+          .insert([formData]);
       }
       
       loadServices();
@@ -113,12 +84,10 @@ const ServicesTab = () => {
 
   const deleteService = async (id: string) => {
     try {
-      const { error } = await supabase
+      await supabase
         .from('services')
         .delete()
         .eq('id', id);
-        
-      if (error) throw error;
       
       loadServices();
       toast({
@@ -140,8 +109,6 @@ const ServicesTab = () => {
       title: '',
       description: '',
       icon: '',
-      category: '',
-      services_list: [''],
       is_active: true,
       display_order: 0
     });
@@ -152,38 +119,13 @@ const ServicesTab = () => {
   const editService = (service: Service) => {
     setFormData({
       title: service.title,
-      description: service.description,
+      description: service.description || '',
       icon: service.icon || '',
-      category: service.category,
-      services_list: service.services_list.length > 0 ? service.services_list : [''],
       is_active: service.is_active ?? true,
       display_order: service.display_order ?? 0
     });
     setEditingService(service);
     setShowForm(true);
-  };
-
-  const addServiceItem = () => {
-    setFormData({
-      ...formData,
-      services_list: [...formData.services_list, '']
-    });
-  };
-
-  const updateServiceItem = (index: number, value: string) => {
-    const newList = [...formData.services_list];
-    newList[index] = value;
-    setFormData({
-      ...formData,
-      services_list: newList
-    });
-  };
-
-  const removeServiceItem = (index: number) => {
-    setFormData({
-      ...formData,
-      services_list: formData.services_list.filter((_, i) => i !== index)
-    });
   };
 
   if (loading) {
@@ -208,88 +150,53 @@ const ServicesTab = () => {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="grid md:grid-cols-2 gap-4">
-              <div>
-                <Label>Título do Serviço</Label>
-                <Input
-                  value={formData.title}
-                  onChange={(e) => setFormData({...formData, title: e.target.value})}
-                />
-              </div>
-              <div>
-                <Label>Categoria</Label>
-                <Input
-                  value={formData.category}
-                  onChange={(e) => setFormData({...formData, category: e.target.value})}
-                />
-              </div>
-            </div>
-            
-            <div className="grid md:grid-cols-2 gap-4">
-              <div>
-                <Label>Ícone (Lucide React)</Label>
-                <Input
-                  value={formData.icon}
-                  onChange={(e) => setFormData({...formData, icon: e.target.value})}
-                  placeholder="ex: Heart, Stethoscope"
-                />
-              </div>
-              <div>
-                <Label>Ordem de Exibição</Label>
-                <Input
-                  type="number"
-                  value={formData.display_order}
-                  onChange={(e) => setFormData({...formData, display_order: parseInt(e.target.value)})}
-                />
-              </div>
-            </div>
-            
-            <div>
-              <Label>Descrição</Label>
-              <Textarea
-                value={formData.description}
-                onChange={(e) => setFormData({...formData, description: e.target.value})}
-                rows={3}
+            <div className="space-y-2">
+              <Label htmlFor="title">Título</Label>
+              <Input
+                id="title"
+                value={formData.title}
+                onChange={(e) => setFormData({...formData, title: e.target.value})}
+                placeholder="Nome do serviço"
               />
             </div>
-            
-            <div>
-              <Label>Lista de Serviços</Label>
-              {formData.services_list.map((item, index) => (
-                <div key={index} className="flex gap-2 mb-2">
-                  <Input
-                    value={item}
-                    onChange={(e) => updateServiceItem(index, e.target.value)}
-                    placeholder="Descrição do serviço"
-                  />
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    onClick={() => removeServiceItem(index)}
-                    disabled={formData.services_list.length === 1}
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                </div>
-              ))}
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={addServiceItem}
-              >
-                <Plus className="h-4 w-4 mr-2" />
-                Adicionar Item
-              </Button>
+
+            <div className="space-y-2">
+              <Label htmlFor="description">Descrição</Label>
+              <Textarea
+                id="description"
+                value={formData.description}
+                onChange={(e) => setFormData({...formData, description: e.target.value})}
+                placeholder="Descrição do serviço"
+                rows={4}
+              />
             </div>
-            
+
+            <div className="space-y-2">
+              <Label htmlFor="icon">Ícone (opcional)</Label>
+              <Input
+                id="icon"
+                value={formData.icon}
+                onChange={(e) => setFormData({...formData, icon: e.target.value})}
+                placeholder="Nome do ícone (ex: Scissors)"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="display_order">Ordem de Exibição</Label>
+              <Input
+                id="display_order"
+                type="number"
+                value={formData.display_order}
+                onChange={(e) => setFormData({...formData, display_order: parseInt(e.target.value)})}
+              />
+            </div>
+
             <div className="flex items-center space-x-2">
               <Switch
                 checked={formData.is_active}
                 onCheckedChange={(checked) => setFormData({...formData, is_active: checked})}
               />
-              <Label>Serviço Ativo</Label>
+              <Label>Ativo</Label>
             </div>
             
             <div className="flex gap-2">
@@ -309,41 +216,30 @@ const ServicesTab = () => {
           <Card key={service.id}>
             <CardContent className="p-4">
               <div className="flex justify-between items-start mb-2">
-                <div className="flex items-center gap-2">
-                  <GripVertical className="h-4 w-4 text-gray-400" />
-                  <div>
-                    <h3 className="font-semibold">{service.title}</h3>
-                    <p className="text-sm text-gray-600">{service.category}</p>
-                  </div>
+                <div>
+                  <h3 className="font-semibold">{service.title}</h3>
+                  {service.description && (
+                    <p className="text-sm text-gray-600 mt-1">{service.description}</p>
+                  )}
+                  <p className="text-xs text-gray-500 mt-1">Ordem: {service.display_order}</p>
                 </div>
                 <div className="flex gap-2">
                   <Button
-                    size="sm"
+                    size="icon"
                     variant="outline"
                     onClick={() => editService(service)}
                   >
                     <Edit className="h-4 w-4" />
                   </Button>
                   <Button
-                    size="sm"
-                    variant="destructive"
+                    size="icon"
+                    variant="outline"
                     onClick={() => deleteService(service.id)}
                   >
                     <Trash2 className="h-4 w-4" />
                   </Button>
                 </div>
               </div>
-              <p className="text-sm text-gray-600 mb-2">{service.description}</p>
-              {service.services_list && service.services_list.length > 0 && (
-                <ul className="text-sm text-gray-600 list-disc list-inside">
-                  {service.services_list.map((item, index) => (
-                    <li key={index}>{item}</li>
-                  ))}
-                </ul>
-              )}
-              {!service.is_active && (
-                <span className="text-xs text-red-500 mt-2 block">Inativo</span>
-              )}
             </CardContent>
           </Card>
         ))}
