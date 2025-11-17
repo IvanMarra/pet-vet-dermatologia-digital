@@ -110,9 +110,9 @@ const BeforeAfterSection = () => {
               <h3 className="text-2xl md:text-3xl font-bold text-center text-foreground">
                 {transformations[currentIndex].pet_name}
               </h3>
-              <p className="text-base md:text-lg text-muted-foreground leading-relaxed text-justify px-2" style={{ textAlignLast: 'left' }}>
+              <div className="text-base md:text-lg text-muted-foreground leading-relaxed text-justify px-2" style={{ textAlignLast: 'left', whiteSpace: 'pre-line' }}>
                 {transformations[currentIndex].description}
-              </p>
+              </div>
               {transformations[currentIndex].treatment_duration && (
                 <div className="flex items-center justify-center gap-3 pt-4 border-t border-border">
                   <div className="bg-primary/10 p-3 rounded-full">
