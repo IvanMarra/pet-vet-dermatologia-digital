@@ -1,256 +1,165 @@
 import React, { useState, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Upload, Heart, Loader2 } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
+import { Heart, Loader2, Calendar, User } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
-import LazyImage from '@/components/LazyImage';
 import type { Tables } from '@/integrations/supabase/types';
 
-type PetPhoto = Tables<'pet_gallery'>;
+type PetGallery = Tables<'pet_gallery'>;
+type PetGalleryImage = Tables<'pet_gallery_images'>;
+
+interface PetGalleryWithImages extends PetGallery {
+  images: PetGalleryImage[];
+}
 
 const PetGallerySection = () => {
-  const { toast } = useToast();
-  const [photos, setPhotos] = useState<PetPhoto[]>([]);
+  const [pets, setPets] = useState<PetGalleryWithImages[]>([]);
   const [loading, setLoading] = useState(true);
-  const [uploading, setUploading] = useState(false);
-  const [dialogOpen, setDialogOpen] = useState(false);
-  const [formData, setFormData] = useState({
-    pet_name: '',
-    owner_name: '',
-    category: '',
-    service_date: new Date().toISOString().split('T')[0],
-  });
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   useEffect(() => {
-    fetchPhotos();
+    fetchPets();
   }, []);
 
-  const fetchPhotos = async () => {
+  const fetchPets = async () => {
     try {
-      const { data, error } = await supabase
+      const { data: petsData, error: petsError } = await supabase
         .from('pet_gallery')
         .select('*')
         .eq('is_active', true)
         .order('created_at', { ascending: false })
-        .limit(20);
+        .limit(12);
 
-      if (error) throw error;
-      setPhotos(data || []);
+      if (petsError) throw petsError;
+
+      const petsWithImages = await Promise.all(
+        (petsData || []).map(async (pet) => {
+          const { data: imagesData, error: imagesError } = await supabase
+            .from('pet_gallery_images')
+            .select('*')
+            .eq('pet_gallery_id', pet.id)
+            .order('display_order', { ascending: true});
+
+          if (imagesError) throw imagesError;
+
+          return {
+            ...pet,
+            images: imagesData || [],
+          };
+        })
+      );
+
+      setPets(petsWithImages.filter(pet => pet.images.length > 0));
     } catch (error: any) {
-      console.error('Erro ao carregar fotos:', error);
+      console.error('Erro ao carregar pets:', error);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      if (file.size > 5 * 1024 * 1024) {
-        toast({
-          title: 'Arquivo muito grande',
-          description: 'O tamanho máximo é 5MB',
-          variant: 'destructive',
-        });
-        return;
-      }
-      setSelectedFile(file);
-    }
+  const getCategoryLabel = (category: string) => {
+    const labels: Record<string, string> = {
+      'banho-simples': 'Banho Simples',
+      'banho-tosa': 'Banho e Tosa',
+      'banho-hidratacao': 'Banho e Hidratação',
+      'banho-terapeutico': 'Banho Terapêuticos',
+      'banho-dermatologico': 'Banho Dermatológico',
+    };
+    return labels[category] || category;
   };
 
-  const handleUpload = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!selectedFile) return;
+  if (loading) {
+    return (
+      <section className="py-16 bg-gradient-to-b from-background to-secondary/10">
+        <div className="container mx-auto px-4 flex justify-center">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        </div>
+      </section>
+    );
+  }
 
-    setUploading(true);
-
-    try {
-      const formDataToSend = new FormData();
-      formDataToSend.append('file', selectedFile);
-
-      const response = await supabase.functions.invoke('optimize-image', {
-        body: formDataToSend,
-      });
-
-      if (response.error) throw response.error;
-
-      const photoData = {
-        pet_name: formData.pet_name,
-        owner_name: formData.owner_name || null,
-        category: formData.category,
-        service_date: formData.service_date,
-        image_with_watermark: response.data.imageUrl,
-        image_url: response.data.imageUrl,
-        is_active: false, // Admin precisa aprovar
-      };
-
-      const { error } = await supabase
-        .from('pet_gallery')
-        .insert([photoData]);
-
-      if (error) throw error;
-
-      toast({
-        title: 'Foto enviada com sucesso!',
-        description: 'Sua foto será exibida após aprovação do administrador.',
-      });
-
-      setDialogOpen(false);
-      setFormData({
-        pet_name: '',
-        owner_name: '',
-        category: '',
-        service_date: new Date().toISOString().split('T')[0],
-      });
-      setSelectedFile(null);
-    } catch (error: any) {
-      toast({
-        title: 'Erro ao enviar foto',
-        description: error.message,
-        variant: 'destructive',
-      });
-    } finally {
-      setUploading(false);
-    }
-  };
+  if (pets.length === 0) {
+    return null;
+  }
 
   return (
-    <section className="py-16 bg-gradient-to-b from-blue-50 to-white">
+    <section className="py-16 bg-gradient-to-b from-background to-secondary/10">
       <div className="container mx-auto px-4">
-        <div className="text-center mb-12 animate-fade-in">
-          <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
-            Mural dos Pets PopularVET 🐾
+        <div className="text-center mb-12">
+          <h2 className="text-3xl md:text-4xl font-bold mb-4">
+            Mural dos Pets
           </h2>
-          <p className="text-xl text-muted-foreground">
-            Veja como nossos clientes ficam ainda mais lindos!
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+            Veja os pets felizes que já passaram pelos nossos cuidados
           </p>
         </div>
 
-        {/* Upload Button */}
-        <div className="flex justify-center mb-8">
-          <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-            <DialogTrigger asChild>
-              <Button size="lg" className="shadow-lg">
-                <Upload className="mr-2 h-5 w-5" />
-                Enviar foto do meu pet
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="sm:max-w-md">
-              <DialogHeader>
-                <DialogTitle>Enviar Foto do Pet</DialogTitle>
-              </DialogHeader>
-              <form onSubmit={handleUpload} className="space-y-4 py-4">
-                <div>
-                  <Label htmlFor="petName">Nome do Pet *</Label>
-                  <Input 
-                    id="petName" 
-                    placeholder="Ex: Rex" 
-                    value={formData.pet_name}
-                    onChange={(e) => setFormData({ ...formData, pet_name: e.target.value })}
-                    required
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="ownerName">Seu Nome (opcional)</Label>
-                  <Input 
-                    id="ownerName" 
-                    placeholder="Ex: Maria Silva" 
-                    value={formData.owner_name}
-                    onChange={(e) => setFormData({ ...formData, owner_name: e.target.value })}
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="category">Categoria do Serviço *</Label>
-                  <Select 
-                    value={formData.category}
-                    onValueChange={(value) => setFormData({ ...formData, category: value })}
-                    required
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Selecione" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Banho & Tosa">Banho & Tosa</SelectItem>
-                      <SelectItem value="Terapêutico">Terapêutico</SelectItem>
-                      <SelectItem value="Dermato">Dermato</SelectItem>
-                      <SelectItem value="Estética">Estética</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
-                  <Label htmlFor="photo">Foto *</Label>
-                  <Input 
-                    id="photo" 
-                    type="file" 
-                    accept="image/jpeg,image/png,image/webp" 
-                    onChange={handleFileSelect}
-                    required
-                  />
-                  <p className="text-xs text-muted-foreground mt-1">
-                    Máximo 5MB. A imagem será otimizada automaticamente.
-                  </p>
-                </div>
-                <Button type="submit" className="w-full" disabled={uploading}>
-                  {uploading ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {pets.map((pet) => (
+            <Card key={pet.id} className="group overflow-hidden hover:shadow-xl transition-all duration-300 border-2 border-transparent hover:border-primary/20">
+              <div className="relative">
+                <Carousel className="w-full">
+                  <CarouselContent>
+                    {pet.images.map((image, index) => (
+                      <CarouselItem key={image.id}>
+                        <div className="relative aspect-square overflow-hidden">
+                          <img
+                            src={image.image_url}
+                            alt={`${pet.pet_name} - ${index + 1}`}
+                            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                            loading="lazy"
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                        </div>
+                      </CarouselItem>
+                    ))}
+                  </CarouselContent>
+                  {pet.images.length > 1 && (
                     <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Processando...
+                      <CarouselPrevious className="left-2 opacity-0 group-hover:opacity-100 transition-opacity" />
+                      <CarouselNext className="right-2 opacity-0 group-hover:opacity-100 transition-opacity" />
                     </>
-                  ) : (
-                    'Enviar Foto'
                   )}
-                </Button>
-              </form>
-            </DialogContent>
-          </Dialog>
-        </div>
+                </Carousel>
+                
+                {pet.images.length > 1 && (
+                  <div className="absolute top-3 right-3 bg-black/70 backdrop-blur-sm text-white px-3 py-1 rounded-full text-xs font-semibold">
+                    {pet.images.length} fotos
+                  </div>
+                )}
 
-        {/* Photo Grid */}
-        {loading ? (
-          <div className="flex justify-center py-12">
-            <Loader2 className="h-8 w-8 animate-spin text-primary" />
-          </div>
-        ) : photos.length === 0 ? (
-          <div className="text-center py-12">
-            <p className="text-muted-foreground">Nenhuma foto publicada ainda.</p>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {photos.map((photo) => (
-              <Card 
-                key={photo.id} 
-                className="overflow-hidden hover:scale-105 transition-transform duration-300 shadow-lg hover:shadow-xl group"
-              >
-                <div className="relative aspect-square overflow-hidden">
-                  <LazyImage 
-                    src={photo.image_with_watermark || photo.image_url} 
-                    alt={photo.pet_name}
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                    containerClassName="w-full h-full"
-                  />
-                  <div className="absolute top-2 right-2 bg-white/90 backdrop-blur-sm p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
-                    <Heart className="h-4 w-4 text-destructive" />
+                <div className="absolute bottom-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                  <div className="bg-white/90 backdrop-blur-sm p-2 rounded-full shadow-lg">
+                    <Heart className="h-5 w-5 text-primary fill-primary" />
                   </div>
                 </div>
-                <CardContent className="p-4 bg-white">
-                  <h3 className="font-bold text-lg text-foreground">{photo.pet_name}</h3>
-                  {photo.owner_name && (
-                    <p className="text-sm text-muted-foreground">Tutor: {photo.owner_name}</p>
+              </div>
+
+              <CardContent className="p-4 space-y-2">
+                <div>
+                  <h3 className="font-bold text-xl text-foreground mb-1">{pet.pet_name}</h3>
+                  <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                    <span className="inline-flex items-center gap-1 bg-primary/10 text-primary px-2 py-0.5 rounded-full text-xs font-medium">
+                      {getCategoryLabel(pet.category)}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="space-y-1 pt-2 border-t">
+                  {pet.owner_name && (
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <User className="h-4 w-4" />
+                      <span>Tutor: {pet.owner_name}</span>
+                    </div>
                   )}
-                  <p className="text-xs text-muted-foreground mt-1">
-                    {photo.category} • {new Date(photo.service_date || '').toLocaleDateString('pt-BR')}
-                  </p>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        )}
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <Calendar className="h-4 w-4" />
+                    <span>{new Date(pet.service_date || '').toLocaleDateString('pt-BR')}</span>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
       </div>
     </section>
   );
