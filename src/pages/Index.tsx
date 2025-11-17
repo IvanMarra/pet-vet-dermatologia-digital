@@ -1,6 +1,10 @@
 import React from 'react';
 import Header from '@/components/Header';
 import HeroSection from '@/components/HeroSection';
+import GroomingHeroSection from '@/components/GroomingHeroSection';
+import PetGallerySection from '@/components/PetGallerySection';
+import DermatologySection from '@/components/DermatologySection';
+import BeforeAfterSection from '@/components/BeforeAfterSection';
 import AboutSection from '@/components/AboutSection';
 import ServicesSection from '@/components/ServicesSection';
 import StoreSection from '@/components/StoreSection';
@@ -10,13 +14,17 @@ import TestimonialsSection from '@/components/TestimonialsSection';
 import ContactSection from '@/components/ContactSection';
 import Footer from '@/components/Footer';
 import ScrollToTop from '@/components/ScrollToTop';
-import WhatsAppFloatingButton from '@/components/WhatsAppFloatingButton'; // Importar o novo componente
+import WhatsAppFloatingButton from '@/components/WhatsAppFloatingButton';
 
 const Index = () => {
   return (
     <div className="min-h-screen scroll-smooth">
       <Header />
       <HeroSection />
+      <GroomingHeroSection />
+      <PetGallerySection />
+      <DermatologySection />
+      <BeforeAfterSection />
       <AboutSection />
       <ServicesSection />
       <StoreSection />
@@ -26,7 +34,7 @@ const Index = () => {
       <ContactSection />
       <Footer />
       <ScrollToTop />
-      <WhatsAppFloatingButton /> {/* Adicionar o botão flutuante */}
+      <WhatsAppFloatingButton />
     </div>
   );
 };
