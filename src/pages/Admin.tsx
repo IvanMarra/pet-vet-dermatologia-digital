@@ -1,26 +1,33 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
-import AdminLogin from '@/components/admin/AdminLogin';
 import AdminDashboard from '@/components/admin/AdminDashboard';
-import SecurityMiddleware from '@/components/SecurityMiddleware';
+import { Loader2 } from 'lucide-react';
 
 const Admin = () => {
+  const navigate = useNavigate();
   const { user, loading, isAdmin } = useAuth();
+
+  useEffect(() => {
+    if (!loading && (!user || !isAdmin)) {
+      navigate('/auth');
+    }
+  }, [user, isAdmin, loading, navigate]);
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/10 to-secondary/10">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
       </div>
     );
   }
 
-  return (
-    <SecurityMiddleware>
-      {user && isAdmin ? <AdminDashboard /> : <AdminLogin />}
-    </SecurityMiddleware>
-  );
+  if (!user || !isAdmin) {
+    return null;
+  }
+
+  return <AdminDashboard />;
 };
 
 export default Admin;
