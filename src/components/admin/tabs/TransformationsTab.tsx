@@ -269,9 +269,9 @@ const TransformationsTab = () => {
         {transformations.map((transformation) => (
           <Card key={transformation.id} className="p-4">
             <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <p className="text-xs text-destructive font-bold text-center mb-1">ANTES</p>
+                  <p className="text-xs text-destructive font-bold text-center mb-2">ANTES</p>
                   <img
                     src={transformation.before_image_url}
                     alt="Antes"
@@ -279,7 +279,7 @@ const TransformationsTab = () => {
                   />
                 </div>
                 <div>
-                  <p className="text-xs text-primary font-bold text-center mb-1">DEPOIS</p>
+                  <p className="text-xs text-primary font-bold text-center mb-2">DEPOIS</p>
                   <img
                     src={transformation.after_image_url}
                     alt="Depois"
