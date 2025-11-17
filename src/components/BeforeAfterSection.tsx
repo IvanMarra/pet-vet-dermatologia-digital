@@ -74,9 +74,9 @@ const BeforeAfterSection = () => {
           </p>
         </div>
 
-        <div className="max-w-5xl mx-auto">
+        <div className="max-w-5xl mx-auto relative">
           <Card className="p-8 shadow-2xl">
-            <div className="grid md:grid-cols-2 gap-8 mb-6">
+            <div className="grid md:grid-cols-2 gap-8 mb-8">
               {/* Before */}
               <div className="space-y-4">
                 <div className="bg-destructive/10 text-destructive font-bold text-center py-2 rounded-lg">
@@ -106,50 +106,60 @@ const BeforeAfterSection = () => {
               </div>
             </div>
 
-            <div className="text-center mb-6">
-              <h3 className="text-xl font-semibold mb-2">{transformations[currentIndex].pet_name}</h3>
-              <p className="text-lg text-muted-foreground">
+            <div className="space-y-6 mb-6">
+              <h3 className="text-2xl md:text-3xl font-bold text-center text-foreground">
+                {transformations[currentIndex].pet_name}
+              </h3>
+              <p className="text-base md:text-lg text-muted-foreground leading-relaxed text-justify px-2" style={{ textAlignLast: 'left' }}>
                 {transformations[currentIndex].description}
               </p>
               {transformations[currentIndex].treatment_duration && (
-                <p className="text-sm text-muted-foreground mt-2">
-                  {transformations[currentIndex].treatment_duration}
-                </p>
+                <div className="flex items-center justify-center gap-3 pt-4 border-t border-border">
+                  <div className="bg-primary/10 p-3 rounded-full">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <circle cx="12" cy="12" r="10"/>
+                      <polyline points="12 6 12 12 16 14"/>
+                    </svg>
+                  </div>
+                  <p className="text-base font-medium text-foreground">
+                    Duração do tratamento: <span className="text-primary font-semibold">{transformations[currentIndex].treatment_duration}</span>
+                  </p>
+                </div>
               )}
             </div>
-
-            {/* Navigation */}
-            {transformations.length > 1 && (
-              <div className="flex justify-center gap-4">
-                <Button 
-                  variant="outline" 
-                  size="icon"
-                  onClick={prevSlide}
-                  className="rounded-full"
-                >
-                  <ChevronLeft className="h-5 w-5" />
-                </Button>
-                <Button 
-                  variant="outline" 
-                  size="icon"
-                  onClick={nextSlide}
-                  className="rounded-full"
-                >
-                  <ChevronRight className="h-5 w-5" />
-                </Button>
-              </div>
-            )}
           </Card>
 
-          <div className="text-center mt-8">
-            <Button 
-              size="lg" 
-              className="shadow-lg text-lg px-8 py-6"
-              onClick={() => window.open(`https://wa.me/${whatsappNumber}`, '_blank')}
-            >
-              Agendar Avaliação Dermatológica →
-            </Button>
-          </div>
+          {/* Setas de Navegação Externas */}
+          {transformations.length > 1 && (
+            <>
+              <Button 
+                variant="outline" 
+                size="icon"
+                onClick={prevSlide}
+                className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1/2 md:-translate-x-16 rounded-full h-14 w-14 shadow-xl bg-background border-2 hover:scale-110 hover:bg-primary hover:text-primary-foreground transition-all duration-300 z-10"
+              >
+                <ChevronLeft className="h-7 w-7" />
+              </Button>
+              <Button 
+                variant="outline" 
+                size="icon"
+                onClick={nextSlide}
+                className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 md:translate-x-16 rounded-full h-14 w-14 shadow-xl bg-background border-2 hover:scale-110 hover:bg-primary hover:text-primary-foreground transition-all duration-300 z-10"
+              >
+                <ChevronRight className="h-7 w-7" />
+              </Button>
+            </>
+          )}
+        </div>
+
+        <div className="text-center mt-8">
+          <Button 
+            size="lg" 
+            className="shadow-lg text-lg px-8 py-6"
+            onClick={() => window.open(`https://wa.me/${whatsappNumber}`, '_blank')}
+          >
+            Agendar Avaliação Dermatológica →
+          </Button>
         </div>
       </div>
     </section>
