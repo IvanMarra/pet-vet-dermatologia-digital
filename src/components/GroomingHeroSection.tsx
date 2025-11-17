@@ -1,6 +1,7 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Sparkles } from 'lucide-react';
+import banhoTosaImage from '@/assets/banho-tosa.png';
 
 const GroomingHeroSection = () => {
   const whatsappNumbers = ['31995502094', '31994162094'];
@@ -47,7 +48,7 @@ const GroomingHeroSection = () => {
             <div className="relative w-full h-[500px] rounded-3xl overflow-hidden shadow-2xl">
               <div className="absolute inset-0 bg-gradient-to-tr from-primary/20 to-transparent z-10"></div>
               <img 
-                src="/public/images/dr-karine.jpeg" 
+                src={banhoTosaImage} 
                 alt="Pet grooming service" 
                 className="w-full h-full object-cover"
               />
