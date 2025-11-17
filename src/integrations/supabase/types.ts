@@ -233,6 +233,41 @@ export type Database = {
         }
         Relationships: []
       }
+      pet_gallery_images: {
+        Row: {
+          created_at: string | null
+          display_order: number
+          id: string
+          image_url: string
+          pet_gallery_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          display_order?: number
+          id?: string
+          image_url: string
+          pet_gallery_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          display_order?: number
+          id?: string
+          image_url?: string
+          pet_gallery_id?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pet_gallery_images_pet_gallery_id_fkey"
+            columns: ["pet_gallery_id"]
+            isOneToOne: false
+            referencedRelation: "pet_gallery"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       pet_transformations: {
         Row: {
           after_image_url: string
