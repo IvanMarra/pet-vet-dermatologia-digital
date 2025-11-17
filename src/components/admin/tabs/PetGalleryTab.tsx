@@ -11,6 +11,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 import { Plus, Pencil, Trash2, Eye, EyeOff, Loader2, Upload, X } from 'lucide-react';
 import type { Tables } from '@/integrations/supabase/types';
+import { ReprocessImagesButton } from '@/components/admin/ReprocessImagesButton';
 
 type PetGallery = Tables<'pet_gallery'>;
 type PetGalleryImage = Tables<'pet_gallery_images'>;
@@ -321,16 +322,18 @@ const PetGalleryTab = () => {
           <h2 className="text-2xl font-bold">Galeria de Pets</h2>
           <p className="text-muted-foreground">Gerencie as fotos do Mural dos Pets com múltiplas imagens</p>
         </div>
-        <Dialog open={dialogOpen} onOpenChange={(open) => {
-          setDialogOpen(open);
-          if (!open) resetForm();
-        }}>
-          <DialogTrigger asChild>
-            <Button>
-              <Plus className="mr-2 h-4 w-4" />
-              Adicionar Pet
-            </Button>
-          </DialogTrigger>
+        <div className="flex gap-2">
+          <ReprocessImagesButton />
+          <Dialog open={dialogOpen} onOpenChange={(open) => {
+            setDialogOpen(open);
+            if (!open) resetForm();
+          }}>
+            <DialogTrigger asChild>
+              <Button>
+                <Plus className="mr-2 h-4 w-4" />
+                Adicionar Pet
+              </Button>
+            </DialogTrigger>
           <DialogContent className="sm:max-w-md">
             <DialogHeader>
               <DialogTitle>{editingPet ? 'Editar Pet' : 'Adicionar Novo Pet'}</DialogTitle>
@@ -426,6 +429,7 @@ const PetGalleryTab = () => {
             </form>
           </DialogContent>
         </Dialog>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
