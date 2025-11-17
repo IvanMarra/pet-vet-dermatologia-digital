@@ -44,6 +44,57 @@ export type Database = {
         }
         Relationships: []
       }
+      grooming_appointments: {
+        Row: {
+          appointment_date: string
+          appointment_time: string
+          client_email: string | null
+          client_name: string
+          client_phone: string
+          created_at: string
+          id: string
+          notes: string | null
+          pet_name: string
+          pet_size: string
+          pet_type: string
+          service_type: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          appointment_date: string
+          appointment_time: string
+          client_email?: string | null
+          client_name: string
+          client_phone: string
+          created_at?: string
+          id?: string
+          notes?: string | null
+          pet_name: string
+          pet_size: string
+          pet_type: string
+          service_type: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          appointment_date?: string
+          appointment_time?: string
+          client_email?: string | null
+          client_name?: string
+          client_phone?: string
+          created_at?: string
+          id?: string
+          notes?: string | null
+          pet_name?: string
+          pet_size?: string
+          pet_type?: string
+          service_type?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       hero_slides: {
         Row: {
           created_at: string | null
