@@ -1,27 +1,44 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Loader2 } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
 
 interface Transformation {
-  id: number;
-  before: string;
-  after: string;
+  id: string;
+  pet_name: string;
+  before_image_url: string;
+  after_image_url: string;
   description: string;
+  treatment_duration: string | null;
 }
-
-const transformations: Transformation[] = [
-  {
-    id: 1,
-    before: '/public/images/dr-karine.jpeg',
-    after: '/public/images/dr-karine.jpeg',
-    description: 'Recuperação completa de dermatite - 30 dias de tratamento'
-  }
-];
 
 const BeforeAfterSection = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [transformations, setTransformations] = useState<Transformation[]>([]);
+  const [loading, setLoading] = useState(true);
   const whatsappNumber = '31995502094';
+
+  useEffect(() => {
+    fetchTransformations();
+  }, []);
+
+  const fetchTransformations = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('pet_transformations')
+        .select('*')
+        .eq('is_active', true)
+        .order('display_order', { ascending: true });
+
+      if (error) throw error;
+      setTransformations(data || []);
+    } catch (error) {
+      console.error('Error fetching transformations:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const nextSlide = () => {
     setCurrentIndex((prev) => (prev + 1) % transformations.length);
@@ -30,6 +47,20 @@ const BeforeAfterSection = () => {
   const prevSlide = () => {
     setCurrentIndex((prev) => (prev - 1 + transformations.length) % transformations.length);
   };
+
+  if (loading) {
+    return (
+      <section className="py-16 bg-gradient-to-b from-white to-blue-50">
+        <div className="container mx-auto px-4 flex justify-center">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        </div>
+      </section>
+    );
+  }
+
+  if (transformations.length === 0) {
+    return null;
+  }
 
   return (
     <section className="py-16 bg-gradient-to-b from-white to-blue-50">
@@ -53,8 +84,8 @@ const BeforeAfterSection = () => {
                 </div>
                 <div className="relative aspect-square rounded-lg overflow-hidden shadow-lg">
                   <img 
-                    src={transformations[currentIndex].before}
-                    alt="Antes do tratamento"
+                    src={transformations[currentIndex].before_image_url}
+                    alt={`Antes - ${transformations[currentIndex].pet_name}`}
                     className="w-full h-full object-cover"
                   />
                 </div>
@@ -67,17 +98,25 @@ const BeforeAfterSection = () => {
                 </div>
                 <div className="relative aspect-square rounded-lg overflow-hidden shadow-lg">
                   <img 
-                    src={transformations[currentIndex].after}
-                    alt="Depois do tratamento"
+                    src={transformations[currentIndex].after_image_url}
+                    alt={`Depois - ${transformations[currentIndex].pet_name}`}
                     className="w-full h-full object-cover"
                   />
                 </div>
               </div>
             </div>
 
-            <p className="text-center text-lg text-muted-foreground mb-6">
-              {transformations[currentIndex].description}
-            </p>
+            <div className="text-center mb-6">
+              <h3 className="text-xl font-semibold mb-2">{transformations[currentIndex].pet_name}</h3>
+              <p className="text-lg text-muted-foreground">
+                {transformations[currentIndex].description}
+              </p>
+              {transformations[currentIndex].treatment_duration && (
+                <p className="text-sm text-muted-foreground mt-2">
+                  {transformations[currentIndex].treatment_duration}
+                </p>
+              )}
+            </div>
 
             {/* Navigation */}
             {transformations.length > 1 && (

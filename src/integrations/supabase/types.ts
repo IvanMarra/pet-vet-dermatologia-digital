@@ -182,6 +182,45 @@ export type Database = {
         }
         Relationships: []
       }
+      pet_transformations: {
+        Row: {
+          after_image_url: string
+          before_image_url: string
+          created_at: string | null
+          description: string
+          display_order: number | null
+          id: string
+          is_active: boolean | null
+          pet_name: string
+          treatment_duration: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          after_image_url: string
+          before_image_url: string
+          created_at?: string | null
+          description: string
+          display_order?: number | null
+          id?: string
+          is_active?: boolean | null
+          pet_name: string
+          treatment_duration?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          after_image_url?: string
+          before_image_url?: string
+          created_at?: string | null
+          description?: string
+          display_order?: number | null
+          id?: string
+          is_active?: boolean | null
+          pet_name?: string
+          treatment_duration?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       products: {
         Row: {
           category: string | null

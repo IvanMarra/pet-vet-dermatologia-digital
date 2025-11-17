@@ -14,6 +14,7 @@ import DashboardTab from './tabs/DashboardTab';
 import ContactsTab from './tabs/ContactsTab';
 import HeroSlidesTab from './tabs/HeroSlidesTab';
 import PetGalleryTab from './tabs/PetGalleryTab';
+import TransformationsTab from './tabs/TransformationsTab';
 
 const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -71,9 +72,10 @@ const AdminDashboard = () => {
       <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
         <div className="px-4 py-6 sm:px-0">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-            <TabsList className="grid w-full grid-cols-3 lg:grid-cols-9 gap-1">
+            <TabsList className="grid w-full grid-cols-3 lg:grid-cols-10 gap-1">
               <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
               <TabsTrigger value="gallery">Galeria</TabsTrigger>
+              <TabsTrigger value="transformations">Antes/Depois</TabsTrigger>
               <TabsTrigger value="hero-slides">Slides</TabsTrigger>
               <TabsTrigger value="contacts">Contatos</TabsTrigger>
               <TabsTrigger value="settings">Config</TabsTrigger>
@@ -85,6 +87,14 @@ const AdminDashboard = () => {
 
             <TabsContent value="dashboard" className="space-y-4">
               <DashboardTab />
+            </TabsContent>
+
+            <TabsContent value="gallery" className="space-y-4">
+              <PetGalleryTab />
+            </TabsContent>
+
+            <TabsContent value="transformations" className="space-y-4">
+              <TransformationsTab />
             </TabsContent>
 
             <TabsContent value="hero-slides" className="space-y-4">
