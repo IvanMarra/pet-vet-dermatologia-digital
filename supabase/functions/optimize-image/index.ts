@@ -61,14 +61,12 @@ serve(async (req) => {
 
     console.log(`Processing image: ${file.name}, size: ${file.size} bytes`);
 
-    // Convert to base64 in chunks to avoid stack overflow
+    // Convert to base64 safely without stack overflow
     const arrayBuffer = await file.arrayBuffer();
     const bytes = new Uint8Array(arrayBuffer);
     let binary = '';
-    const chunkSize = 8192;
-    for (let i = 0; i < bytes.length; i += chunkSize) {
-      const chunk = bytes.subarray(i, Math.min(i + chunkSize, bytes.length));
-      binary += String.fromCharCode.apply(null, Array.from(chunk));
+    for (let i = 0; i < bytes.length; i++) {
+      binary += String.fromCharCode(bytes[i]);
     }
     const base64 = btoa(binary);
     const imageDataUrl = `data:${file.type};base64,${base64}`;
