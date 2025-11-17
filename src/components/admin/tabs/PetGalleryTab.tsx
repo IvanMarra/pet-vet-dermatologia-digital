@@ -283,10 +283,11 @@ const PetGalleryTab = () => {
                     <SelectValue placeholder="Selecione" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="Banho & Tosa">Banho & Tosa</SelectItem>
-                    <SelectItem value="Terapêutico">Terapêutico</SelectItem>
-                    <SelectItem value="Dermato">Dermato</SelectItem>
-                    <SelectItem value="Estética">Estética</SelectItem>
+                    <SelectItem value="banho-simples">Banho Simples</SelectItem>
+                    <SelectItem value="banho-tosa">Banho e Tosa</SelectItem>
+                    <SelectItem value="banho-hidratacao">Banho e Hidratação</SelectItem>
+                    <SelectItem value="banho-terapeutico">Banho Terapêuticos</SelectItem>
+                    <SelectItem value="banho-dermatologico">Banho Dermatológico</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
