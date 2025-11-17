@@ -48,61 +48,24 @@ serve(async (req) => {
 
     // Read file as array buffer
     const arrayBuffer = await file.arrayBuffer();
-    const uint8Array = new Uint8Array(arrayBuffer);
-
-    // Use ImageMagick via Deno subprocess for image processing
-    const process = new Deno.Command("convert", {
-      args: [
-        "-", // Read from stdin
-        "-resize", "800x800^", // Resize to fill 800x800
-        "-gravity", "center",
-        "-extent", "800x800", // Crop to exactly 800x800
-        "-quality", "85", // Compress to 85% quality
-        "-strip", // Remove metadata
-        // Add watermark
-        "-gravity", "southeast",
-        "-pointsize", "14",
-        "-fill", "white",
-        "-stroke", "rgba(0,0,0,0.3)",
-        "-strokewidth", "1",
-        "-annotate", "+12+12", "popularVET",
-        "jpeg:-" // Output as JPEG to stdout
-      ],
-      stdin: "piped",
-      stdout: "piped",
-      stderr: "piped",
-    });
-
-    const child = process.spawn();
     
-    // Write input image to stdin
-    const writer = child.stdin.getWriter();
-    await writer.write(uint8Array);
-    await writer.close();
+    // Simple validation - just pass through the image
+    // Note: Complex image processing with subprocesses is not supported in Edge Runtime
+    // For production, consider using client-side compression or a separate image processing service
+    console.log('Image received successfully');
 
-    // Get the output
-    const { stdout, stderr } = await child.output();
-    const status = await child.status;
-
-    if (!status.success) {
-      const errorText = new TextDecoder().decode(stderr);
-      console.error('ImageMagick error:', errorText);
-      throw new Error(`Image processing failed: ${errorText}`);
-    }
-
-    console.log('Image processed successfully');
-
-    // Generate unique filename
+    // Generate unique filename - preserve original extension
     const timestamp = Date.now();
     const randomStr = Math.random().toString(36).substring(2, 9);
-    const fileName = `${timestamp}-${randomStr}.jpg`;
+    const extension = file.name.split('.').pop() || 'jpg';
+    const fileName = `${timestamp}-${randomStr}.${extension}`;
 
-    // Upload optimized image to storage
+    // Upload image directly to storage
     const { data: uploadData, error: uploadError } = await supabaseClient
       .storage
       .from('pet-gallery')
-      .upload(fileName, stdout, {
-        contentType: 'image/jpeg',
+      .upload(fileName, arrayBuffer, {
+        contentType: file.type || 'image/jpeg',
         upsert: false,
       });
 
@@ -125,8 +88,8 @@ serve(async (req) => {
         imageUrl: publicUrl,
         fileName: fileName,
         originalSize: file.size,
-        optimizedSize: stdout.length,
-        compressionRatio: ((1 - stdout.length / file.size) * 100).toFixed(2) + '%'
+        optimizedSize: file.size,
+        message: 'Image uploaded successfully. For best results, compress images before uploading.'
       }),
       {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
