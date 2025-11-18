@@ -192,7 +192,7 @@ const BeforeAfterSection = () => {
             className="shadow-lg text-lg px-8 py-6"
             onClick={() => window.open(`https://wa.me/${whatsappNumber}`, '_blank')}
           >
-            Agendar Consulta →
+            Agendar Consulta Dermato →
           </Button>
         </div>
       </div>
