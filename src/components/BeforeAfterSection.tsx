@@ -13,10 +13,13 @@ interface Transformation {
   treatment_duration: string | null;
 }
 
+const MAX_DESCRIPTION_LENGTH = 850;
+
 const BeforeAfterSection = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [transformations, setTransformations] = useState<Transformation[]>([]);
   const [loading, setLoading] = useState(true);
+  const [expandedDescriptions, setExpandedDescriptions] = useState<Record<string, boolean>>({});
   const whatsappNumber = '31995502094';
 
   useEffect(() => {
@@ -46,6 +49,24 @@ const BeforeAfterSection = () => {
 
   const prevSlide = () => {
     setCurrentIndex((prev) => (prev - 1 + transformations.length) % transformations.length);
+  };
+
+  const toggleDescription = (id: string) => {
+    setExpandedDescriptions(prev => ({
+      ...prev,
+      [id]: !prev[id]
+    }));
+  };
+
+  const getDisplayDescription = (transformation: Transformation) => {
+    const isExpanded = expandedDescriptions[transformation.id];
+    const needsTruncation = transformation.description.length > MAX_DESCRIPTION_LENGTH;
+    
+    if (!needsTruncation || isExpanded) {
+      return transformation.description;
+    }
+    
+    return transformation.description.slice(0, MAX_DESCRIPTION_LENGTH) + '...';
   };
 
   if (loading) {
@@ -111,8 +132,20 @@ const BeforeAfterSection = () => {
                 {transformations[currentIndex].pet_name}
               </h3>
               <div className="text-base md:text-lg text-muted-foreground leading-relaxed text-justify px-2" style={{ textAlignLast: 'left', whiteSpace: 'pre-line' }}>
-                {transformations[currentIndex].description}
+                {getDisplayDescription(transformations[currentIndex])}
               </div>
+              {transformations[currentIndex].description.length > MAX_DESCRIPTION_LENGTH && (
+                <div className="text-center">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => toggleDescription(transformations[currentIndex].id)}
+                    className="text-primary hover:text-primary/80"
+                  >
+                    {expandedDescriptions[transformations[currentIndex].id] ? 'Ver Menos' : 'Continue Lendo'}
+                  </Button>
+                </div>
+              )}
               {transformations[currentIndex].treatment_duration && (
                 <div className="flex items-center justify-center gap-3 pt-4 border-t border-border">
                   <div className="bg-primary/10 p-3 rounded-full">
@@ -154,11 +187,12 @@ const BeforeAfterSection = () => {
 
         <div className="text-center mt-8">
           <Button 
-            size="lg" 
+            size="lg"
+            variant="destructive"
             className="shadow-lg text-lg px-8 py-6"
             onClick={() => window.open(`https://wa.me/${whatsappNumber}`, '_blank')}
           >
-            Agendar Avaliação Dermatológica →
+            Agendar Consulta →
           </Button>
         </div>
       </div>
