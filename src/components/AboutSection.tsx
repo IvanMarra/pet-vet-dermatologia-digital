@@ -112,8 +112,8 @@ const AboutSection = () => {
                 <div className="text-sm text-muted-foreground">Pets Atendidos</div>
               </div>
               <div className="text-center">
-                <div className="text-3xl font-bold text-primary">10+</div>
-                <div className="text-sm text-muted-foreground">Anos de Experiência</div>
+                <div className="text-3xl font-bold text-primary">Desde 2021</div>
+                <div className="text-sm text-muted-foreground">Cuidando dos Pets</div>
               </div>
             </div>
           </div>
