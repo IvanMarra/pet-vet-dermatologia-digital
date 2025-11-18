@@ -3,7 +3,6 @@ import Header from '@/components/Header';
 import HeroSection from '@/components/HeroSection';
 import GroomingHeroSection from '@/components/GroomingHeroSection';
 import GroomingGallerySection from '@/components/GroomingGallerySection';
-import GroomingAppointmentForm from '@/components/GroomingAppointmentForm';
 import PetGallerySection from '@/components/PetGallerySection';
 import DermatologySection from '@/components/DermatologySection';
 import BeforeAfterSection from '@/components/BeforeAfterSection';
@@ -25,7 +24,6 @@ const Index = () => {
       <HeroSection />
       <GroomingHeroSection />
       <GroomingGallerySection />
-      <GroomingAppointmentForm />
       <PetGallerySection />
       <DermatologySection />
       <BeforeAfterSection />
