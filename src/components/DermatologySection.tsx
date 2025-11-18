@@ -62,11 +62,12 @@ const DermatologySection = () => {
 
         <div className="text-center">
           <Button 
-            size="lg" 
+            size="lg"
+            variant="destructive"
             className="shadow-lg text-lg px-8 py-6"
             onClick={() => window.open(`https://wa.me/${whatsappNumber}`, '_blank')}
           >
-            Agendar Avaliação Dermatológica →
+            Agendar Consulta →
           </Button>
         </div>
       </div>
