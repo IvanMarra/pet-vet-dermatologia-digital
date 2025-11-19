@@ -26,8 +26,7 @@ const PetGallerySection = () => {
         .from('pet_gallery')
         .select('*')
         .eq('is_active', true)
-        .order('created_at', { ascending: false })
-        .limit(12);
+        .order('created_at', { ascending: false });
 
       if (petsError) throw petsError;
 
@@ -93,73 +92,87 @@ const PetGallerySection = () => {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {pets.map((pet) => (
-            <Card key={pet.id} className="group overflow-hidden hover:shadow-xl transition-all duration-300 border-2 border-transparent hover:border-primary/20">
-              <div className="relative">
-                <Carousel className="w-full">
-                  <CarouselContent>
-                    {pet.images.map((image, index) => (
-                      <CarouselItem key={image.id}>
-                        <div className="relative aspect-square overflow-hidden">
-                          <img
-                            src={image.image_url}
-                            alt={`${pet.pet_name} - ${index + 1}`}
-                            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                            loading="lazy"
-                          />
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                        </div>
-                      </CarouselItem>
-                    ))}
-                  </CarouselContent>
-                  {pet.images.length > 1 && (
-                    <>
-                      <CarouselPrevious className="left-2 opacity-0 group-hover:opacity-100 transition-opacity" />
-                      <CarouselNext className="right-2 opacity-0 group-hover:opacity-100 transition-opacity" />
-                    </>
-                  )}
-                </Carousel>
-                
-                {pet.images.length > 1 && (
-                  <div className="absolute top-3 right-3 bg-black/70 backdrop-blur-sm text-white px-3 py-1 rounded-full text-xs font-semibold">
-                    {pet.images.length} fotos
-                  </div>
-                )}
+        <Carousel
+          opts={{
+            align: "start",
+            loop: true,
+          }}
+          className="w-full"
+        >
+          <CarouselContent className="-ml-2 md:-ml-4">
+            {pets.map((pet) => (
+              <CarouselItem key={pet.id} className="pl-2 md:pl-4 basis-full sm:basis-1/2 lg:basis-1/3">
+                <Card className="group overflow-hidden hover:shadow-xl transition-all duration-300 border-2 border-transparent hover:border-primary/20 h-full">
+                  <div className="relative">
+                    <Carousel className="w-full">
+                      <CarouselContent>
+                        {pet.images.map((image, index) => (
+                          <CarouselItem key={image.id}>
+                            <div className="relative aspect-square overflow-hidden">
+                              <img
+                                src={image.image_url}
+                                alt={`${pet.pet_name} - ${index + 1}`}
+                                className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                                loading="lazy"
+                              />
+                            </div>
+                          </CarouselItem>
+                        ))}
+                      </CarouselContent>
+                      {pet.images.length > 1 && (
+                        <>
+                          <CarouselPrevious className="left-2 opacity-0 group-hover:opacity-100 transition-opacity" />
+                          <CarouselNext className="right-2 opacity-0 group-hover:opacity-100 transition-opacity" />
+                        </>
+                      )}
+                    </Carousel>
+                    
+                    {pet.images.length > 1 && (
+                      <div className="absolute top-3 right-3 bg-black/70 backdrop-blur-sm text-white px-3 py-1 rounded-full text-xs font-semibold">
+                        {pet.images.length} fotos
+                      </div>
+                    )}
 
-                <div className="absolute bottom-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                  <div className="bg-white/90 backdrop-blur-sm p-2 rounded-full shadow-lg">
-                    <Heart className="h-5 w-5 text-primary fill-primary" />
-                  </div>
-                </div>
-              </div>
-
-              <CardContent className="p-4 space-y-2">
-                <div>
-                  <h3 className="font-bold text-xl text-foreground mb-1">{pet.pet_name}</h3>
-                  <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                    <span className="inline-flex items-center gap-1 bg-primary/10 text-primary px-2 py-0.5 rounded-full text-xs font-medium">
-                      {getCategoryLabel(pet.category)}
-                    </span>
-                  </div>
-                </div>
-
-                <div className="space-y-1 pt-2 border-t">
-                  {pet.owner_name && (
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <User className="h-4 w-4" />
-                      <span>Tutor: {pet.owner_name}</span>
+                    <div className="absolute bottom-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                      <div className="bg-white/90 backdrop-blur-sm p-2 rounded-full shadow-lg">
+                        <Heart className="h-5 w-5 text-primary fill-primary" />
+                      </div>
                     </div>
-                  )}
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <Calendar className="h-4 w-4" />
-                    <span>{new Date(pet.service_date || '').toLocaleDateString('pt-BR')}</span>
                   </div>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+
+                  <CardContent className="p-3 space-y-2">
+                    <div>
+                      <h3 className="font-bold text-lg text-foreground mb-1">{pet.pet_name}</h3>
+                      <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                        <span className="inline-flex items-center gap-1 bg-primary/10 text-primary px-2 py-0.5 rounded-full text-xs font-medium">
+                          {getCategoryLabel(pet.category)}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="space-y-1 pt-2 border-t">
+                      {pet.owner_name && (
+                        <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                          <User className="h-3 w-3" />
+                          <span>Tutor: {pet.owner_name}</span>
+                        </div>
+                      )}
+                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                        <Calendar className="h-3 w-3" />
+                        <span>{new Date(pet.service_date || '').toLocaleDateString('pt-BR')}</span>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+          
+          <div className="flex justify-center gap-2 mt-8">
+            <CarouselPrevious className="relative left-0 translate-y-0" />
+            <CarouselNext className="relative right-0 translate-y-0" />
+          </div>
+        </Carousel>
       </div>
     </section>
   );
