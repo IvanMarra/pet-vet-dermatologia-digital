@@ -31,7 +31,7 @@ const HeroSection = () => {
 
       {/* Conteúdo principal da seção Hero */}
       <div className="container mx-auto px-4 h-full flex flex-col justify-center items-center text-center relative z-20">
-        <div className="max-w-2xl text-white mb-16">
+        <div className="max-w-2xl text-white mb-8 md:mb-16">
           <h1 className="text-5xl md:text-6xl font-bold mb-4 leading-tight">
             Cuidando com amor do seu melhor amigo
           </h1>
@@ -43,15 +43,15 @@ const HeroSection = () => {
           </p>
           <Button 
             size="lg" 
-            className="text-lg px-8 py-6"
+            className="text-lg px-8 py-6 mb-8 md:mb-0"
             onClick={() => window.open(`https://wa.me/${whatsappNumber}`, '_blank')}
           >
             Agendar Consulta
           </Button>
         </div>
 
-        {/* Cartões de recursos */}
-        <div className="w-full max-w-4xl px-4 absolute bottom-4 md:bottom-20 left-1/2 transform -translate-x-1/2">
+        {/* Cartões de recursos - Mobile: após botão, Desktop: posicionamento absoluto */}
+        <div className="w-full max-w-4xl px-4 md:absolute md:bottom-4 md:left-1/2 md:transform md:-translate-x-1/2 lg:bottom-20">
           <div className="grid md:grid-cols-3 gap-4">
             <Card className="bg-white/80 backdrop-blur-sm shadow-xl transition-all duration-300 hover:bg-white/90 hover:shadow-2xl">
               <CardContent className="p-4 text-center">
