@@ -11,7 +11,6 @@ import ServicesSection from '@/components/ServicesSection';
 import StoreSection from '@/components/StoreSection';
 import VeterinarianSection from '@/components/VeterinarianSection';
 import TestimonialsSection from '@/components/TestimonialsSection';
-import PatientsAttendedSection from '@/components/PatientsAttendedSection';
 import EventsGallerySection from '@/components/EventsGallerySection';
 import Footer from '@/components/Footer';
 import ScrollToTop from '@/components/ScrollToTop';
@@ -25,7 +24,6 @@ const Index = () => {
       <GroomingHeroSection />
       <GroomingGallerySection />
       <PetGallerySection />
-      <PatientsAttendedSection />
       <BeforeAfterSection />
       <EventsGallerySection />
       <ValuesSection />
