@@ -48,7 +48,7 @@ const HeroSection = () => {
         </div>
 
         {/* Cartões de recursos - Mobile: após botão, Desktop: posicionamento absoluto */}
-        <div className="w-full max-w-4xl px-4 md:absolute md:bottom-4 md:left-1/2 md:transform md:-translate-x-1/2 lg:bottom-20 pb-8 md:pb-0">
+        <div className="w-full max-w-4xl px-4 mt-12 md:mt-0 md:absolute md:bottom-4 md:left-1/2 md:transform md:-translate-x-1/2 lg:bottom-20 pb-8 md:pb-0">
           <div className="grid md:grid-cols-3 gap-4">
             <Card className="bg-white/80 backdrop-blur-sm shadow-xl transition-all duration-300 hover:bg-white/90 hover:shadow-2xl">
               <CardContent className="p-4 text-center">
