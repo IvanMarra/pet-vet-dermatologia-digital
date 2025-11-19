@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Calendar, Clock } from 'lucide-react';
@@ -16,30 +15,22 @@ interface BlogPost {
 }
 
 const BlogSection = () => {
-  const [posts, setPosts] = useState<BlogPost[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    loadBlogPosts();
-  }, []);
-
-  const loadBlogPosts = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('blog_posts')
-        .select('*')
-        .eq('is_published', true)
-        .order('published_at', { ascending: false })
-        .limit(3);
-
-      if (error) throw error;
-      setPosts(data || []);
-    } catch (error) {
-      console.error('Erro ao carregar posts:', error);
-    } finally {
-      setLoading(false);
+  // Placeholder posts - replace with actual blog_posts table data later
+  const placeholderPosts: BlogPost[] = [
+    {
+      id: '1',
+      title: 'Cuidados Essenciais com seu Pet',
+      description: 'Descubra as melhores práticas para manter seu pet saudável e feliz.',
+      content: '',
+      category: 'Saúde',
+      image_url: null,
+      published_at: new Date().toISOString(),
+      reading_time: 5
     }
-  };
+  ];
+
+  const [posts, setPosts] = useState<BlogPost[]>(placeholderPosts);
+  const [loading, setLoading] = useState(false);
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
