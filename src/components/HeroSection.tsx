@@ -35,11 +35,8 @@ const HeroSection = () => {
           <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 leading-tight">
             Cuidando com amor do seu melhor amigo
           </h1>
-          <p className="text-base sm:text-lg md:text-xl lg:text-2xl mb-4 md:mb-6 text-gray-200">
+          <p className="text-base sm:text-lg md:text-xl lg:text-2xl mb-6 md:mb-8 text-gray-200">
             Clínica veterinária especializada em cuidados completos para seu pet
-          </p>
-          <p className="text-sm sm:text-base md:text-lg mb-6 md:mb-8 text-gray-300 leading-relaxed">
-            Atendimento humanizado, equipamentos modernos e profissionais qualificados para garantir a saúde e bem-estar do seu companheiro.
           </p>
           <Button 
             size="lg" 
