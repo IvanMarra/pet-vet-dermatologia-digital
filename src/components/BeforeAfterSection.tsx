@@ -155,7 +155,7 @@ const BeforeAfterSection = () => {
                     </svg>
                   </div>
                   <p className="text-base font-medium text-foreground">
-                    Duração do tratamento: <span className="text-primary font-semibold">{transformations[currentIndex].treatment_duration}</span>
+                    Duração do tratamento: <span className="text-primary font-semibold">{transformations[currentIndex].treatment_duration} dias</span>
                   </p>
                 </div>
               )}
