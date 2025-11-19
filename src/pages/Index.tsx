@@ -5,7 +5,8 @@ import GroomingHeroSection from '@/components/GroomingHeroSection';
 import GroomingGallerySection from '@/components/GroomingGallerySection';
 import PetGallerySection from '@/components/PetGallerySection';
 import BeforeAfterSection from '@/components/BeforeAfterSection';
-import AboutSection from '@/components/AboutSection';
+import ValuesSection from '@/components/ValuesSection';
+import BlogSection from '@/components/BlogSection';
 import ServicesSection from '@/components/ServicesSection';
 import StoreSection from '@/components/StoreSection';
 import VeterinarianSection from '@/components/VeterinarianSection';
@@ -27,7 +28,8 @@ const Index = () => {
       <PatientsAttendedSection />
       <BeforeAfterSection />
       <EventsGallerySection />
-      <AboutSection />
+      <ValuesSection />
+      <BlogSection />
       <ServicesSection />
       <StoreSection />
       <VeterinarianSection />
