@@ -63,13 +63,10 @@ const Header = () => {
 
   const menuItems = [
     { id: 'inicio', label: 'Home' },
-    { id: 'about', label: 'Sobre Nós' },
     { id: 'services', label: 'Procedimentos' },
     { id: 'loja', label: 'Loja Online' },
-    { id: 'lost-pets', label: 'Pets Perdidos' },
     { id: 'veterinaria', label: 'Dra. Karine' },
     { id: 'testimonials', label: 'Depoimentos' },
-    { id: 'contato', label: 'Contato' },
   ];
 
   return (
