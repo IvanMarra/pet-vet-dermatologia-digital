@@ -98,7 +98,7 @@ const TestimonialsSection = () => {
           </p>
           <div className="flex items-center justify-center gap-2 mb-6">
             {renderStars(5)}
-            <span className="text-lg font-semibold ml-2">4.9/5</span>
+            <span className="text-lg font-semibold ml-2">5/5</span>
             <span className="text-muted-foreground">(250+ avaliações)</span>
           </div>
         </div>

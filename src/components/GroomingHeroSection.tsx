@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Sparkles } from 'lucide-react';
-import banhoTosaImage from '@/assets/banho-tosa.png';
+import banhoTosaImage from '@/assets/pet-bath-bubbles.jpg';
 
 const GroomingHeroSection = () => {
   const whatsappNumbers = ['31995502094', '31994162094'];

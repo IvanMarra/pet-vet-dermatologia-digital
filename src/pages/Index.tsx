@@ -4,15 +4,14 @@ import HeroSection from '@/components/HeroSection';
 import GroomingHeroSection from '@/components/GroomingHeroSection';
 import GroomingGallerySection from '@/components/GroomingGallerySection';
 import PetGallerySection from '@/components/PetGallerySection';
-import DermatologySection from '@/components/DermatologySection';
 import BeforeAfterSection from '@/components/BeforeAfterSection';
 import AboutSection from '@/components/AboutSection';
 import ServicesSection from '@/components/ServicesSection';
 import StoreSection from '@/components/StoreSection';
-import LostPetsSection from '@/components/LostPetsSection';
 import VeterinarianSection from '@/components/VeterinarianSection';
 import TestimonialsSection from '@/components/TestimonialsSection';
-import ContactSection from '@/components/ContactSection';
+import PatientsAttendedSection from '@/components/PatientsAttendedSection';
+import EventsGallerySection from '@/components/EventsGallerySection';
 import Footer from '@/components/Footer';
 import ScrollToTop from '@/components/ScrollToTop';
 import WhatsAppFloatingButton from '@/components/WhatsAppFloatingButton';
@@ -25,15 +24,14 @@ const Index = () => {
       <GroomingHeroSection />
       <GroomingGallerySection />
       <PetGallerySection />
-      <DermatologySection />
+      <PatientsAttendedSection />
       <BeforeAfterSection />
+      <EventsGallerySection />
       <AboutSection />
       <ServicesSection />
       <StoreSection />
-      <LostPetsSection />
       <VeterinarianSection />
       <TestimonialsSection />
-      <ContactSection />
       <Footer />
       <ScrollToTop />
       <WhatsAppFloatingButton />
