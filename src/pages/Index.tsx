@@ -1,8 +1,6 @@
 import React from 'react';
 import Header from '@/components/Header';
 import HeroSection from '@/components/HeroSection';
-import GroomingHeroSection from '@/components/GroomingHeroSection';
-import GroomingGallerySection from '@/components/GroomingGallerySection';
 import PetGallerySection from '@/components/PetGallerySection';
 import BeforeAfterSection from '@/components/BeforeAfterSection';
 import ValuesSection from '@/components/ValuesSection';
@@ -21,8 +19,6 @@ const Index = () => {
     <div className="min-h-screen scroll-smooth">
       <Header />
       <HeroSection />
-      <GroomingHeroSection />
-      <GroomingGallerySection />
       <PetGallerySection />
       <BeforeAfterSection />
       <EventsGallerySection />
